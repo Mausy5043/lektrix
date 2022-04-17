@@ -5,37 +5,41 @@ HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 pushd "${HERE}" >/dev/null || exit 1
     # shellcheck disable=SC1091
     source ./bin/constants.sh
-popd >/dev/null || exit 1
 
-# check commandline parameters
-for i in "$@"; do
-    case $i in
-    -i | --install)
-        install_lektrix
-        ;;
-    -u | --uninstall)
-        unstall_lektrix
-        ;;
-    -s | --stop)
-        stop_lektrix
-        ;;
-    -g | --go)
-        start_lektrix
-        ;;
-    -r | --restart)
-        restart_lektrix 0
-        ;;
-    --systemd)
-        restart_lektrix 1
-        ;;
-    *)
-        # unknown option
-        echo "** Unknown option **"
-        echo
-        echo "Syntax:"
-        echo "lektrix [-i|--install] [-g|--go] [-r|--restart]  [-s|--stop] [-u|--uninstall]"
-        echo
-        exit 1
-        ;;
-    esac
-done
+    # check commandline parameters
+    for i in "$@"; do
+        case $i in
+        -i | --install)
+            install_lektrix "${HERE}"
+            ;;
+        -u | --uninstall)
+            unstall_lektrix
+            ;;
+        -s | --stop)
+            stop_lektrix
+            ;;
+        -g | --go)
+            start_lektrix
+            ;;
+        -b | --boot)
+            start_lektrix
+            ;;
+        -r | --restart)
+            restart_lektrix "${HERE}" 0
+            ;;
+        --systemd | --graph)
+            restart_lektrix "${HERE}" 1
+            ;;
+        *)
+            # unknown option
+            echo "** Unknown option **"
+            echo
+            echo "Syntax:"
+            echo "lektrix [-i|--install] [-g|--go] [-r|--restart|--graph]  [-s|--stop] [-u|--uninstall]"
+            echo
+            exit 1
+            ;;
+        esac
+    done
+
+popd >/dev/null || exit 1
