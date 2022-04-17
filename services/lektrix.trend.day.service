@@ -7,7 +7,7 @@ Wants=lektrix.trend.day.timer
 [Service]
 Type=oneshot
 User=pi
-ExecStart=/home/pi/lektrixd/bin/pastday.sh -
+ExecStart=/home/pi/lektrix/bin/pastday.sh -
 
 # [Install]
 # WantedBy=multi-user.target

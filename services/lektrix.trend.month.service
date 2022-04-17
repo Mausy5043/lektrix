@@ -7,7 +7,7 @@ Wants=lektrix.trend.month.timer
 [Service]
 Type=oneshot
 User=pi
-ExecStart=/home/pi/lektrixd/bin/pastmonth.sh -
+ExecStart=/home/pi/lektrix/bin/pastmonth.sh -
 
 # [Install]
 # WantedBy=multi-user.target
