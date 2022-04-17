@@ -2,8 +2,8 @@
 
 [Unit]
 Description=daily lektrix update
-# also trigger at boot:
-Requires=lektrix.update.service
+# Do not use this to also trigger at boot and timer.start. Beware this will cause an end-less loop of updates!
+# Requires=lektrix.update.service
 
 [Timer]
 OnCalendar=*-*-* 04:00
