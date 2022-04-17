@@ -186,7 +186,7 @@ action_apt_install(){
     PKG=$1
     echo "*********************************************************"
     echo "* Requesting ${PKG}"
-    status=$(dpkg -l | awk '{print $2}' | grep -c -e "^${PKG}$")
+    status=$(dpkg -l | awk '{print $2}' | grep -c -e "^${PKG}*")
     if [ "${status}" -eq 0 ]; then
         echo -n "* Installing ${PKG} "
         sudo apt-get -yqq install "${PKG}" && echo " ... [OK]"
