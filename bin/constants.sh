@@ -116,7 +116,7 @@ install_lektrix(){
     echo "Installing ${app_name} on $(date)"
     # install APT packages
     for PKG in "${lektrix_apt_packages[@]}"; do
-        echo action_apt_install "${PKG}"
+        action_apt_install "${PKG}"
     done
     # install Python3 stuff
     python3 -m pip install --upgrade pip setuptools wheel
