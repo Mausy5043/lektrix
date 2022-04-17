@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 # shellcheck disable=SC2034
 app_name="lektrix"

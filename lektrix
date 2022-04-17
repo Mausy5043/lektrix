@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#! /usr/bin/env bash
 
 HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
 
@@ -22,7 +22,7 @@ pushd "${HERE}" >/dev/null || exit 1
             start_lektrix
             ;;
         -b | --boot)
-            start_lektrix
+            boot_lektrix
             ;;
         -r | --restart)
             restart_lektrix "${HERE}" 0
