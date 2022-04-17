@@ -1,0 +1,13 @@
+# This service is for trending data from the past year(s)
+
+[Unit]
+Description=trending electricity data from past year (service)
+Wants=lektrix.trend.year.timer
+
+[Service]
+Type=oneshot
+User=pi
+ExecStart=/home/pi/lektrixd/bin/pastyear.sh -
+
+# [Install]
+# WantedBy=multi-user.target

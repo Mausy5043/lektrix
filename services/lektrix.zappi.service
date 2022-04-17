@@ -1,0 +1,16 @@
+# This service is for starting the EV charger telemetry service
+
+[Unit]
+Description=EV charger telemetry service
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+ExecStartPre=/bin/sleep 20
+ExecStart=/home/pi/lektrixd/bin/zappi.py --start
+RestartSec=60s
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

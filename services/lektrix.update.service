@@ -1,0 +1,16 @@
+# This service is for updating the repository clone
+
+[Unit]
+Description=lektrix update service
+After=multi-user.target
+Wants=multi-user.target
+Wants=lektrix.update.timer
+
+[Service]
+Type=oneshot
+User=pi
+ExecStart=/home/pi/lektrixd/update.sh --systemd
+TimeoutSec=900
+
+# [Install]
+# WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+# This timer is for triggering the trending of past year(s) data
+
+[Unit]
+Description=daily trending electricity data from past year (timer)
+
+[Timer]
+OnCalendar=*-*-* 01:00
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target

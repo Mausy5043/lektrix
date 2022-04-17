@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve fles app
+After=network.target
+
+[Service]
+User=pi
+Group=www-data
+WorkingDirectory=/home/pi/lektrixd/bin/
+Environment="PATH=/home/pi/lektrixd/bin/"
+ExecStart=/home/pi/.local/bin/uwsgi --socket 0.0.0.0:5000 --protocol=http --processes=1 -w wsgi:app
+
+[Install]
+WantedBy=multi-user.target
