@@ -9,7 +9,7 @@ Wants=lektrix.update.timer
 [Service]
 Type=oneshot
 User=pi
-ExecStart=/home/pi/lektrixd/update.sh --systemd
+ExecStart=/home/pi/lektrixd/lektrix --systemd
 TimeoutSec=900
 
 # [Install]
