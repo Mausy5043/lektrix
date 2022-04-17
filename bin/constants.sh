@@ -160,7 +160,7 @@ action_timers(){
         if [ "${ACTION}" != "rm" ]; then
             sudo systemctl "${ACTION}" "${TMR}"
         else
-            rm "/etc/systemd/system/${TMR}"
+            sudo rm "/etc/systemd/system/${TMR}"
         fi
     done
     sudo systemctl daemon-reload
@@ -174,7 +174,7 @@ action_services(){
         if [ "${ACTION}" != "rm" ]; then
             sudo systemctl "${ACTION}" "${SRVC}"
         else
-            rm "/etc/systemd/system/${SRVC}"
+            sudo rm "/etc/systemd/system/${SRVC}"
         fi
     done
     sudo systemctl daemon-reload
@@ -188,9 +188,9 @@ action_apt_install(){
     echo "* Requesting ${PKG}"
     status=$(dpkg -l | awk '{print $2}' | grep -c -e "^${PKG}$")
     if [ "${status}" -eq 0 ]; then
-        echo "* Installing ${PKG}"
+        echo -n "* Installing ${PKG} "
+        sudo apt-get -yqq install "${PKG}" && echo " ... [OK]"
         echo "*********************************************************"
-        sudo apt-get -yqq install "${PKG}"
     else
         echo "* Already installed !!!"
         echo "*********************************************************"
