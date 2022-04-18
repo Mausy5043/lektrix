@@ -7,8 +7,8 @@ if [ -f "${HOME}/.${app_name}.branch" ]; then
 else
     branch_name="master"
 fi
-# Python library of common functions
-commonlibbranch="v1_0"
+# Python library of common functions to be used
+commonlibbranch="v2_0"
 
 # determine machine identity
 host_name=$(hostname)
@@ -126,7 +126,7 @@ install_lektrix(){
     python3 -m pip uninstall -y mausy5043-common-python
     echo
     echo "Install common python functions..."
-    python3 -m pip install "git+https://gitlab.com/mausy5043-installer/mausy5043-common-python.git@${commonlibbranch}#egg=mausy5043-common-python"
+    python3 -m pip install "git+https://github.com/Mausy5043/mausy5043-common-python.git@${commonlibbranch}#egg=mausy5043-common-python"
 
     # install account keys from local fileserver
     getfilefromserver "solaredge" "0740"
