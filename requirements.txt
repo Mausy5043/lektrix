@@ -3,7 +3,7 @@ Flask
 # matplotlib
 # numpy
 # pandas
-# pyserial
+pyserial
 # python-dateutil
 # python-dotenv
 # pytz
