@@ -122,17 +122,25 @@ install_lektrix(){
     python3 -m pip install --upgrade pip setuptools wheel
     python3 -m pip install -r requirements.txt
     echo
-    echo "Uninstall common python functions..."
+    echo "Uninstalling common python functions..."
     python3 -m pip uninstall -y mausy5043-common-python
     echo
-    echo "Install common python functions..."
+    echo "Installing common python functions..."
     python3 -m pip install "git+https://github.com/Mausy5043/mausy5043-common-python.git@${commonlibbranch}#egg=mausy5043-common-python"
 
     # install account keys from local fileserver
     getfilefromserver "solaredge" "0740"
     getfilefromserver "zappi" "0740"
 
+    if [ -f "${db_full_path}" ]; then
+        echo "Found existing database."
+    else
+        echo "Creating database."
+        sqlite3 "${db_full_path}" < ./lektrix.sql
+    fi
+
     # install services and timers
+    echo "Installing timers & services."
     sudo cp "${ROOT_DIR}"/services/*.service /etc/systemd/system/
     sudo cp "${ROOT_DIR}"/services/*.timer /etc/systemd/system/
     sudo systemctl daemon-reload
