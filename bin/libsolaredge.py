@@ -11,8 +11,9 @@ import dateutil.parser as dtparse
 import dateutil.rrule as dtrule
 import pytz
 import requests
+import constants
 
-BASEURL = "https://monitoringapi.solaredge.com"
+BASEURL = constants.SOLAREDGE['director']
 
 
 class Solaredge:
@@ -44,9 +45,8 @@ class Solaredge:
         """
         Request a list of all sites
 
-        Returns
-        -------
-        dict
+        Returns:
+            dict
         """
 
         url = urljoin(BASEURL, "sites", "list")
@@ -75,13 +75,11 @@ class Solaredge:
         """
         Request details about a certain site
 
-        Parameters
-        ----------
-        site_id : int
+        Args:
+        site_id (int): site to get details for.
 
-        Returns
-        -------
-        dict
+        Returns:
+            dict containing details of site
         """
         url = urljoin(BASEURL, "site", site_id, "details")
         params = {"api_key": self.token}

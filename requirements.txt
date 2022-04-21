@@ -1,13 +1,13 @@
 Flask
 # hanging_threads
 # matplotlib
-# numpy
-# pandas
+numpy
+pandas
 pyserial
-# python-dateutil
+python-dateutil
 # python-dotenv
-# pytz
-# requests
+pytz
+requests
 # scipy
 # skyfield
 uwsgi

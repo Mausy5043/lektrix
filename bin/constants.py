@@ -46,17 +46,20 @@ KAMSTRUP = {'database': _DATABASE,
             }
 
 SOLAREDGE = {'database': _DATABASE,
+             'table': "production",
              'sql_command': "INSERT INTO production ("
                             "sample_time, sample_epoch, site_id, energy"
                             ") "
                             "VALUES (?, ?, ?, ?)",
              'report_time': 899,
              'cycles': 1,
-             'samplespercycle': 1
+             'samplespercycle': 1,
+             'director': "https://monitoringapi.solaredge.com"
              }
 
 ZAPPI = {'database': _DATABASE,
-         'sql_commmand': "INSERT INTO zappi ("
+         'table': "charger",
+         'sql_commmand': "INSERT INTO charger ("
                          "sample_time, sample_epoch"
                          ") "
                          "VALUES (?, ?, ?, ?)",
