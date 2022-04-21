@@ -4,16 +4,16 @@ import os
 import sys
 
 _MYHOME = os.environ["HOME"]
-_DATABASE = '/srv/databases/electriciteit.sqlite3'
+_DATABASE = '/srv/databases/lektrix.sqlite3'
 
 if not os.path.isfile(_DATABASE):
-    _DATABASE = '/srv/data/electriciteit.sqlite3'
+    _DATABASE = '/srv/data/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
-    _DATABASE = '/mnt/data/electriciteit.sqlite3'
+    _DATABASE = '/mnt/data/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
-    _DATABASE = f'.local/electriciteit.sqlite3'
+    _DATABASE = f'.local/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
-    _DATABASE = f'{_MYHOME}/.sqlite3/electriciteit.sqlite3'
+    _DATABASE = f'{_MYHOME}/.sqlite3/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
     print("Database is missing.")
     sys.exit(1)
