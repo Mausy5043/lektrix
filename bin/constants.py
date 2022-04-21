@@ -54,7 +54,12 @@ SOLAREDGE = {'database': _DATABASE,
              'report_time': 899,
              'cycles': 1,
              'samplespercycle': 1,
-             'director': "https://monitoringapi.solaredge.com"
+             'director': "https://monitoringapi.solaredge.com",
+             'template': {'sample_time': 0,
+                          'sample_epoch': 0,
+                          'site_id': 0,
+                          'energy': 0
+                          }
              }
 
 ZAPPI = {'database': _DATABASE,

@@ -142,7 +142,7 @@ def main():
 def do_work(site_list):
     """Extract the data from the dict(s)."""
     dt_format = "%Y-%m-%d %H:%M:%S"
-    data_list = list()
+    result_dict = constants.SOLAREDGE['template']
     data_dict = dict()
 
     for site in site_list:
@@ -168,9 +168,11 @@ def do_work(site_list):
         if data_dict:
             try:
                 date_time = data_dict["lastUpdateTime"]
-                epoch = int(dt.datetime.strptime(date_time, dt_format).timestamp())
                 energy = data_dict["lifeTimeData"]["energy"]
-                data_list.append([date_time, epoch, site_id, energy])
+                result_dict['sample_time'] = date_time
+                result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, dt_format).timestamp())
+                result_dict['site_id'] = site_id
+                result_dict['energy'] = energy
                 mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
             except TypeError:
                 # ignore empty sites
@@ -179,7 +181,7 @@ def do_work(site_list):
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(f"site: {site_id}", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(f"data: {data_dict}", syslog.LOG_CRIT, DEBUG)
-    return data_list
+    return result_dict
 
 
 if __name__ == "__main__":
