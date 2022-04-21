@@ -168,7 +168,7 @@ def do_work(site_list):
         if data_dict:
             try:
                 date_time = data_dict["lastUpdateTime"]
-                energy = data_dict["lifeTimeData"]["energy"]
+                energy = int(data_dict["lifeTimeData"]["energy"])
                 result_dict['sample_time'] = date_time
                 result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, dt_format).timestamp())
                 result_dict['site_id'] = site_id
