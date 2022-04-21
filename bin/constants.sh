@@ -136,7 +136,7 @@ install_lektrix(){
         echo "Found existing database."
     else
         echo "Creating database."
-        sqlite3 "${db_full_path}" < ./lektrix.sql
+        sqlite3 "${db_full_path}" < "${ROOT_DIR}/bin/lektrix.sql"
     fi
 
     # install services and timers
