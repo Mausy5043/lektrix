@@ -6,6 +6,9 @@ import json
 import os
 import time
 from pprint import pprint
+import mausy5043funcs.fileops3 as mf
+import traceback
+import syslog
 
 import numpy as np
 import pandas as pd
@@ -33,11 +36,11 @@ class Myenergi:
     """Class to interact with the myenergi servers
     """
 
-    def __init__(self, config_file, debug=False):
+    def __init__(self, keys_file, debug=False):
         """Initialise the Myenergi object
 
         Args:
-            config_file (str): path and filename to an ini-file (see below).
+            keys_file (str): full path and filename to a file containing the API-keys (see below).
             debug (bool, optional): [description]. Defaults to False.
 
         The ini-file must be a configparser compatible file containing:
@@ -55,22 +58,29 @@ class Myenergi:
         serial: 12345678
         # EOF
         """
+        self.DEBUG = debug
+        self.base_url = constants.ZAPPI['director']
+        self.zappi_data_template = constants.ZAPPI['template']
 
         iniconf = configparser.ConfigParser()
-        iniconf.read(config_file)
-
-        self.base_url = constants.ZAPPI['director']
+        iniconf.read(keys_file)
         self.harvi_serial = iniconf.get("HARVI", "serial")
         self.hub_serial = iniconf.get("HUB", "serial")
+        self.hub_username = iniconf.get("ZAPPI", "username")
         self.hub_password = iniconf.get("HUB", "password")
         self.zappi_serial = iniconf.get("ZAPPI", "serial")
-        self.zappi_data_template = constants.ZAPPI['template']
+        try:
+            self.eddi_serial = iniconf.get("EDDI", "serial")
+        except configparser.Error:
+            mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, self.DEBUG)
+            # not everybody has an eddi
+            self.eddi_serial = None
+            pass
 
         # First call to the API to get the ASN
         self.response = requests.get(self.base_url,
                                      auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
                                      )
-        self.DEBUG = debug
         if self.DEBUG:
             print("Response :")
             pprint(self.response)
