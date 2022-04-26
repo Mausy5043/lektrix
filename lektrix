@@ -31,6 +31,9 @@ pushd "${HERE}" >/dev/null || exit 1
         --systemd | --graph)
             restart_lektrix "${HERE}" 1
             ;;
+        --update)
+            update_lektrix
+            ;;
         *)
             # unknown option
             echo "** Unknown option **"
