@@ -66,7 +66,7 @@ class Myenergi:
         iniconf.read(keys_file)
         self.harvi_serial = iniconf.get("HARVI", "serial")
         self.hub_serial = iniconf.get("HUB", "serial")
-        self.hub_username = iniconf.get("ZAPPI", "username")
+        self.hub_username = iniconf.get("HUB", "username")
         self.hub_password = iniconf.get("HUB", "password")
         self.zappi_serial = iniconf.get("ZAPPI", "serial")
         try:
