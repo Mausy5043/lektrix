@@ -4,12 +4,10 @@ import configparser
 import datetime as dt
 import json
 import os
-import time
-from pprint import pprint
-import mausy5043funcs.fileops3 as mf
-import traceback
 import syslog
+import time
 
+import mausy5043funcs.fileops3 as mf
 import numpy as np
 import pandas as pd
 import requests
@@ -113,7 +111,6 @@ class Myenergi:
             pass
         return key_value
 
-
     def get_status(self, command):
         """Call the API with a command and return the resulting data in a dict.
 
@@ -145,7 +142,7 @@ class Myenergi:
             for key in response.headers:
                 print(key, "  ::  ", response.headers[key])
             print(f"### Payload {command}")
-            pprint(result)
+            print(result)
             print("***************")
 
         return result
