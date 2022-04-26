@@ -19,7 +19,21 @@ if not os.path.isfile(_DATABASE):
     sys.exit(1)
 
 BATTERY = {'database': _DATABASE,
-           'graph_file': ".local/graph.png"
+           'sql_table': "storage",
+
+           'graph_file': ".local/graph.png",
+
+           'sql_command': "INSERT INTO storage ("
+                          "sample_time, sample_epoch, battery_id, soc"
+                          ") "
+                          "VALUES (?, ?, ?, ?)",
+           'report_time': 299,
+           'samplespercycle': 1,
+           'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
+                        'sample_epoch': 0,
+                        'battery_id': 0,
+                        'soc': 0
+                        }
            }
 
 TREND = {'database': _DATABASE,
@@ -32,6 +46,7 @@ TREND = {'database': _DATABASE,
          }
 
 KAMSTRUP = {'database': _DATABASE,
+            'sql_table': "kamstrup",
             'sql_command': "INSERT INTO kamstrup ("
                            "sample_time, sample_epoch, "
                            "T1in, T2in, powerin, "
@@ -39,23 +54,24 @@ KAMSTRUP = {'database': _DATABASE,
                            "tarif, swits"
                            ") "
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            'sql_table': "kamstrup",
             'report_time': 600,
-            'cycles': 1,
-            'samplespercycle': 58
+            'samplespercycle': 58,
+            'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
+                         'sample_epoch': 0
+                         # add other parameters
+                         }
             }
 
 SOLAREDGE = {'database': _DATABASE,
-             'table': "production",
+             'sql_table': "production",
              'sql_command': "INSERT INTO production ("
                             "sample_time, sample_epoch, site_id, energy"
                             ") "
                             "VALUES (?, ?, ?, ?)",
              'report_time': 899,
-             'cycles': 1,
              'samplespercycle': 1,
              'director': "https://monitoringapi.solaredge.com",
-             'template': {'sample_time': 0,
+             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
                           'sample_epoch': 0,
                           'site_id': 0,
                           'energy': 0
@@ -63,13 +79,18 @@ SOLAREDGE = {'database': _DATABASE,
              }
 
 ZAPPI = {'database': _DATABASE,
-         'table': "charger",
+         'sql_table': "charger",
          'sql_commmand': "INSERT INTO charger ("
                          "sample_time, sample_epoch"
                          ") "
                          "VALUES (?, ?, ?, ?)",
+         'report_time': 899,
+         'samplespercycle': 1,
          'director': "https://director.myenergi.net",
-         'template': {'hr': 0,
+         'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
+                      'sample_epoch': 0,
+                      'site_id': 0,
+                      'hr': 0,
                       'dow': "Mon",
                       'dom': 1,
                       'mon': 1,
