@@ -1,12 +1,22 @@
 #!/usr/bin/env python3
+"""Daemon to periodically call the Myenergy API to fetch energy production data.
 
-import argparse
-import os
-import syslog
+Store the data in a SQLite3 database.
+"""
 import time
+import argparse
+import configparser
+import syslog
+import constants
+import os
+import traceback
+import datetime as dt
 
 import mausy5043funcs.fileops3 as mf
 import mausy5043libs.libsignals3 as ml
+import mausy5043libs.libsqlite3 as m3
+
+import libzappi as zl
 
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
@@ -31,7 +41,6 @@ MYROOT = "/".join(HERE[0:-3])
 # host_name :
 NODE = os.uname()[1]
 
-
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'zappi.py']
 # MYID: zappi.py
@@ -41,7 +50,25 @@ NODE = os.uname()[1]
 
 
 def main():
+    """Execute main loop until killed."""
     killer = ml.GracefulKiller()
+    iniconf = configparser.ConfigParser()
+    # read api_key from the file ~/.config/zappi/keys.ini
+    api_keys_file = f"{os.environ['HOME']}/.config/zappi/keys.ini"
+    iniconf.read(api_keys_file)
+    API_ZP = zl.Myenergi(api_keys_file, DEBUG)
+
+    sql_db = m3.SqlDatabase(database=constants.SOLAREDGE['database'],
+                            table='production', insert=constants.SOLAREDGE['sql_command'],
+                            debug=DEBUG
+                            )
+
+    report_time = int(constants.SOLAREDGE['report_time'])
+    sample_time = report_time / int(constants.SOLAREDGE['samplespercycle'])
+
+    site_list = []
+    pause_time = 0
+    next_time = pause_time + time.time()
     while not killer.kill_now:
         time.sleep(5.0)
 
