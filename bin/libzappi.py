@@ -73,11 +73,11 @@ class Myenergi:
         self.response = requests.get(self.base_url,
                                      auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
                                      )
-        if self.DEBUG:
-            mf.syslog_trace("Response :", False, self.DEBUG)
-            for key in self.response.headers:
-                mf.syslog_trace(f"{key}\t::\t{self.response.headers[key]}", False, self.DEBUG)
-            mf.syslog_trace("", False, self.DEBUG)
+        # if self.DEBUG:
+        #     mf.syslog_trace("Response :", False, self.DEBUG)
+        #     for key in self.response.headers:
+        #         mf.syslog_trace(f"{key}\t::\t{self.response.headers[key]}", False, self.DEBUG)
+        #     mf.syslog_trace("", False, self.DEBUG)
 
         # construct the URL for the ASN
         if "X_MYENERGI-asn" in self.response.headers:
