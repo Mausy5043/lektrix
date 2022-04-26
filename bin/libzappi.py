@@ -64,40 +64,55 @@ class Myenergi:
 
         iniconf = configparser.ConfigParser()
         iniconf.read(keys_file)
-        self.harvi_serial = iniconf.get("HARVI", "serial")
-        self.hub_serial = iniconf.get("HUB", "serial")
-        self.hub_username = iniconf.get("HUB", "username")
-        self.hub_password = iniconf.get("HUB", "password")
-        self.zappi_serial = iniconf.get("ZAPPI", "serial")
-        try:
-            self.eddi_serial = iniconf.get("EDDI", "serial")
-        except configparser.Error:
-            mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, self.DEBUG)
-            # not everybody has an eddi
-            self.eddi_serial = None
-            pass
+        self.harvi_serial = self.get_key(iniconf, "HARVI", "serial")
+        self.hub_serial = self.get_key(iniconf, "HUB", "serial")
+        self.hub_username = self.get_key(iniconf, "HUB", "username")
+        self.hub_password = self.get_key(iniconf, "HUB", "password")
+        self.zappi_serial = self.get_key(iniconf, "ZAPPI", "serial")
+        self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
 
         # First call to the API to get the ASN
         self.response = requests.get(self.base_url,
                                      auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
                                      )
         if self.DEBUG:
-            print("Response :")
-            pprint(self.response)
-            print("")
+            mf.syslog_trace("Response :", False, self.DEBUG)
             for key in self.response.headers:
-                print(f"{key}\t  ::  {self.response.headers[key]}")
-            print("")
+                mf.syslog_trace(f"{key}\t::\t{self.response.headers[key]}", False, self.DEBUG)
+            mf.syslog_trace("", False, self.DEBUG)
 
         # construct the URL for the ASN
         if "X_MYENERGI-asn" in self.response.headers:
             self.asn = self.response.headers['X_MYENERGI-asn']
             self.base_url = "https://" + self.asn
-            if self.DEBUG:
-                print(f"ASN:              {self.asn}")
-                print(f"Constructed URL : {self.base_url}")
+            mf.syslog_trace(f"ASN             : {self.asn}", syslog.LOG_INFO, self.DEBUG)
+            mf.syslog_trace(f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG)
         else:
-            print("myenergi ASN not found in myenergi header")
+            raise RuntimeError("myenergi ASN not found in myenergi header")
+
+    def get_key(self, confobj, key_section, key_option):
+        """Read keys from keys_file with error handling
+
+        Args:
+            confobj (obj):  configparser object
+            key_section (str): section name
+            key_option (str): option name
+
+        Returns:
+            value of the option
+        """
+        key_value = None
+        try:
+            key_value = confobj.get(key_section, key_option)
+        except configparser.NoSectionError:
+            mf.syslog_trace(f"Section [{key_section}] does not exist.", syslog.LOG_WARNING, self.DEBUG)
+            pass
+        except configparser.NoOptionError:
+            mf.syslog_trace(f"Option [{key_section}]\n{key_option} = ...    does not exist.",
+                            syslog.LOG_WARNING, self.DEBUG)
+            pass
+        return key_value
+
 
     def get_status(self, command):
         """Call the API with a command and return the resulting data in a dict.
