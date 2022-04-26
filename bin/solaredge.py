@@ -66,8 +66,6 @@ def main():
                             debug=DEBUG
                             )
 
-    # fdatabase = constants.SOLAREDGE['database']
-    # sqlcmd = constants.SOLAREDGE['sql_command']
     report_time = int(constants.SOLAREDGE['report_time'])
     sample_time = report_time / int(constants.SOLAREDGE['samplespercycle'])
 
