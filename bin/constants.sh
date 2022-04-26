@@ -46,6 +46,16 @@ start_lektrix(){
     action_services start
 }
 
+# update the repository
+update_lektrix(){
+    git fetch origin || sleep 60; git fetch origin
+    DIFFLIST=$(git --no-pager diff --name-only "${branch_name}..origin/${branch_name}")
+    git pull
+    git fetch origin
+    git checkout "${branch_name}"
+    git reset --hard "origin/${branch_name}" && git clean -f -d
+}
+
 # stop, update the repo and start the application
 # do some additional stuff when called by systemd
 restart_lektrix(){
@@ -56,13 +66,7 @@ restart_lektrix(){
     echo "Restarting ${app_name} on $(date)"
     stop_lektrix
 
-    # update the repository
-    git fetch origin || sleep 60; git fetch origin
-    DIFFLIST=$(git --no-pager diff --name-only "${branch_name}..origin/${branch_name}")
-    git pull
-    git fetch origin
-    git checkout "${branch_name}"
-    git reset --hard "origin/${branch_name}" && git clean -f -d
+    update_lektrix
 
     if [ "${SYSTEMD_REQUEST}" -eq 1 ]; then
         echo "Creating graphs [1]"
