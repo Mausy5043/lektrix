@@ -61,7 +61,7 @@ class Kamstrup:
         telegram = []
         # end of line delimiter
         # delim = "\x0a"
-        line = ""
+        # line = ""
         while receiving:
             try:
                 line = str(self.PORT.readline().strip(), "utf-8")
