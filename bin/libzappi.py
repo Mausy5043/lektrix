@@ -283,7 +283,7 @@ class Myenergi:
         # Concatenate date/time parameters to UTC date/time string
         utc_cols = ['yr', 'mon', 'dom']
         pd_data['utc'] = pd_data[utc_cols].apply(lambda row: '-'.join(row.values.astype(str)), axis=1)
-        utc_cols = ['utc', 'hr']
+        utc_cols = ['utc', 'hr', 'min']
         pd_data['utc'] = pd_data[utc_cols].apply(lambda row: ' '.join(row.values.astype(str)) + ":00:00", axis=1)
         pd_data['utc'] = pd.to_datetime(pd_data['utc'], format="%Y-%m-%d %H:%M:%S", utc=True)
         # convert UTC to `sample_time`
@@ -292,7 +292,7 @@ class Myenergi:
         # calculate `sample_epoch`
         pd_data['sample_epoch'] = (pd.to_datetime(pd_data['utc']).apply(lambda x: x.value) / 10 ** 9).astype(np.int64)
         # prune the data; throw away what we no longer need.
-        pd_data.drop(['dow', 'dom', 'hr', 'mon', 'yr', 'utc'], axis=1, inplace=True)
+        pd_data.drop(['dow', 'dom', 'hr', 'min', 'mon', 'yr', 'utc'], axis=1, inplace=True)
         if self.DEBUG:
             print(pd_data)
 
