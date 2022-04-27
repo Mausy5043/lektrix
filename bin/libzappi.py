@@ -223,12 +223,13 @@ class Myenergi:
         # date is in UTC
         block_dt = f"{str(block['mon']).zfill(2)}" \
                    f"-{str(block['dom']).zfill(2)}" \
-                   f" {str(block['hr']).zfill(2)}h"
+                   f" {str(block['hr']).zfill(2)}:{str(block['min']).zfill(2)}"
         # datetime object in UTC
         utc_dt = dt.datetime.strptime(f"{str(block['yr']).zfill(4)}"
                                       f"-{str(block['mon']).zfill(2)}"
                                       f"-{str(block['dom']).zfill(2)}"
-                                      f" {str(block['hr']).zfill(2)}:00:00",
+                                      f" {str(block['hr']).zfill(2)}"
+                                      f":{str(block['min']).zfill(2)}:00",
                                       "%Y-%m-%d %H:%M:%S"
                                       )
 
