@@ -274,12 +274,16 @@ class Myenergi:
         pd_data['gep'] = joules2kwh(pd_data['gep'])
         pd_data['h1b'] = joules2kwh(pd_data['h1b'])
         pd_data['h1d'] = joules2kwh(pd_data['h1d'])
-        # hours are returned as floats. So, first convert float to int
+        # hours and minutes are returned as floats. So, first convert float to int
         hours = np.array(pd_data['hr'], dtype=int)
+        mints = np.array(pd_data['min'], dtype=int)
         # then int to str
         hours = np.array(hours, dtype=str)
+        mints = np.array(mints, dtype=str)
         # and add a leading zero
         pd_data['hr'] = np.char.zfill(hours, 2)
+        pd_data['min'] = np.char.zfill(mints, 2)
+
         # Concatenate date/time parameters to UTC date/time string
         utc_cols = ['yr', 'mon', 'dom']
         pd_data['utc'] = pd_data[utc_cols].apply(lambda row: '-'.join(row.values.astype(str)), axis=1)
