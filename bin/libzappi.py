@@ -41,7 +41,7 @@ class Myenergi:
             keys_file (str): full path and filename to a file containing the API-keys (see below).
             debug (bool, optional): [description]. Defaults to False.
 
-        The ini-file must be a configparser compatible file containing:
+        The keys-file must be a configparser compatible file containing:
         [HUB]
         serial: 12345678
         password: secret_hub_password
