@@ -333,7 +333,14 @@ class Myenergi:
         timeout_retries = 3
         while not done_flag:
             try:
-                result = self.get_status(f"cgi-jdayhour-Z{self.zappi_serial}-"
+                # hourly data
+                # result = self.get_status(f"cgi-jdayhour-Z{self.zappi_serial}-"
+                #                          f"{this_day.year}-"
+                #                          f"{this_day.month}-"
+                #                          f"{this_day.day}"
+                #                          )
+                # minutely data
+                result = self.get_status(f"cgi-jday-Z{self.zappi_serial}-"
                                          f"{this_day.year}-"
                                          f"{this_day.month}-"
                                          f"{this_day.day}"
