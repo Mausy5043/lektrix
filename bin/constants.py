@@ -103,10 +103,12 @@ ZAPPI = {'database': _DATABASE,
                       'h1b': 0.0,
                       'h1d': 0.0,
                       'v1': 0,
+                      'pect1': 0,
                       'pect2': 0,
                       'pect3': 0,
                       'nect1': 0,
                       'nect2': 0,
+                      'nect3': 0,
                       'frq': 0
                       }
          }
