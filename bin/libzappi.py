@@ -124,8 +124,7 @@ class Myenergi:
         hdrs = {"User-Agent": "Wget/1.20 (linux-gnu)"}
 
         call_url = "/".join([self.base_url, command])
-        if self.DEBUG:
-            print(call_url)
+        mf.syslog_trace(f"Calling {call_url}...", False, self.DEBUG)
         try:
             response = requests.get(call_url,
                                     headers=hdrs,
@@ -134,17 +133,15 @@ class Myenergi:
                                     )
         except requests.exceptions.ReadTimeout:
             # We raise the time-out here. If desired, retries should be handled by caller
-            print("!!! TimeOut")
+            mf.syslog_trace(f"{call_url} timed out!", syslog.LOG_WARNING, self.DEBUG)
             raise
         result = json.loads(response.content)
 
         if self.DEBUG:
-            print(response.status_code)
+            mf.syslog_trace(f"Response Status Code: {response.status_code}...", False, self.DEBUG)
             for key in response.headers:
-                print(key, "  ::  ", response.headers[key])
-            print(f"### Payload {command}")
-            print(result)
-            print("***************")
+                mf.syslog_trace(f"{key} :: {response.headers[key]}", False, self.DEBUG)
+            mf.syslog_trace("***** ***** *****", False, self.DEBUG)
 
         return result
 
@@ -178,7 +175,7 @@ class Myenergi:
             if key not in self.zappi_data_template:
                 unknown_keys.add(key)
         if unknown_keys:
-            print(" *** Missing keys in template:", unknown_keys)
+            mf.syslog_trace(f"*** Missing keys in template: {unknown_keys}", False, self.DEBUG)
 
         return block
 
@@ -212,7 +209,8 @@ class Myenergi:
             if key not in self.zappi_data_template:
                 unknown_keys.add(key)
         if unknown_keys:
-            print(" *** Missing keys in template:", unknown_keys)
+            mf.syslog_trace(f"*** *** Keys not in template: {unknown_keys}", False, self.DEBUG)
+
         # Convert Joules to kWh
         exp = int(block["exp"] / 3600) / 1000  # exported
         imp = int(block["imp"] / 3600) / 1000  # imported
@@ -301,8 +299,7 @@ class Myenergi:
         # prune the data; throw away what we no longer need.
         pd_data.drop(['dow', 'dom', 'hr', 'min', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm',
                       'pect1', 'pect2', 'pect3', 'nect1', 'nect2', 'nect3'], axis=1, inplace=True)
-        # if self.DEBUG:
-        #     print(pd_data)
+
         self.zappi_pd_data = pd_data
 
     def _fetch(self, this_day):
