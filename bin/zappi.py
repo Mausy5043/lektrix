@@ -74,6 +74,7 @@ def main():
     next_time = pause_time + time.time()
     while not killer.kill_now:
         API_ZP.fetch_data(dt.datetime.today())
+        print(API_ZP.zappi_data)
         zappi_status = API_ZP.get_status(f"cgi-jstatus-Z{API_ZP.zappi_serial}")
         for k in zappi_status["zappi"][0]:
             print(f"{k}\t::  {zappi_status['zappi'][0][k]}")
