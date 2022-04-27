@@ -58,6 +58,7 @@ class Myenergi:
         """
         self.DEBUG = debug
         self.base_url = constants.ZAPPI['director']
+        self.zappi_pd_data = None
         self.zappi_data_template = constants.ZAPPI['template']
 
         iniconf = configparser.ConfigParser()
@@ -244,9 +245,9 @@ class Myenergi:
                 }
 
     def fetch_data(self, day_to_fetch):
-        """Fetch data from the API for <day_to_fetch>.
+        """Fetch data from the API for <day_to_fetch> and store it as a pandas dataframe in `zappi-pd-data`
 
-           This will fetch at least 24 hours and including the previous day to compensate
+           This will fetch at least 24 hours and including the previous day to compensate for
            any hours that might be lost due to the offset from UTC.
            The dates are converted to local time and the data returned is
            for 00:00 u/i 23:59 LOCAL CLOCK TIME of the requested <day_to_fetch>
@@ -255,7 +256,7 @@ class Myenergi:
                 day_to_fetch (datetime.date): object containing the day for which to fetch data
 
             Returns:
-                (tuple of lists): data for each parameter in a separate list.
+                None
         """
         previous_day_data = [self.standardise_json_block(block)
                              for block in self._fetch(day_to_fetch - dt.timedelta(days=1)
@@ -302,8 +303,7 @@ class Myenergi:
                       'pect1', 'pect2', 'pect3', 'nect1', 'nect2', 'nect3'], axis=1, inplace=True)
         # if self.DEBUG:
         #     print(pd_data)
-
-        return pd_data
+        self.zappi_pd_data = pd_data
 
     def _fetch(self, this_day):
         """Try to get the data off the server for the date <this_date>.
