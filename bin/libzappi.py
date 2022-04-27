@@ -300,7 +300,7 @@ class Myenergi:
         pd_data.drop(['dow', 'dom', 'hr', 'min', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm',
                       'pect1', 'pect2', 'pect3', 'nect1', 'nect2', 'nect3'], axis=1, inplace=True)
 
-        self.zappi_data = pd_data.df.to_dict('records')
+        self.zappi_data = pd_data.to_dict('records')
 
     def _fetch(self, this_day):
         """Try to get the data off the server for the date <this_date>.
