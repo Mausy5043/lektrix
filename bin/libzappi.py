@@ -124,7 +124,7 @@ class Myenergi:
         hdrs = {"User-Agent": "Wget/1.20 (linux-gnu)"}
 
         call_url = "/".join([self.base_url, command])
-        mf.syslog_trace(f"Calling {call_url}...", False, self.DEBUG)
+        mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
         try:
             response = requests.get(call_url,
                                     headers=hdrs,
@@ -138,7 +138,7 @@ class Myenergi:
         result = json.loads(response.content)
 
         if self.DEBUG:
-            mf.syslog_trace(f"Response Status Code: {response.status_code}...", False, self.DEBUG)
+            mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
             for key in response.headers:
                 mf.syslog_trace(f"{key} :: {response.headers[key]}", False, self.DEBUG)
             mf.syslog_trace("***** ***** *****", False, self.DEBUG)
