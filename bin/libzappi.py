@@ -300,31 +300,9 @@ class Myenergi:
         # prune the data; throw away what we no longer need.
         pd_data.drop(['dow', 'dom', 'hr', 'min', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm',
                       'pect1', 'pect2', 'pect3', 'nect1', 'nect2', 'nect3'], axis=1, inplace=True)
-        if self.DEBUG:
-            print(pd_data)
-        #
-        # # TODO: remove LEGACY
-        # # #### LEGACY code block start
-        # data_lbls = list()
-        # imp = list()
-        # gep = list()
-        # gen = list()
-        # exp = list()
-        # h1b = list()
-        # h1d = list()
-        # dtm = list()
-        #
-        # for block in previous_day_data + current_day_data:
-        #     block_values = self.standardise_data_block(block)
-        #     data_lbls.append(block_values['dat'])
-        #     imp.append(block_values['imp'])
-        #     gep.append(block_values['gep'])
-        #     gen.append(block_values['gen'])
-        #     exp.append(block_values['exp'])
-        #     h1b.append(block_values['h1b'])
-        #     h1d.append(block_values['h1d'])
-        #     dtm.append(utc_to_local(block_values['utc']))
-        # # #### LEGACY code block end
+        # if self.DEBUG:
+        #     print(pd_data)
+
         return pd_data
 
     def _fetch(self, this_day):
