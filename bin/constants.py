@@ -80,7 +80,7 @@ SOLAREDGE = {'database': _DATABASE,
 
 ZAPPI = {'database': _DATABASE,
          'sql_table': "charger",
-         'sql_commmand': "INSERT INTO charger ("
+         'sql_command': "INSERT INTO charger ("
                          "sample_time, sample_epoch"
                          ") "
                          "VALUES (?, ?, ?, ?)",
