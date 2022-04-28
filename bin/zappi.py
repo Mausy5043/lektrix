@@ -69,16 +69,73 @@ def main():
     report_time = int(constants.SOLAREDGE['report_time'])
     sample_time = report_time / int(constants.SOLAREDGE['samplespercycle'])
 
-    site_list = []
     pause_time = 0
     next_time = pause_time + time.time()
     while not killer.kill_now:
-        API_ZP.fetch_data(dt.datetime.today())
-        print(API_ZP.zappi_data)
-        zappi_status = API_ZP.get_status(f"cgi-jstatus-Z{API_ZP.zappi_serial}")
-        for k in zappi_status["zappi"][0]:
-            print(f"{k}\t::  {zappi_status['zappi'][0][k]}")
-        time.sleep(5.0)
+        if time.time() > next_time:
+            start_time = time.time()
+
+            try:
+                data = do_work(API_ZP)
+            except Exception:   # noqa
+                mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
+                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                raise
+            if data:
+                try:
+                    mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
+                    for element in data:
+                        sql_db.queue(element)
+                except Exception:   # noqa
+                    mf.syslog_trace("Unexpected error while try to queue the data", syslog.LOG_ALERT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
+                    raise   # may be changed to pass if errors can be corrected.
+                try:
+                    sql_db.insert()
+                except Exception:   # noqa
+                    mf.syslog_trace("Unexpected error while try to commit the data to the database",
+                                    syslog.LOG_ALERT, DEBUG)
+                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
+                    raise   # may be changed to pass if errors can be corrected.
+
+            pause_time = (sample_time
+                          - (time.time() - start_time)          # time spent in this loop           eg. (40-3) = 37s
+                          - (start_time % sample_time)          # number of seconds to next loop    eg. 3 % 60 = 3s
+                          )
+            next_time = pause_time + time.time()                # gives the actual time when the next loop should start
+            """Example calculation:
+            sample_time = 60s   # target duration one loop
+            time.time() = 40    # actual current time
+            start_time = 3      # actual current time when the loop was started
+
+            sample_time - ( time.time() - start_time ) - ( start_time % sample_time )
+                60      - (     40      -     3      ) - (     3      %    60       )
+                60      -             37               -            3
+             = 20 s waiting time
+
+            Example 2:
+                60      - (     181     -     122      ) - (     122      %    60       )
+                60      -             59                -            2
+             = 3 seconds behind (no waiting)
+            """
+            if pause_time > 0:
+                mf.syslog_trace(f"Waiting  : {pause_time:.1f}s", False, DEBUG, )
+                mf.syslog_trace("................................", False, DEBUG)
+            else:
+                mf.syslog_trace(f"Behind   : {pause_time:.1f}s", False, DEBUG, )
+                mf.syslog_trace("................................", False, DEBUG)
+        else:
+            time.sleep(1.0)     # 1s resolution is enough
+
+
+def do_work(zappi):
+    result = list()
+    dt_format = "%Y-%m-%d %H:%M:%S"
+    zappi.fetch_data(dt.datetime.today())
+    for element in zappi.zappi_data:
+        element['sample_time'] = dt.datetime.fromtimestamp(element['sample_epoch']).strftime(dt_format)
+        result.append(element)
+    return result
 
 
 if __name__ == "__main__":
