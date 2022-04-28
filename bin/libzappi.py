@@ -290,8 +290,7 @@ class Myenergi:
         # calculate `sample_epoch`
         pd_data['sample_epoch'] = (pd.to_datetime(pd_data['utc']).apply(lambda x: x.value) / 10 ** 9).astype(np.int64)
         # prune the data; throw away what we no longer need.
-        pd_data.drop(['dow', 'dom', 'hr', 'min', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm',
-                      'pect1', 'pect2', 'pect3', 'nect1', 'nect2', 'nect3'], axis=1, inplace=True)
+        pd_data.drop(['hr', 'min', 'dom', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm'], axis=1, inplace=True)
 
         self.zappi_data = pd_data.to_dict('records')
 
