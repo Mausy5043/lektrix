@@ -151,6 +151,7 @@ class Myenergi:
         Args:
             block (dict): example; one or more entries of:
                             {'hr': 18,
+                             'min': 0,
                              'dow': 'Tue',
                              'dom': 27,
                              'mon': 7,
@@ -167,80 +168,71 @@ class Myenergi:
                     Joules are converted to kWh. Datetime parameters are converted to
                     a datetime-object.
         """
-        unknown_keys = set()
+        # unknown_keys = set()
         for key in self.zappi_data_template:
             if key not in block:
                 block[key] = self.zappi_data_template[key]
-        for key in block:
-            if key not in self.zappi_data_template:
-                unknown_keys.add(key)
-        if unknown_keys:
-            mf.syslog_trace(f"*** Missing keys in template: {unknown_keys}", False, self.DEBUG)
+        # We don't care about keys that are not in the template
+        # for key in block:
+        #     if key not in self.zappi_data_template:
+        #         unknown_keys.add(key)
+        # if unknown_keys:
+        #     mf.syslog_trace(f"*** Missing keys in template: {unknown_keys}", False, self.DEBUG)
 
         return block
 
-    def standardise_data_block(self, block):
-        """Standardise a block of data from the zappi
-
-        Args:
-            block (dict): example; one or more entries of:
-                            {'hr': 18,
-                             'dow': 'Tue',
-                             'dom': 27,
-                             'mon': 7,
-                             'yr': 2021,
-                             'imp': 893760,
-                             'gep': 69900,
-                             'gen': 3060,
-                             'h1b': 1080,
-                             'h1d': 5742
-                            }
-
-        Returns:
-            (dict): values for each parameter in the template. 0 for missing values.
-                    Joules are converted to kWh. Datetime parameters are converted to
-                    a datetime-object.
-        """
-        unknown_keys = set()
-        for key in self.zappi_data_template:
-            if key not in block:
-                block[key] = self.zappi_data_template[key]
-        for key in block:
-            if key not in self.zappi_data_template:
-                unknown_keys.add(key)
-        if unknown_keys:
-            mf.syslog_trace(f"*** *** Keys not in template: {unknown_keys}", False, self.DEBUG)
-
-        # Convert Joules to kWh
-        exp = int(block["exp"] / 3600) / 1000  # exported
-        imp = int(block["imp"] / 3600) / 1000  # imported
-        # PV production (generator positive)
-        gep = int(block["gep"] / 3600) / 1000
-        gen = int(block["gen"] / 3600) / 1000  # PV usage (generator negative)
-        h1b = int(block["h1b"] / 3600) / 1000  # phase 1 usage (imported)
-        h1d = int(block["h1d"] / 3600) / 1000  # phase 1 usage (PV diverted)
-        # date is in UTC
-        block_dt = f"{str(block['mon']).zfill(2)}" \
-                   f"-{str(block['dom']).zfill(2)}" \
-                   f" {str(block['hr']).zfill(2)}:{str(block['min']).zfill(2)}"
-        # datetime object in UTC
-        utc_dt = dt.datetime.strptime(f"{str(block['yr']).zfill(4)}"
-                                      f"-{str(block['mon']).zfill(2)}"
-                                      f"-{str(block['dom']).zfill(2)}"
-                                      f" {str(block['hr']).zfill(2)}"
-                                      f":{str(block['min']).zfill(2)}:00",
-                                      "%Y-%m-%d %H:%M:%S"
-                                      )
-
-        return {'dat': block_dt,
-                'exp': exp,
-                'imp': imp,
-                'gen': gen,
-                'gep': gep,
-                'h1b': h1b,
-                'h1d': h1d,
-                'utc': utc_dt
-                }
+    # DEPRECATED
+    # def standardise_data_block(self, block):
+    #     """Standardise a block of data from the zappi
+    #
+    #     Args:
+    #         block (dict): dict containing the data to be processed.
+    #
+    #     Returns:
+    #         (dict): values for each parameter in the template. 0 for missing values.
+    #                 Joules are converted to kWh. Datetime parameters are converted to
+    #                 a datetime-object.
+    #     """
+    #     unknown_keys = set()
+    #     for key in self.zappi_data_template:
+    #         if key not in block:
+    #             block[key] = self.zappi_data_template[key]
+    #     for key in block:
+    #         if key not in self.zappi_data_template:
+    #             unknown_keys.add(key)
+    #     if unknown_keys:
+    #         mf.syslog_trace(f"*** *** Keys not in template: {unknown_keys}", False, self.DEBUG)
+    #
+    #     # Convert Joules to kWh
+    #     exp = int(block["exp"] / 3600) / 1000  # exported
+    #     imp = int(block["imp"] / 3600) / 1000  # imported
+    #     # PV production (generator positive)
+    #     gep = int(block["gep"] / 3600) / 1000
+    #     gen = int(block["gen"] / 3600) / 1000  # PV usage (generator negative)
+    #     h1b = int(block["h1b"] / 3600) / 1000  # phase 1 usage (imported)
+    #     h1d = int(block["h1d"] / 3600) / 1000  # phase 1 usage (PV diverted)
+    #     # date is in UTC
+    #     block_dt = f"{str(block['mon']).zfill(2)}" \
+    #                f"-{str(block['dom']).zfill(2)}" \
+    #                f" {str(block['hr']).zfill(2)}:{str(block['min']).zfill(2)}"
+    #     # datetime object in UTC
+    #     utc_dt = dt.datetime.strptime(f"{str(block['yr']).zfill(4)}"
+    #                                   f"-{str(block['mon']).zfill(2)}"
+    #                                   f"-{str(block['dom']).zfill(2)}"
+    #                                   f" {str(block['hr']).zfill(2)}"
+    #                                   f":{str(block['min']).zfill(2)}:00",
+    #                                   "%Y-%m-%d %H:%M:%S"
+    #                                   )
+    #
+    #     return {'dat': block_dt,
+    #             'exp': exp,
+    #             'imp': imp,
+    #             'gen': gen,
+    #             'gep': gep,
+    #             'h1b': h1b,
+    #             'h1d': h1d,
+    #             'utc': utc_dt
+    #             }
 
     def fetch_data(self, day_to_fetch):
         """Fetch data from the API for <day_to_fetch> and store it as a pandas dataframe in `zappi-pd-data`
