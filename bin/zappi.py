@@ -61,13 +61,13 @@ def main():
     iniconf.read(api_keys_file)
     API_ZP = zl.Myenergi(api_keys_file, DEBUG)
 
-    sql_db = m3.SqlDatabase(database=constants.SOLAREDGE['database'],
-                            table='production', insert=constants.SOLAREDGE['sql_command'],
+    sql_db = m3.SqlDatabase(database=constants.ZAPPI['database'],
+                            table='charger', insert=constants.ZAPPI['sql_command'],
                             debug=DEBUG
                             )
 
-    report_time = int(constants.SOLAREDGE['report_time'])
-    sample_time = report_time / int(constants.SOLAREDGE['samplespercycle'])
+    report_time = int(constants.ZAPPI['report_time'])
+    sample_time = report_time / int(constants.ZAPPI['samplespercycle'])
 
     pause_time = 0
     next_time = pause_time + time.time()
