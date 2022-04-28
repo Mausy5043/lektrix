@@ -256,6 +256,7 @@ class Myenergi:
             Returns:
                 None
         """
+        self.zappi_data = list()
         previous_day_data = [self.standardise_json_block(block)
                              for block in self._fetch(day_to_fetch - dt.timedelta(days=1)
                                                       )[f"U{self.zappi_serial}"]
