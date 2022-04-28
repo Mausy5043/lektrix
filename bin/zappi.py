@@ -135,6 +135,13 @@ def do_work(zappi):
     for element in zappi.zappi_data:
         element['sample_time'] = dt.datetime.fromtimestamp(element['sample_epoch']).strftime(dt_format)
         result.append(element)
+    """
+    {'imp': 0.0, 'gen': 0.0, 'v1': 2251, 'frq': 5001, 'sample_time': '2022-04-28 16:53:00', 'sample_epoch': 1651157580,
+     'site_id': 0, 'exp': 0.0, 'gep': 0.027, 'h1b': 0.0, 'h1d': 0.021
+     }
+
+     {'sample_time': '2022-04-28 16:53:41', 'sample_epoch': 1651157621, 'site_id': 1508443, 'energy': 8764164}
+    """
     return result
 
 
