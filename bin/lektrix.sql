@@ -33,7 +33,6 @@ DROP TABLE IF EXISTS production;
 -- energy is cumulative power generated in Wh
 
 CREATE TABLE production (
---  id            integer PRIMARY KEY AUTOINCREMENT,
   sample_time   datetime NOT NULL PRIMARY KEY,
   sample_epoch  integer,
   site_id       integer,
@@ -41,7 +40,6 @@ CREATE TABLE production (
   );
 
 CREATE INDEX idx_prod_site ON production(site_id);
--- CREATE INDEX idx_date ON production(sample_time);
 
 -- Set a starting value and add first two datapoints (not available in SolarEdge DB)
 INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-20 09:08:22', 1582186102, 1508443, 0);
@@ -52,12 +50,17 @@ INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('202
 DROP TABLE IF EXISTS charger;
 
 CREATE TABLE charger (
---    id            integer PRIMARY KEY AUTOINCREMENT,
-    sample_time   datetime NOT NULL PRIMARY KEY,
-    sample_epoch  integer,
-    site_id       integer
-    -- other fields to be added
-    -- zappi provides additional data on mains and production
+    sample_time     datetime NOT NULL PRIMARY KEY,
+    sample_epoch    integer,
+    site_id         float,
+    exp             float,
+    gen             float,
+    gep             float,
+    imp             float,
+    h1b             float,
+    h1d             float,
+    v1              integer,
+    frq             integer
     );
 
 CREATE INDEX idx_chrg_site ON charger(site_id);
