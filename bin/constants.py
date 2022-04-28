@@ -84,7 +84,7 @@ ZAPPI = {'database': _DATABASE,
                          "sample_time, sample_epoch"
                          ") "
                          "VALUES (?, ?, ?, ?)",
-         'report_time': 899,
+         'report_time': 99, # 3599,
          'samplespercycle': 1,
          'director': "https://director.myenergi.net",
          'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
