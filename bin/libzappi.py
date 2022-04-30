@@ -38,24 +38,27 @@ class Myenergi:
     def __init__(self, keys_file, debug=False):
         """Initialise the Myenergi object
 
+        The keys-file must be a configparser compatible file containing:\n
+        [HUB]\n
+        serial: 12345678\n
+        password: secret_hub_password\n
+        [ZAPPI]\n
+        serial: 12345678\n
+        [HARVI]\n
+        serial: 12345678\n
+        [EDDI]\n
+        serial: 12345678\n
+        <EOF>
+
         Args:
             keys_file (str): full path and filename to a file containing the API-keys (see below).
             debug (bool, optional): [description]. Defaults to False.
 
-        The keys-file must be a configparser compatible file containing:
-        [HUB]
-        serial: 12345678
-        password: secret_hub_password
 
-        [ZAPPI]
-        serial: 12345678
+        Atrtributes:
+            DEBUG (bool): show debugging info
+            zappi_data (list): list of dicts containing the data
 
-        [HARVI]
-        serial: 12345678
-
-        [EDDI]
-        serial: 12345678
-        # EOF
         """
         self.DEBUG = debug
         self.base_url = constants.ZAPPI['director']
@@ -72,9 +75,9 @@ class Myenergi:
         self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
 
         # First call to the API to get the ASN
-        self.response = requests.get(self.base_url,
-                                     auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
-                                     )
+        _response = requests.get(self.base_url,
+                                 auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
+                                 )
         # if self.DEBUG:
         #     mf.syslog_trace("Response :", False, self.DEBUG)
         #     for key in self.response.headers:
@@ -82,10 +85,10 @@ class Myenergi:
         #     mf.syslog_trace("", False, self.DEBUG)
 
         # construct the URL for the ASN
-        if "X_MYENERGI-asn" in self.response.headers:
-            self.asn = self.response.headers['X_MYENERGI-asn']
-            self.base_url = "https://" + self.asn
-            mf.syslog_trace(f"ASN             : {self.asn}", syslog.LOG_INFO, self.DEBUG)
+        if "X_MYENERGI-asn" in _response.headers:
+            _asn = _response.headers['X_MYENERGI-asn']
+            self.base_url = "https://" + _asn
+            mf.syslog_trace(f"ASN             : {_asn}", syslog.LOG_INFO, self.DEBUG)
             mf.syslog_trace(f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG)
         else:
             raise RuntimeError("myenergi ASN not found in myenergi header")
@@ -147,27 +150,15 @@ class Myenergi:
         return result
 
     def standardise_json_block(self, blk):
-        """Standardise a block of data from the zappi
+        """Standardise a block of data from the myenergi DB
 
         Args:
-            block (dict): example; one or more entries of:
-                            {'hr': 18,
-                             'min': 0,
-                             'dow': 'Tue',
-                             'dom': 27,
-                             'mon': 7,
-                             'yr': 2021,
-                             'imp': 893760,
-                             'gep': 69900,
-                             'gen': 3060,
-                             'h1b': 1080,
-                             'h1d': 5742
-                            }
+            blk (dict): dict containing one entry from the myenergi database
 
         Returns:
             (dict): values for each parameter in the template. 0 for missing values.
-                    Joules are converted to kWh. Datetime parameters are converted to
-                    a datetime-object.
+                    Joules are converted to kWh. Date and time parameters are converted to
+                    a datetime-string and epoch-value in the local timezone.
         """
         # unknown_keys = set()
         result_dict = dict()
@@ -189,11 +180,13 @@ class Myenergi:
                 del result_dict[key]
             except KeyError:
                 pass
+        # convert the UTC time from MyEnergi to local time
         lcl_date_time = utc_date_time.replace(tzinfo=pytz.utc)
         lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
         date_time = lcl_date_time.strftime(constants.DT_FORMAT)
         result_dict['sample_time'] = date_time
         result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
+
         mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
 
@@ -251,7 +244,7 @@ class Myenergi:
     #             }
 
     def fetch_data(self, day_to_fetch):
-        """Fetch data from the API for <day_to_fetch> and store it as a pandas dataframe in `zappi-pd-data`
+        """Fetch data from the API for <day_to_fetch> and store it as a list of dicts in `zappi_data`
 
            This will fetch at least 24 hours and including the previous day to compensate for
            any hours that might be lost due to the offset from UTC.
@@ -273,48 +266,7 @@ class Myenergi:
                             for block in self._fetch(day_to_fetch
                                                      )[f"U{self.zappi_serial}"]
                             ]
-        # TODO: do not use pandas for this!
-        # pd_data = pd.concat([pd.json_normalize(previous_day_data).fillna(0),
-        #                      pd.json_normalize(current_day_data).fillna(0)
-        #                      ])
-        #
-        # # convert the energy fields from J to kWh
-        # pd_data['imp'] = joules2kwh(pd_data['imp'])
-        # pd_data['exp'] = joules2kwh(pd_data['exp'])
-        # pd_data['gen'] = joules2kwh(pd_data['gen'])
-        # pd_data['gep'] = joules2kwh(pd_data['gep'])
-        # pd_data['h1b'] = joules2kwh(pd_data['h1b'])
-        # pd_data['h1d'] = joules2kwh(pd_data['h1d'])
-        # # hours and minutes are returned as floats. So, first convert float to int
-        # hours = np.array(pd_data['hr'], dtype=int)
-        # mints = np.array(pd_data['min'], dtype=int)
-        # # then int to str
-        # hours = np.array(hours, dtype=str)
-        # mints = np.array(mints, dtype=str)
-        # # and add a leading zero
-        # pd_data['hr'] = np.char.zfill(hours, 2)
-        # pd_data['min'] = np.char.zfill(mints, 2)
-        #
-        # # Concatenate date/time parameters to UTC date/time string
-        # utc_cols = ['yr', 'mon', 'dom']
-        # pd_data['utc_dy'] = pd_data[utc_cols].apply(lambda row: '-'.join(row.values.astype(str)), axis=1)
-        # utc_cols = ['hr', 'min']
-        # pd_data['utc_tm'] = pd_data[utc_cols].apply(lambda row: ':'.join(row.values.astype(str)) + ":00", axis=1)
-        # utc_cols = ['utc_dy', 'utc_tm']
-        # pd_data['utc'] = pd_data[utc_cols].apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
-        # pd_data['utc'] = pd.to_datetime(pd_data['utc'], format="%Y-%m-%d %H:%M:%S", utc=True)
-        #
-        # # convert UTC to `sample_time`
-        # pd_data['sample_time'] = pd_data['utc'].dt.tz_convert('Europe/Amsterdam')
-        # pd_data.index = pd_data['sample_time']
-        #
-        # # calculate `sample_epoch`
-        # pd_data['sample_epoch'] = (pd.to_datetime(pd_data['utc']).apply(lambda x: x.value) / 10 ** 9).astype(np.int64)
-        #
-        # # prune the data; throw away what we no longer need.
-        # pd_data.drop(['hr', 'min', 'dom', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm'], axis=1, inplace=True)
-        # TODO: in the end we just need a list of dicts...
-        self.zappi_data = pd_data.to_dict('records')
+        self.zappi_data = previous_day_data + current_day_data
 
     def _fetch(self, this_day):
         """Try to get the data off the server for the date <this_date>.
@@ -352,22 +304,6 @@ class Myenergi:
                     # back off from the server for a while
                     time.sleep(23)
         return result
-
-
-def utc_to_local(dt_obj):
-    """Convert a (UTC) datetime object to local time
-
-    Args:
-        dt_obj (datetime.datetime): object to convert (in UTC)
-
-    Returns:
-        (datetime.datetime): converted datetime object (local time)
-    """
-    delta = dt_obj - dt.datetime(1970, 1, 1)
-    utc_epoch = (24 * 60 * 60) * delta.days + delta.seconds
-    time_struct = time.localtime(utc_epoch)
-    dt_args = time_struct[:6] + (delta.microseconds,)
-    return dt.datetime(*dt_args)
 
 
 def joules2kwh(df_joules):
