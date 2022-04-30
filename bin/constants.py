@@ -3,6 +3,8 @@
 import os
 import sys
 
+import pytz
+
 _MYHOME = os.environ["HOME"]
 _DATABASE = '/srv/databases/lektrix.sqlite3'
 
@@ -17,6 +19,9 @@ if not os.path.isfile(_DATABASE):
 if not os.path.isfile(_DATABASE):
     print("Database is missing.")
     sys.exit(1)
+
+DT_FORMAT = "%Y-%m-%d %H:%M:%S"
+TIMEZONE = pytz.timezone("Europe/Amsterdam")
 
 BATTERY = {'database': _DATABASE,
            'sql_table': "storage",
@@ -71,7 +76,7 @@ SOLAREDGE = {'database': _DATABASE,
              'report_time': 899,
              'samplespercycle': 1,
              'director': "https://monitoringapi.solaredge.com",
-             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
+             'template': {'sample_time': "yyyy-mm-dd hh:mm:ss",
                           'sample_epoch': 0,
                           'site_id': 0,
                           'energy': 0
@@ -81,13 +86,18 @@ SOLAREDGE = {'database': _DATABASE,
 ZAPPI = {'database': _DATABASE,
          'sql_table': "charger",
          'sql_command': "INSERT INTO charger ("
-                         "sample_time, sample_epoch"
-                         ") "
-                         "VALUES (?, ?, ?, ?)",
-         'report_time': 99, # 3599,
+                        "sample_time, sample_epoch, site_id,"
+                        "exp, gen, gep, imp, h1b, h1d,"
+                        "v1, frq"
+                        ") "
+                        "VALUES (?, ?, ?,"
+                        "?, ?, ?, ?, ?, ?,"
+                        "?, ?"
+                        ")",
+         'report_time': 99,  # 3599,
          'samplespercycle': 1,
          'director': "https://director.myenergi.net",
-         'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
+         'template': {'sample_time': "yyyy-mm-dd hh:mm:ss",
                       'sample_epoch': 0,
                       'site_id': 4.1,
                       'hr': 0,
