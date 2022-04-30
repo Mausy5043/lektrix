@@ -59,8 +59,8 @@ KAMSTRUP = {'database': _DATABASE,
                            "tarif, swits"
                            ") "
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-            'report_time': 600,
-            'samplespercycle': 58,
+            'report_time': 900,
+            'samplespercycle': 90,
             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
                          'sample_epoch': 0
                          # add other parameters
@@ -73,7 +73,7 @@ SOLAREDGE = {'database': _DATABASE,
                             "sample_time, sample_epoch, site_id, energy"
                             ") "
                             "VALUES (?, ?, ?, ?)",
-             'report_time': 899,
+             'report_time': 900,    # quarter of an hour resolution
              'samplespercycle': 1,
              'director': "https://monitoringapi.solaredge.com",
              'template': {'sample_time': "yyyy-mm-dd hh:mm:ss",
@@ -94,7 +94,7 @@ ZAPPI = {'database': _DATABASE,
                         "?, ?, ?, ?, ?, ?,"
                         "?, ?"
                         ")",
-         'report_time': 99,  # 3599,
+         'report_time': 900,  # 3599,
          'samplespercycle': 1,
          'director': "https://director.myenergi.net",
          'template': {'sample_time': "yyyy-mm-dd hh:mm:ss",
