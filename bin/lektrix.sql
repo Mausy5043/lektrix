@@ -69,5 +69,5 @@ CREATE INDEX idx_chrg_site ON charger(site_id);
 
 INSERT INTO charger (sample_time, sample_epoch, site_id,
                      exp, gen, gep, imp, h1b, h1d, v1, frq)
-       VALUES ('2021-07-07 00:00:00', 1625608800, 4.1
+       VALUES ('2021-07-07 00:00:00', 1625608800, 4.1,
                 0, 0, 0, 0, 0, 0, 2200, 5000);
