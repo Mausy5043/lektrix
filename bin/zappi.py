@@ -78,7 +78,7 @@ def main():
             start_dt = sql_db.latest_datapoint()
 
             try:
-                data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))
+                data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))    # noqa
             except Exception:  # noqa
                 mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -136,7 +136,7 @@ def do_work(zappi, start_dt=dt.datetime.today()):
 
     Args:
         zappi (obj): object of class Myenergi
-        start_dt (str): date/time for which to retrieve data
+        start_dt (datetime): date/time for which to retrieve data
 
     Returns:
         (list) list of dicts containing data retrieved
