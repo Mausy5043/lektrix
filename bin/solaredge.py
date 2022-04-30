@@ -88,7 +88,8 @@ def main():
 
             if site_list:
                 try:
-                    data = do_work(site_list, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))
+                    data = do_work(site_list, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT)
+                                                       + dt.timedelta(days=1))  # noqa
                 except Exception:   # noqa
                     mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -115,6 +116,7 @@ def main():
                           - (time.time() - start_time)          # time spent in this loop           eg. (40-3) = 37s
                           - (start_time % sample_time)          # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
+            pause_time += 120    # we wait 2 more minutes to allow the inverter to update the data on the server.
             next_time = pause_time + time.time()                # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
@@ -152,7 +154,6 @@ def do_work(site_list, start_dt=dt.datetime.today()):
     for site in site_list:
         site_id = site['id']
         try:
-            data_dict = API_SE.get_overview(site_id)['overview']
             data_list = API_SE.get_energy_details(site_id,
                                                   dt.datetime.strftime(back_dt, constants.DT_FORMAT),
                                                   dt.datetime.strftime(start_dt, constants.DT_FORMAT),
@@ -187,7 +188,7 @@ def do_work(site_list, start_dt=dt.datetime.today()):
                 result_dict['sample_time'] = date_time
                 result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
                 result_dict['site_id'] = site_id
-                result_dict['energy'] = energy
+                result_dict['energy'] = int(energy)
                 mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
                 result_list.append(result_dict)
     return result_list
