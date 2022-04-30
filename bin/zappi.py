@@ -65,6 +65,7 @@ def main():
                             table='charger', insert=constants.ZAPPI['sql_command'],
                             debug=DEBUG
                             )
+    start_epoch = sql_db.latest_datapoint()
 
     report_time = int(constants.ZAPPI['report_time'])
     sample_time = report_time / int(constants.ZAPPI['samplespercycle'])
