@@ -105,8 +105,8 @@ def main():
                           - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                           - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
-            pause_time += 120    # we wait 2 more minutes to allow the charger to update the data on the server.
-            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
+            pause_time += constants.ZAPPI['delay']      # allow the charger to update the data on the server.
+            next_time = pause_time + time.time()        # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time

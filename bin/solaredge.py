@@ -112,11 +112,11 @@ def main():
                         raise   # may be changed to pass if errors can be corrected.
 
             pause_time = (sample_time
-                          - (time.time() - start_time)          # time spent in this loop           eg. (40-3) = 37s
-                          - (start_time % sample_time)          # number of seconds to next loop    eg. 3 % 60 = 3s
+                          - (time.time() - start_time)    # time spent in this loop           eg. (40-3) = 37s
+                          - (start_time % sample_time)    # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
-            pause_time += 120    # we wait 2 more minutes to allow the inverter to update the data on the server.
-            next_time = pause_time + time.time()                # gives the actual time when the next loop should start
+            pause_time += constants.SOLAREDGE['delay']    # allow the inverter to update the data on the server.
+            next_time = pause_time + time.time()          # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time
