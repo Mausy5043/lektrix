@@ -145,7 +145,7 @@ def main():
 
 def do_work(site_list, start_dt=dt.datetime.today()):
     """Extract the data from the dict(s)."""
-    back_dt = start_dt - dt.timedelta(days=1)
+    back_dt = start_dt - dt.timedelta(days=2)   # start_dt will be 1 day ahead
     result_dict = constants.SOLAREDGE['template']
     data_dict = dict()
     data_list = list()
