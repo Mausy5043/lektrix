@@ -139,7 +139,6 @@ def main():
 
 def do_work(site_list):
     """Extract the data from the dict(s)."""
-    dt_format = "%Y-%m-%d %H:%M:%S"
     result_dict = constants.SOLAREDGE['template']
     data_dict = dict()
 
@@ -168,7 +167,7 @@ def do_work(site_list):
                 date_time = data_dict["lastUpdateTime"]
                 energy = int(data_dict["lifeTimeData"]["energy"])
                 result_dict['sample_time'] = date_time
-                result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, dt_format).timestamp())
+                result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
                 result_dict['site_id'] = site_id
                 result_dict['energy'] = energy
                 mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
