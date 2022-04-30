@@ -153,7 +153,7 @@ def do_work(site_list, start_dt=dt.datetime.today()):
         site_id = site['id']
         try:
             data_dict = API_SE.get_overview(site_id)['overview']
-            data_list = API_SE.get_energy_details(id,
+            data_list = API_SE.get_energy_details(site_id,
                                                   dt.datetime.strftime(back_dt, constants.DT_FORMAT),
                                                   dt.datetime.strftime(start_dt, constants.DT_FORMAT),
                                                   time_unit="QUARTER_OF_AN_HOUR"
