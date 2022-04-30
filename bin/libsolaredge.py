@@ -154,6 +154,7 @@ class Solaredge:
         return r.json()
 
     def get_time_frame_energy(self, site_id, start_date, end_date, time_unit="DAY"):
+        # BEWARE: only date NO TIME
         url = urljoin(BASEURL, "site", site_id, "timeFrameEnergy")
         params = {"api_key": self.token,
                   "startDate": start_date,

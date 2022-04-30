@@ -75,6 +75,8 @@ def main():
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
+            start_dt = sql_db.latest_datapoint()
+
             if not site_list:
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
@@ -86,19 +88,21 @@ def main():
 
             if site_list:
                 try:
-                    data = do_work(site_list)
+                    data = do_work(site_list, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))
                 except Exception:   # noqa
                     mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
                 if data:
                     try:
-                        mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
-                        sql_db.queue(data)
-                    except Exception:   # noqa
+                        mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
+                        mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
+                        for element in data:
+                            sql_db.queue(element)
+                    except Exception:  # noqa
                         mf.syslog_trace("Unexpected error while try to queue the data", syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
-                        raise   # may be changed to pass if errors can be corrected.
+                        raise  # may be changed to pass if errors can be corrected.
                     try:
                         sql_db.insert()
                     except Exception:   # noqa
@@ -137,48 +141,55 @@ def main():
             time.sleep(1.0)     # 1s resolution is enough
 
 
-def do_work(site_list):
+def do_work(site_list, start_dt=dt.datetime.today()):
     """Extract the data from the dict(s)."""
+    back_dt = start_dt - dt.timedelta(days=1)
     result_dict = constants.SOLAREDGE['template']
     data_dict = dict()
+    data_list = list()
+    result_list = list()
 
     for site in site_list:
         site_id = site['id']
         try:
             data_dict = API_SE.get_overview(site_id)['overview']
+            data_list = API_SE.get_energy_details(id,
+                                                  dt.datetime.strftime(back_dt, constants.DT_FORMAT),
+                                                  dt.datetime.strftime(start_dt, constants.DT_FORMAT),
+                                                  time_unit="QUARTER_OF_AN_HOUR"
+                                                  )['energyDetails']['meters'][0]['values']
         except Exception:  # noqa
             mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
 
         """
-        data_dict looks like this:
-        { 'currentPower': {'power': 353.82956},
-          'lastDayData': {'energy': 219.0},
-          'lastMonthData': {'energy': 105406.0},
-          'lastUpdateTime': '2020-02-20 09:58:33',
-          'lastYearData': {'energy': 203548.0},
-          'lifeTimeData': {'energy': 405694.0},
-          'measuredBy': 'INVERTER'
-        }
+        data_list looks like this:
+        [{'date': '2022-04-30 05:15:00'},
+         {'date': '2022-04-30 05:30:00'},
+         {'date': '2022-04-30 05:45:00'},
+         {'date': '2022-04-30 06:00:00'},
+         {'date': '2022-04-30 06:15:00', 'value': 0.0},
+         {'date': '2022-04-30 06:30:00', 'value': 2.0},
+         {'date': '2022-04-30 06:45:00', 'value': 10.0}
+         ...
+        ]
         """
-        if data_dict:
-            try:
-                date_time = data_dict["lastUpdateTime"]
-                energy = int(data_dict["lifeTimeData"]["energy"])
+        if data_list:
+            for element in data_list:
+                date_time = element['date']
+                try:
+                    energy = element['value']
+                except KeyError:
+                    energy = 0
+
                 result_dict['sample_time'] = date_time
                 result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
                 result_dict['site_id'] = site_id
                 result_dict['energy'] = energy
                 mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
-            except TypeError:
-                # ignore empty sites
-                continue
-            except KeyError:
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(f"site: {site_id}", syslog.LOG_CRIT, DEBUG)
-                mf.syslog_trace(f"data: {data_dict}", syslog.LOG_CRIT, DEBUG)
-    return result_dict
+                result_list.append(result_dict)
+    return result_list
 
 
 if __name__ == "__main__":
