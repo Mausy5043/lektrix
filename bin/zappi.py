@@ -129,20 +129,15 @@ def main():
 
 
 def do_work(zappi):
-    result = list()
-    dt_format = "%Y-%m-%d %H:%M:%S"
-    zappi.fetch_data(dt.datetime.today())
-    for element in zappi.zappi_data:
-        element['sample_time'] = dt.datetime.fromtimestamp(element['sample_epoch']).strftime(dt_format)
-        result.append(element)
-    """
-    {'imp': 0.0, 'gen': 0.0, 'v1': 2251, 'frq': 5001, 'sample_time': '2022-04-28 16:53:00', 'sample_epoch': 1651157580,
-     'site_id': 0, 'exp': 0.0, 'gep': 0.027, 'h1b': 0.0, 'h1d': 0.021
-     }
+    zappi.fetch_data(dt.datetime.today())   # TODO: start with the last date in the DB
 
-     {'sample_time': '2022-04-28 16:53:41', 'sample_epoch': 1651157621, 'site_id': 1508443, 'energy': 8764164}
     """
-    return result
+     {'sample_time': '2022-04-30 08:37:00', 'sample_epoch': 1651300620, 'site_id': 4.1,
+      'exp': 300, 'gen': 0.0, 'gep': 24180, 'imp': 1860, 'h1b': 0.0, 'h1d': 0.0,
+      'v1': 2245, 'frq': 5001
+     }
+    """
+    return zappi.zappi_data
 
 
 if __name__ == "__main__":
