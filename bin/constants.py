@@ -120,5 +120,6 @@ ZAPPI = {'database': _DATABASE,
                       # 'nect2': 0,
                       # 'nect3': 0,
                       'frq': 0
-                      }
+                      },
+         'template_keys_to_drop': ['yr', 'mon', 'dom', 'hr', 'min']
          }

@@ -184,11 +184,11 @@ class Myenergi:
         if result_dict['min'] == 0:
             mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
         # discard fields we nolonger need
-        del result_dict['yr']
-        del result_dict['mon']
-        del result_dict['dom']
-        del result_dict['hr']
-        del result_dict['min']
+        for key in constants.ZAPPI['template_keys_to_drop']:
+            try:
+                del result_dict[key]
+            except KeyError:
+                pass
         lcl_date_time = utc_date_time.replace(tzinfo=pytz.utc)
         lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
         date_time = lcl_date_time.strftime(constants.DT_FORMAT)
