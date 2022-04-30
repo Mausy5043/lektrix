@@ -205,6 +205,7 @@ class Myenergi:
                 None
         """
         self.zappi_data = list()
+        result = list()
         previous_day_data = [self.standardise_json_block(block)
                              for block in self._fetch(day_to_fetch - dt.timedelta(days=1)
                                                       )[f"U{self.zappi_serial}"]
@@ -219,7 +220,8 @@ class Myenergi:
         mf.syslog_trace(f"> {current_day_data[-2]}", False, self.DEBUG)
         mf.syslog_trace(f"> {current_day_data[-1]}", False, self.DEBUG)
 
-        self.zappi_data = previous_day_data + current_day_data
+        result = previous_day_data + current_day_data
+        self.zappi_data = self.compact_data(result)
 
     def _fetch(self, this_day):
         """Try to get the data off the server for the date <this_date>.
@@ -255,6 +257,24 @@ class Myenergi:
                     # back off from the server for a while
                     time.sleep(23)
         return result
+
+    @staticmethod
+    def compact_data(data):
+        """
+        Compact the one-minute data into 10-minute data
+
+        Args:
+            data (list): list of dicts containing one-minute data from myenergy DB
+
+        Returns:
+            list of compacted data
+        """
+        # first make sure the list is properly sorted by sample_epoch
+        result_data = sorted(data, key=lambda k: k['sample_epoch'])
+        # epoch / 60 % 60 ==> minute
+        # epoch / 360 % 24 ==> hour (UTC)
+        # TODO: compact to 10-minute samples?
+        return result_data
 
 
 def joules2kwh(df_joules):
