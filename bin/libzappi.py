@@ -10,6 +10,7 @@ import time
 import mausy5043funcs.fileops3 as mf
 import numpy as np
 import pandas as pd
+import pytz
 import requests
 from requests.auth import HTTPDigestAuth
 
@@ -145,7 +146,7 @@ class Myenergi:
 
         return result
 
-    def standardise_json_block(self, block):
+    def standardise_json_block(self, blk):
         """Standardise a block of data from the zappi
 
         Args:
@@ -169,17 +170,27 @@ class Myenergi:
                     a datetime-object.
         """
         # unknown_keys = set()
+        result_dict = dict()
         for key in self.zappi_data_template:
-            if key not in block:
-                block[key] = self.zappi_data_template[key]
-        # We don't care about keys that are not in the template
-        # for key in block:
-        #     if key not in self.zappi_data_template:
-        #         unknown_keys.add(key)
-        # if unknown_keys:
-        #     mf.syslog_trace(f"*** Missing keys in template: {unknown_keys}", False, self.DEBUG)
+            try:
+                result_dict[key] = blk[key]
+            except KeyError:
+                result_dict[key] = self.zappi_data_template[key]
 
-        return block
+        utc_date_time = dt.datetime.strptime(f"{blk['yr']}-{blk['mon'].zfill(2)}-{blk['dom'].zfill(2)} "
+                                             f"{blk['hr'].zfill(2)}:{blk['min'].zfill(2)}:00",
+                                             constants.DT_FORMAT
+                                             )  # UTC!
+        if blk['min'] == "0":
+            mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
+
+        lcl_date_time = utc_date_time.replace(tzinfo=pytz.utc)
+        lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
+        date_time = lcl_date_time.strftime(constants.DT_FORMAT)
+        result_dict['sample_time'] = date_time
+        result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
+        mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
+        return result_dict
 
     # DEPRECATED
     # def standardise_data_block(self, block):
@@ -254,44 +265,50 @@ class Myenergi:
                                                       )[f"U{self.zappi_serial}"]
                              ]
         current_day_data = [self.standardise_json_block(block)
-                            for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]
+                            for block in self._fetch(day_to_fetch
+                                                     )[f"U{self.zappi_serial}"]
                             ]
-        pd_data = pd.concat([pd.json_normalize(previous_day_data).fillna(0),
-                             pd.json_normalize(current_day_data).fillna(0)
-                             ])
-        # convert the energy fields from J to kWh
-        pd_data['imp'] = joules2kwh(pd_data['imp'])
-        pd_data['exp'] = joules2kwh(pd_data['exp'])
-        pd_data['gen'] = joules2kwh(pd_data['gen'])
-        pd_data['gep'] = joules2kwh(pd_data['gep'])
-        pd_data['h1b'] = joules2kwh(pd_data['h1b'])
-        pd_data['h1d'] = joules2kwh(pd_data['h1d'])
-        # hours and minutes are returned as floats. So, first convert float to int
-        hours = np.array(pd_data['hr'], dtype=int)
-        mints = np.array(pd_data['min'], dtype=int)
-        # then int to str
-        hours = np.array(hours, dtype=str)
-        mints = np.array(mints, dtype=str)
-        # and add a leading zero
-        pd_data['hr'] = np.char.zfill(hours, 2)
-        pd_data['min'] = np.char.zfill(mints, 2)
-
-        # Concatenate date/time parameters to UTC date/time string
-        utc_cols = ['yr', 'mon', 'dom']
-        pd_data['utc_dy'] = pd_data[utc_cols].apply(lambda row: '-'.join(row.values.astype(str)), axis=1)
-        utc_cols = ['hr', 'min']
-        pd_data['utc_tm'] = pd_data[utc_cols].apply(lambda row: ':'.join(row.values.astype(str)) + ":00", axis=1)
-        utc_cols = ['utc_dy', 'utc_tm']
-        pd_data['utc'] = pd_data[utc_cols].apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
-        pd_data['utc'] = pd.to_datetime(pd_data['utc'], format="%Y-%m-%d %H:%M:%S", utc=True)
-        # convert UTC to `sample_time`
-        pd_data['sample_time'] = pd_data['utc'].dt.tz_convert('Europe/Amsterdam')
-        pd_data.index = pd_data['sample_time']
-        # calculate `sample_epoch`
-        pd_data['sample_epoch'] = (pd.to_datetime(pd_data['utc']).apply(lambda x: x.value) / 10 ** 9).astype(np.int64)
-        # prune the data; throw away what we no longer need.
-        pd_data.drop(['hr', 'min', 'dom', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm'], axis=1, inplace=True)
-
+        # TODO: do not use pandas for this!
+        # pd_data = pd.concat([pd.json_normalize(previous_day_data).fillna(0),
+        #                      pd.json_normalize(current_day_data).fillna(0)
+        #                      ])
+        #
+        # # convert the energy fields from J to kWh
+        # pd_data['imp'] = joules2kwh(pd_data['imp'])
+        # pd_data['exp'] = joules2kwh(pd_data['exp'])
+        # pd_data['gen'] = joules2kwh(pd_data['gen'])
+        # pd_data['gep'] = joules2kwh(pd_data['gep'])
+        # pd_data['h1b'] = joules2kwh(pd_data['h1b'])
+        # pd_data['h1d'] = joules2kwh(pd_data['h1d'])
+        # # hours and minutes are returned as floats. So, first convert float to int
+        # hours = np.array(pd_data['hr'], dtype=int)
+        # mints = np.array(pd_data['min'], dtype=int)
+        # # then int to str
+        # hours = np.array(hours, dtype=str)
+        # mints = np.array(mints, dtype=str)
+        # # and add a leading zero
+        # pd_data['hr'] = np.char.zfill(hours, 2)
+        # pd_data['min'] = np.char.zfill(mints, 2)
+        #
+        # # Concatenate date/time parameters to UTC date/time string
+        # utc_cols = ['yr', 'mon', 'dom']
+        # pd_data['utc_dy'] = pd_data[utc_cols].apply(lambda row: '-'.join(row.values.astype(str)), axis=1)
+        # utc_cols = ['hr', 'min']
+        # pd_data['utc_tm'] = pd_data[utc_cols].apply(lambda row: ':'.join(row.values.astype(str)) + ":00", axis=1)
+        # utc_cols = ['utc_dy', 'utc_tm']
+        # pd_data['utc'] = pd_data[utc_cols].apply(lambda row: ' '.join(row.values.astype(str)), axis=1)
+        # pd_data['utc'] = pd.to_datetime(pd_data['utc'], format="%Y-%m-%d %H:%M:%S", utc=True)
+        #
+        # # convert UTC to `sample_time`
+        # pd_data['sample_time'] = pd_data['utc'].dt.tz_convert('Europe/Amsterdam')
+        # pd_data.index = pd_data['sample_time']
+        #
+        # # calculate `sample_epoch`
+        # pd_data['sample_epoch'] = (pd.to_datetime(pd_data['utc']).apply(lambda x: x.value) / 10 ** 9).astype(np.int64)
+        #
+        # # prune the data; throw away what we no longer need.
+        # pd_data.drop(['hr', 'min', 'dom', 'mon', 'yr', 'utc', 'utc_dy', 'utc_tm'], axis=1, inplace=True)
+        # TODO: in the end we just need a list of dicts...
         self.zappi_data = pd_data.to_dict('records')
 
     def _fetch(self, this_day):
