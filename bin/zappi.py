@@ -3,19 +3,19 @@
 
 Store the data in a SQLite3 database.
 """
-import time
 import argparse
 import configparser
-import syslog
-import constants
-import os
-import traceback
 import datetime as dt
+import os
+import syslog
+import time
+import traceback
 
 import mausy5043funcs.fileops3 as mf
 import mausy5043libs.libsignals3 as ml
 import mausy5043libs.libsqlite3 as m3
 
+import constants
 import libzappi as zl
 
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
@@ -43,6 +43,7 @@ NODE = os.uname()[1]
 
 API_ZP = None
 
+
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'zappi.py']
 # MYID: zappi.py
@@ -65,7 +66,6 @@ def main():
                             table='charger', insert=constants.ZAPPI['sql_command'],
                             debug=DEBUG
                             )
-    start_epoch = sql_db.latest_datapoint()
 
     report_time = int(constants.ZAPPI['report_time'])
     sample_time = report_time / int(constants.ZAPPI['samplespercycle'])
@@ -75,10 +75,11 @@ def main():
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
+            start_dt = sql_db.latest_datapoint()
 
             try:
-                data = do_work(API_ZP)
-            except Exception:   # noqa
+                data = do_work(API_ZP, start_dt=start_dt)
+            except Exception:  # noqa
                 mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
@@ -88,23 +89,23 @@ def main():
                     mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
                     for element in data:
                         sql_db.queue(element)
-                except Exception:   # noqa
+                except Exception:  # noqa
                     mf.syslog_trace("Unexpected error while try to queue the data", syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
-                    raise   # may be changed to pass if errors can be corrected.
+                    raise  # may be changed to pass if errors can be corrected.
                 try:
                     sql_db.insert()
-                except Exception:   # noqa
+                except Exception:  # noqa
                     mf.syslog_trace("Unexpected error while try to commit the data to the database",
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
-                    raise   # may be changed to pass if errors can be corrected.
+                    raise  # may be changed to pass if errors can be corrected.
 
             pause_time = (sample_time
-                          - (time.time() - start_time)          # time spent in this loop           eg. (40-3) = 37s
-                          - (start_time % sample_time)          # number of seconds to next loop    eg. 3 % 60 = 3s
+                          - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+                          - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
-            next_time = pause_time + time.time()                # gives the actual time when the next loop should start
+            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -127,11 +128,20 @@ def main():
                 mf.syslog_trace(f"Behind   : {pause_time:.1f}s", False, DEBUG, )
                 mf.syslog_trace("................................", False, DEBUG)
         else:
-            time.sleep(1.0)     # 1s resolution is enough
+            time.sleep(1.0)  # 1s resolution is enough
 
 
-def do_work(zappi):
-    zappi.fetch_data(dt.datetime.today())   # TODO: start with the last date in the DB
+def do_work(zappi, start_dt=dt.datetime.today()):
+    """
+
+    Args:
+        zappi (obj): object of class Myenergi
+        start_dt (str): date/time for which to retrieve data
+
+    Returns:
+        (list) list of dicts containing data retrieved
+    """
+    zappi.fetch_data(start_dt)
 
     """
      {'sample_time': '2022-04-30 08:37:00', 'sample_epoch': 1651300620, 'site_id': 4.1,
