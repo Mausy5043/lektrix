@@ -83,7 +83,8 @@ def main():
                 raise
             if data:
                 try:
-                    mf.syslog_trace(f"Data to add : {data}", False, DEBUG)
+                    mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
+                    mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
                     for element in data:
                         sql_db.queue(element)
                 except Exception:   # noqa
