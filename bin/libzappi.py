@@ -284,12 +284,9 @@ class Myenergi:
             try:
                 # hourly data
                 # result = self.get_status(f"cgi-jdayhour-Z{self.zappi_serial}-"
-                #                          f"{this_day.year}-"
-                #                          f"{this_day.month}-"
-                #                          f"{this_day.day}"
-                #                          )
                 # minutely data
-                result = self.get_status(f"cgi-jday-Z{self.zappi_serial}-"
+                # result = self.get_status(f"cgi-jday-Z{self.zappi_serial}-"
+                result = self.get_status(f"cgi-jdayhour-Z{self.zappi_serial}-"
                                          f"{this_day.year}-"
                                          f"{this_day.month}-"
                                          f"{this_day.day}"
@@ -298,6 +295,7 @@ class Myenergi:
             except requests.exceptions.ReadTimeout:
                 timeout_retries -= 1
                 if timeout_retries <= 0:
+                    # raise for testing
                     # done_flag = False
                     raise
                 else:
