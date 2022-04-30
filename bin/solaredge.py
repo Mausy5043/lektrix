@@ -88,8 +88,7 @@ def main():
 
             if site_list:
                 try:
-                    data = do_work(site_list, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT)
-                                                       + dt.timedelta(days=1))  # noqa
+                    data = do_work(site_list, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))
                 except Exception:   # noqa
                     mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -145,9 +144,9 @@ def main():
 
 def do_work(site_list, start_dt=dt.datetime.today()):
     """Extract the data from the dict(s)."""
-    back_dt = start_dt - dt.timedelta(days=2)   # start_dt will be 1 day ahead
-    result_dict = constants.SOLAREDGE['template']
-    data_dict = dict()
+    back_dt = start_dt - dt.timedelta(days=1)   # start_dt will be 1 day ahead
+    start_dt += dt.timedelta(days=1)
+    # result_dict = constants.SOLAREDGE['template']
     data_list = list()
     result_list = list()
 
