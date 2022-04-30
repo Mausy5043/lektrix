@@ -52,13 +52,13 @@ DROP TABLE IF EXISTS charger;
 CREATE TABLE charger (
     sample_time     datetime NOT NULL PRIMARY KEY,
     sample_epoch    integer,
-    site_id         float,
-    exp             float,
-    gen             float,
-    gep             float,
-    imp             float,
-    h1b             float,
-    h1d             float,
+    site_id         text,
+    exp             integer,
+    gen             integer,
+    gep             integer,
+    imp             integer,
+    h1b             integer,
+    h1d             integer,
     v1              integer,
     frq             integer
     );
@@ -66,3 +66,8 @@ CREATE TABLE charger (
 CREATE INDEX idx_chrg_site ON charger(site_id);
 -- SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
 -- So, no index needed.
+
+INSERT INTO charger (sample_time, sample_epoch, site_id,
+                     exp, gen, gep, imp, h1b, h1d, v1, frq)
+       VALUES ('2021-07-07 00:00:00', 1625608800, 4.1
+                0, 0, 0, 0, 0, 0, 2200, 5000);
