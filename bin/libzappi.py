@@ -141,11 +141,11 @@ class Myenergi:
             raise
         result = json.loads(response.content)
 
-        if self.DEBUG:
-            mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
-            for key in response.headers:
-                mf.syslog_trace(f"{key} :: {response.headers[key]}", False, self.DEBUG)
-            mf.syslog_trace("***** ***** *****", False, self.DEBUG)
+        # if self.DEBUG:
+        #     mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
+        #     for key in response.headers:
+        #         mf.syslog_trace(f"{key} :: {response.headers[key]}", False, self.DEBUG)
+        #     mf.syslog_trace("***** ***** *****", False, self.DEBUG)
 
         return result
 
@@ -172,8 +172,8 @@ class Myenergi:
                                              f"{result_dict['hr']:02d}:{result_dict['min']:02d}:00",
                                              constants.DT_FORMAT
                                              )  # UTC!
-        if result_dict['min'] == 0:
-            mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
+        # if result_dict['min'] == 0:
+        #     mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
         # discard fields we nolonger need
         for key in constants.ZAPPI['template_keys_to_drop']:
             try:
@@ -187,7 +187,7 @@ class Myenergi:
         result_dict['sample_time'] = date_time
         result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
 
-        mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
+        # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
 
     def fetch_data(self, day_to_fetch):
@@ -213,6 +213,12 @@ class Myenergi:
                             for block in self._fetch(day_to_fetch
                                                      )[f"U{self.zappi_serial}"]
                             ]
+
+        mf.syslog_trace(f"> {previous_day_data[0]}", False, self.DEBUG)
+        mf.syslog_trace(f"> {previous_day_data[1]}", False, self.DEBUG)
+        mf.syslog_trace(f"> {current_day_data[-2]}", False, self.DEBUG)
+        mf.syslog_trace(f"> {current_day_data[-1]}", False, self.DEBUG)
+
         self.zappi_data = previous_day_data + current_day_data
 
     def _fetch(self, this_day):
