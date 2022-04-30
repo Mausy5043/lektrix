@@ -177,11 +177,11 @@ class Myenergi:
             except KeyError:
                 result_dict[key] = self.zappi_data_template[key]
 
-        utc_date_time = dt.datetime.strptime(f"{blk['yr']}-{blk['mon'].zfill(2)}-{blk['dom'].zfill(2)} "
-                                             f"{blk['hr'].zfill(2)}:{blk['min'].zfill(2)}:00",
+        utc_date_time = dt.datetime.strptime(f"{result_dict['yr']}-{result_dict['mon']:02d}-{result_dict['dom']:02d} "
+                                             f"{result_dict['hr']:02d}:{result_dict['min']:02d}:00",
                                              constants.DT_FORMAT
                                              )  # UTC!
-        if blk['min'] == "0":
+        if result_dict['min'] == "0":
             mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
 
         lcl_date_time = utc_date_time.replace(tzinfo=pytz.utc)
