@@ -270,21 +270,26 @@ class Myenergi:
         Returns:
             (list): list of dicts containing compacted data
         """
+
+        def _convert_time_to_epoch(date_to_convert):
+            return int(pd.Timestamp(date_to_convert).timestamp())
+
         df = pd.DataFrame(data)
         df = df.set_index('sample_time')
         df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
         # resample to monotonic timeline
         df = df.resample('15min', label='right').sum()
+        # recreate column 'sample_time' that was lost to the index
+        df['sample_time'] = df.index.to_frame(name='sample_time')
+        # reset 'site_id'
+        df['site_id'] = 4.1
         # fields 'v1' and 'frq' should be averaged so divide them by 15 here:
-        df['site_id'] = np.array(df['site_id'] / 15, dtype='float')
         df['v1'] = np.array(df['v1'] / 15, dtype='int')
         df['frq'] = np.array(df['frq'] / 15, dtype='int')
-        df['sample_epoch'] = int(dt.datetime.strptime(df['sample_time'], constants.DT_FORMAT).timestamp())
+        # recalculate 'sample_epoch'
+        df['sample_epoch'] = df['sample_time'].apply(_convert_time_to_epoch)
         mf.syslog_trace(f"{df}", False, self.DEBUG)
         result_data = df.to_dict('records')
-        # recalculate datetime string
-        for element in result_data:
-            element['sample_time'] = dt.datetime.fromtimestamp(element['sample_epoch']).strftime(constants.DT_FORMAT)
         return result_data
 
 
