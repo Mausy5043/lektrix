@@ -279,6 +279,7 @@ class Myenergi:
         df['site_id'] = np.array(df['site_id'] / 15, dtype='float')
         df['v1'] = np.array(df['v1'] / 15, dtype='int')
         df['frq'] = np.array(df['frq'] / 15, dtype='int')
+        df['sample_epoch'] = int(dt.datetime.strptime(df['sample_time'], constants.DT_FORMAT).timestamp())
         mf.syslog_trace(f"{df}", False, self.DEBUG)
         result_data = df.to_dict('records')
         # recalculate datetime string
