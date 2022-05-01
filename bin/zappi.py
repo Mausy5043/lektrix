@@ -80,7 +80,7 @@ def main():
             try:
                 data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))    # noqa
             except Exception:  # noqa
-                mf.syslog_trace("Unexpected error while try to do some work!", syslog.LOG_CRIT, DEBUG)
+                mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
             if data:
@@ -90,13 +90,13 @@ def main():
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
-                    mf.syslog_trace("Unexpected error while try to queue the data", syslog.LOG_ALERT, DEBUG)
+                    mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     sql_db.insert()
                 except Exception:  # noqa
-                    mf.syslog_trace("Unexpected error while try to commit the data to the database",
+                    mf.syslog_trace("Unexpected error while trying to commit the data to the database",
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
