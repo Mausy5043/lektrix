@@ -271,15 +271,19 @@ class Myenergi:
             (list): list of dicts containing compacted data
         """
         df = pd.DataFrame(data)
-        df = df.set_index('sample_epoch')
-        df.index = pd.to_datetime(df.index, unit='s')
+        df = df.set_index('sample_time')
+        df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
         # resample to monotonic timeline
         df = df.resample('15min', label='right').sum()
         # fields 'v1' and 'frq' should be averaged so divide them by 15 here:
+        df['site_id'] = np.array(df['site_id'] / 15, dtype='float')
         df['v1'] = np.array(df['v1'] / 15, dtype='int')
         df['frq'] = np.array(df['frq'] / 15, dtype='int')
         mf.syslog_trace(f"{df}", False, self.DEBUG)
         result_data = df.to_dict('records')
+        # recalculate datetime string
+        for element in result_data:
+            element['sample_time'] = dt.datetime.fromtimestamp(element['epoch']).strftime(constants.DT_FORMAT)
         return result_data
 
 
