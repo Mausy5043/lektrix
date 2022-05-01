@@ -260,22 +260,25 @@ class Myenergi:
                     time.sleep(23)
         return result
 
-    @staticmethod
-    def compact_data(data):
+    def compact_data(self, data):
         """
-        Compact the one-minute data into 10-minute data
+        Compact the one-minute data into 15-minute data
 
         Args:
             data (list): list of dicts containing one-minute data from myenergy DB
 
         Returns:
-            list of compacted data
+            (list): list of dicts containing compacted data
         """
-        # first make sure the list is properly sorted by sample_epoch
-        result_data = sorted(data, key=lambda k: k['sample_epoch'])
-        # epoch / 60 % 60 ==> minute
-        # epoch / 360 % 24 ==> hour (UTC)
-        # TODO: compact to 10-minute samples?
+        df = pd.DataFrame(data)
+        df = df.set_index('sample_time')
+        # resample to monotonic timeline
+        df = df.resample('15min', label='right').sum()
+        # fileds 'v1' and 'frq' should be averaged so divide them by 15 here:
+        df['v1'] = int(df['v1'] / 15)
+        df['frq'] = int(df['frq'] / 15)
+        mf.syslog_trace(f"{df}", False, self.DEBUG)
+        result_data = df.to_dict('records')
         return result_data
 
 
