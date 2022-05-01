@@ -283,7 +283,7 @@ class Myenergi:
         result_data = df.to_dict('records')
         # recalculate datetime string
         for element in result_data:
-            element['sample_time'] = dt.datetime.fromtimestamp(element['epoch']).strftime(constants.DT_FORMAT)
+            element['sample_time'] = dt.datetime.fromtimestamp(element['sample_epoch']).strftime(constants.DT_FORMAT)
         return result_data
 
 
