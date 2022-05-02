@@ -58,7 +58,7 @@ def main():
     API_KL = kl.Kamstrup(DEBUG)
 
     sql_db = m3.SqlDatabase(database=constants.KAMSTRUP['database'],
-                            table='charger', insert=constants.KAMSTRUP['sql_command'],
+                            table='mains', insert=constants.KAMSTRUP['sql_command'],
                             debug=DEBUG
                             )
 
