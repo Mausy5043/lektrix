@@ -81,9 +81,9 @@ def main():
             if time.time() > rprt_time:
                 mf.syslog_trace("Reporting", False, DEBUG)
                 mf.syslog_trace(f"Result   : {API_KL.list_data}", False, DEBUG)
-                data = API_KL.compact_data(API_KL.listdata)
+                data = API_KL.compact_data(API_KL.list_data)
                 #
-                API_KL.listdata = list()  # FIXME: for testing
+                API_KL.list_data = list()  # FIXME: for testing
                 rprt_time += constants.KAMSTRUP['delay']
                 try:
                     mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
