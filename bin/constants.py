@@ -37,7 +37,8 @@ BATTERY = {'database': _DATABASE,
            'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
                         'sample_epoch': 0,
                         'battery_id': 0,
-                        'soc': 0
+                        'soc': None,
+                        'soh': None
                         }
            }
 
@@ -51,8 +52,8 @@ TREND = {'database': _DATABASE,
          }
 
 KAMSTRUP = {'database': _DATABASE,
-            'sql_table': "kamstrup",
-            'sql_command': "INSERT INTO kamstrup ("
+            'sql_table': "mains",
+            'sql_command': "INSERT INTO mains ("
                            "sample_time, sample_epoch, "
                            "T1in, T2in, powerin, "
                            "T1out, T2out, powerout, "
@@ -63,8 +64,15 @@ KAMSTRUP = {'database': _DATABASE,
             'samplespercycle': 90,
             'delay': 0,
             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
-                         'sample_epoch': 0
-                         # add other parameters
+                         'sample_epoch': 0,
+                         'T1in':         0,
+                         'T2in':        0,
+                         'powerin':       0,
+                         'T1out':      0,
+                         'T2out':     0,
+                         'powerout':    0,
+                         'tarif':   1,
+                         'swits':  1
                          }
             }
 
