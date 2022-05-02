@@ -74,16 +74,19 @@ def main():
             start_time = time.time()
             try:
                 succes = API_KL.get_telegram()
-                if succes and DEBUG:
-                    print(f"Result   : {API_KL.list_data}")
-                # data = do_work(API_KL, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))    # noqa
             except Exception:  # noqa
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
+            if not succes:
+                mf.syslog_trace("Getting telegram failed", syslog.LOG_WARNING, DEBUG)
             if time.time() > rprt_time:
                 mf.syslog_trace("Reporting", False, DEBUG)
+                if DEBUG:
+                    mf.syslog_trace(f"Result   : {API_KL.list_data}", False, DEBUG)
                 rprt_time = start_time + report_time
+                #
+                API_KL.listdata = list() # FIXME: for testing
                 rprt_time += constants.KAMSTRUP['delay']
             if data:
                 try:
