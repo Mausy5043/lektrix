@@ -12,7 +12,7 @@ import numpy as np
 import serial   # noqa
 
 
-class Kamstrup:
+class Kamstrup():
     """Class to interact with the P1-port
     """
 
@@ -51,7 +51,7 @@ class Kamstrup:
         """Fetch a telegram from the serialport.
 
         Returns:
-            valid telegram received (bool)
+            (bool): valid telegram received True or False
         """
         receiving = True
         valid_telegram = False
@@ -107,6 +107,8 @@ class Kamstrup:
     def _translate_telegram(self, telegram):
         """Translate the telegram to a dict.
 
+        kW or kWh are converted to W resp. kW
+
         Returns:
             (dict): data converted to a dict.
         """
@@ -134,7 +136,8 @@ class Kamstrup:
                 # ['1-0:2.7.0', '0000.00', 'kW', ''] power out
                 if line[0] == "1-0:2.7.0":
                     self.powerout = int(float(line[1]) * 1000)
-                # ['0-0:17.0.0', '999', 'A', ''] unknown; not recorded
+                # ['0-0:17.0.0', '999', 'A', ''] unknown;
+                # not recorded
                 # ['0-0:96.3.10', '1', '']  powerusage (1)
                 #                           or powermanufacturing ()
                 if line[0] == "0-0:96.3.10":
@@ -154,6 +157,7 @@ class Kamstrup:
                 pass
         idx_dt = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
+
         return {'sample_time': idx_dt.strftime(self.dt_format),
                 'sample_epoch': epoch,
                 'T1in': self.electra1in,
