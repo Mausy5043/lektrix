@@ -194,18 +194,19 @@ class Kamstrup:
         df = df.set_index('sample_time')
         df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
         # resample to monotonic timeline
-        df_max = df.resample('15min', label='right').max()
+        df_out = df.resample('15min', label='right').max()
         df_mean = df.resample('15min', label='right').mean()
 
+        df_out['powerin'] = int(df_mean['powerin'])
+        df_out['powerout'] = int(df_mean['powerout'])
         # recreate column 'sample_time' that was lost to the index
-        df = df_max
-        df['powerin'] = int(df_mean['powerin'])
-        df['powerout'] = int(df_mean['powerout'])
-        df['sample_time'] = df.index.to_frame(name='sample_time')
-        df['sample_time'] = df['sample_time'].apply(_convert_time_to_text)
+        df_out['sample_time'] = df_out.index.to_frame(name='sample_time')
+        df_out['sample_time'] = df_out['sample_time'].apply(_convert_time_to_text)
 
         # recalculate 'sample_epoch'
-        df['sample_epoch'] = df['sample_time'].apply(_convert_time_to_epoch)
-        mf.syslog_trace(f"{df}", False, self.debug)
-        result_data = df.to_dict('records')     # list of dicts
-        return result_data
+        df_out['sample_epoch'] = df_out['sample_time'].apply(_convert_time_to_epoch)
+        mf.syslog_trace(f"{df_out}", False, self.debug)
+        result_data = df_out.to_dict('records')     # list of dicts
+        df = df[df['sample_epoch'] > np.max(df_out['sample_epoch'])]
+        remain_data = df.to_dict('records')
+        return result_data, remain_data
