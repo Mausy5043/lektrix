@@ -95,7 +95,7 @@ def main():
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
-                    sql_db.insert()
+                    sql_db.insert(method='replace')
                 except Exception:  # noqa
                     mf.syslog_trace("Unexpected error while trying to commit the data to the database",
                                     syslog.LOG_ALERT, DEBUG)
