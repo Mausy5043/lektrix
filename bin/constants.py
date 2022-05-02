@@ -61,7 +61,7 @@ KAMSTRUP = {'database': _DATABASE,
                            ") "
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             'report_time': 900,
-            'samplespercycle': 90,
+            'samplespercycle': 88,      # meter runs at 1 telegram every ~10s
             'delay': 0,
             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
                          'sample_epoch': 0,
