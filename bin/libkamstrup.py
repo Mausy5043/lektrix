@@ -199,8 +199,8 @@ class Kamstrup:
 
         # recreate column 'sample_time' that was lost to the index
         df = df_max
-        df['powerin'] = df_mean['powerin']
-        df['powerout'] = df_mean['powerout']
+        df['powerin'] = int(df_mean['powerin'])
+        df['powerout'] = int(df_mean['powerout'])
         df['sample_time'] = df.index.to_frame(name='sample_time')
         df['sample_time'] = df['sample_time'].apply(_convert_time_to_text)
 
