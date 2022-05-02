@@ -66,8 +66,8 @@ def main():
     sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
 
     pause_time = 0
-    next_time = pause_time + time.time()
-    rprt_time = report_time + time.time()
+    next_time = (pause_time + time.time()) % sample_time
+    rprt_time = (report_time + time.time()) % report_time
     data = None     # FIXME: for testing
     while not killer.kill_now:
         if time.time() > next_time:
