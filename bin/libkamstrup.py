@@ -9,10 +9,13 @@ import traceback
 
 import mausy5043funcs.fileops3 as mf
 import numpy as np
-import serial   # noqa
+import pandas as pd
+import serial
+
+import constants
 
 
-class Kamstrup():
+class Kamstrup:
     """Class to interact with the P1-port
     """
 
@@ -169,3 +172,36 @@ class Kamstrup():
                 'tarif': self.tarif,
                 'swits': self.swits
                 }
+
+    def compact_data(self, data):
+        """
+        Compact the ten-second data into 15-minute data
+
+        Args:
+            data (list): list of dicts containing 10-second data from the electricity meter
+
+        Returns:
+            (list): list of dicts containing compacted 15-minute data
+        """
+
+        def _convert_time_to_epoch(date_to_convert):
+            return int(pd.Timestamp(date_to_convert).timestamp())
+
+        def _convert_time_to_text(date_to_convert):
+            return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
+
+        df = pd.DataFrame(data)
+        df = df.set_index('sample_time')
+        df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
+        # resample to monotonic timeline
+        df = df.resample('15min', label='right').max()
+
+        # recreate column 'sample_time' that was lost to the index
+        df['sample_time'] = df.index.to_frame(name='sample_time')
+        df['sample_time'] = df['sample_time'].apply(_convert_time_to_text)
+
+        # recalculate 'sample_epoch'
+        df['sample_epoch'] = df['sample_time'].apply(_convert_time_to_epoch)
+        mf.syslog_trace(f"{df}", False, self.debug)
+        result_data = df.to_dict('records')     # list of dicts
+        return result_data

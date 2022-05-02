@@ -67,7 +67,6 @@ def main():
     pause_time = 0
     next_time = time.time() + (sample_time - (time.time() % sample_time))
     rprt_time = time.time() + (report_time - (time.time() % report_time))
-    data = None  # FIXME: for testing
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
@@ -81,13 +80,11 @@ def main():
                 mf.syslog_trace("Getting telegram failed", syslog.LOG_WARNING, DEBUG)
             if time.time() > rprt_time:
                 mf.syslog_trace("Reporting", False, DEBUG)
-                if DEBUG:
-                    mf.syslog_trace(f"Result   : {API_KL.list_data}", False, DEBUG)
-                rprt_time = start_time + report_time
+                mf.syslog_trace(f"Result   : {API_KL.list_data}", False, DEBUG)
+                data = API_KL.compact_data(API_KL.listdata)
                 #
                 API_KL.listdata = list()  # FIXME: for testing
                 rprt_time += constants.KAMSTRUP['delay']
-            if data:
                 try:
                     mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
                     mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
@@ -127,6 +124,8 @@ def main():
                 60      -             59                -            2
              = 3 seconds behind (no waiting)
             """
+            # determine moment of next report
+            rprt_time = time.time() + (report_time - (time.time() % report_time))
             if pause_time > 0:
                 mf.syslog_trace(f"Waiting  : {pause_time:.1f}s. Report in {rprt_time - time.time():.0f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
