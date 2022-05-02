@@ -160,7 +160,6 @@ class Myenergi:
                     Joules are converted to kWh. Date and time parameters are converted to
                     a datetime-string and epoch-value in the local timezone.
         """
-        # unknown_keys = set()
         result_dict = dict()
         for key in self.zappi_data_template:
             try:

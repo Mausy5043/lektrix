@@ -43,7 +43,6 @@ NODE = os.uname()[1]
 
 API_ZP = None
 
-
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'zappi.py']
 # MYID: zappi.py
