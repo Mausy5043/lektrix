@@ -67,11 +67,11 @@ def main():
 
     pause_time = 0
     next_time = pause_time + time.time()
+    rprt_time = report_time + time.time()
     data = None     # FIXME: for testing
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
-            rprt_time = start_time + report_time
             try:
                 succes = API_KL.get_telegram()
                 if succes and DEBUG:
@@ -81,8 +81,9 @@ def main():
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
-            if rprt_time < time.time():
+            if time.time() > rprt_time:
                 mf.syslog_trace("Reporting", False, DEBUG)
+                rprt_time = start_time + report_time
             if data:
                 try:
                     mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
