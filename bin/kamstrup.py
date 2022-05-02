@@ -84,6 +84,7 @@ def main():
             if time.time() > rprt_time:
                 mf.syslog_trace("Reporting", False, DEBUG)
                 rprt_time = start_time + report_time
+                rprt_time += constants.KAMSTRUP['delay']
             if data:
                 try:
                     mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
@@ -102,11 +103,12 @@ def main():
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
 
-            pause_time = (sample_time
-                          - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-                          - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
-                          )
-            pause_time += constants.KAMSTRUP['delay']      # allow the charger to update the data on the server.
+            # pause_time = (sample_time
+            #               - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+            #               - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
+            #               )
+            # electricity meter determines the tempo, so no need to wait.
+            pause_time = 0.
             next_time = pause_time + time.time()        # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
