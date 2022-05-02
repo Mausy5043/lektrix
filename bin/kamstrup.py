@@ -71,8 +71,7 @@ def main():
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
-            start_dt = sql_db.latest_datapoint()
-
+            rprt_time = start_time + report_time
             try:
                 succes = API_KL.get_telegram()
                 if succes and DEBUG:
@@ -82,6 +81,8 @@ def main():
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
+            if rprt_time < time.time():
+                mf.syslog_trace("Reporting", False, DEBUG)
             if data:
                 try:
                     mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
