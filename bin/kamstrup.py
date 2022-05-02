@@ -129,10 +129,10 @@ def main():
              = 3 seconds behind (no waiting)
             """
             if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time:.1f}s. Report in {rprt_time - time.time()}s", False, DEBUG)
+                mf.syslog_trace(f"Waiting  : {pause_time:.1f}s. Report in {rprt_time - time.time():.0f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time:.1f}s. Report in {rprt_time - time.time()}s", False, DEBUG)
+                mf.syslog_trace(f"Behind   : {pause_time:.1f}s. Report in {rprt_time - time.time():.0f}s", False, DEBUG)
                 mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)  # 1s resolution is enough
