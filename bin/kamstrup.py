@@ -74,9 +74,9 @@ def main():
             start_dt = sql_db.latest_datapoint()
 
             try:
-                succes = kl.get_telegram()
+                succes = API_KL.get_telegram()
                 if succes and DEBUG:
-                    print(f"Result   : {kl.list_data}")
+                    print(f"Result   : {API_KL.list_data}")
                 # data = do_work(API_KL, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))    # noqa
             except Exception:  # noqa
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
