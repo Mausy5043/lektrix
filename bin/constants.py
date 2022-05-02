@@ -65,14 +65,14 @@ KAMSTRUP = {'database': _DATABASE,
             'delay': 0,
             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
                          'sample_epoch': 0,
-                         'T1in':         0,
-                         'T2in':        0,
-                         'powerin':       0,
-                         'T1out':      0,
-                         'T2out':     0,
-                         'powerout':    0,
-                         'tarif':   1,
-                         'swits':  1
+                         'T1in': 0,
+                         'T2in': 0,
+                         'powerin': 0,
+                         'T1out': 0,
+                         'T2out': 0,
+                         'powerout': 0,
+                         'tarif': 1,
+                         'swits': 1
                          }
             }
 
