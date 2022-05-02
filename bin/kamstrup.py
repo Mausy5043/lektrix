@@ -4,8 +4,6 @@
 Store the data in a SQLite3 database.
 """
 import argparse
-import configparser
-import datetime as dt
 import os
 import syslog
 import time
@@ -17,7 +15,6 @@ import mausy5043libs.libsqlite3 as m3
 
 import constants
 import libkamstrup as kl
-
 
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
@@ -43,6 +40,8 @@ MYROOT = "/".join(HERE[0:-3])
 NODE = os.uname()[1]
 
 API_KL = None
+
+
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
 # MYID: kamstrup.py
@@ -68,7 +67,7 @@ def main():
     pause_time = 0
     next_time = time.time() + (sample_time - (time.time() % sample_time))
     rprt_time = time.time() + (report_time - (time.time() % report_time))
-    data = None     # FIXME: for testing
+    data = None  # FIXME: for testing
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
@@ -86,7 +85,7 @@ def main():
                     mf.syslog_trace(f"Result   : {API_KL.list_data}", False, DEBUG)
                 rprt_time = start_time + report_time
                 #
-                API_KL.listdata = list() # FIXME: for testing
+                API_KL.listdata = list()  # FIXME: for testing
                 rprt_time += constants.KAMSTRUP['delay']
             if data:
                 try:
@@ -112,7 +111,7 @@ def main():
             #               )
             # electricity meter determines the tempo, so no need to wait.
             pause_time = 0.
-            next_time = pause_time + time.time()        # gives the actual time when the next loop should start
+            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time
