@@ -43,8 +43,8 @@ CREATE INDEX idx_prod_site ON production(site_id);
 
 -- Set a starting value and add first two datapoints (not available in SolarEdge DB)
 INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-20 09:08:22', 1582186102, 1508443, 0);
-INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-21 23:30:00', 1582324200 , 1508443, 510);
-INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-22 09:30:00', 1582360200 , 1508443, 641);
+INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-21 23:30:00', 1582324200, 1508443, 510);
+INSERT INTO production (sample_time, sample_epoch, site_id, energy) VALUES ('2020-02-22 09:30:00', 1582360200, 1508443, 641);
 
 
 DROP TABLE IF EXISTS charger;
