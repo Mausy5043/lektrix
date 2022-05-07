@@ -25,7 +25,7 @@ declare -a lektrix_timers=("lektrix.trend.day.timer" \
                             "lektrix.update.timer")
 # list of services provided
 declare -a lektrix_services=("lektrix.kamstrup.service" \
-                             "lektrix.zappi.service" \
+                             "lektrix.myenergi.service" \
                              "lektrix.solaredge.service" \
                              "lektrix.fles.service")
 # Install python3 and develop packages

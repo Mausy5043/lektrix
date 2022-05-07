@@ -16,7 +16,7 @@ import mausy5043libs.libsignals3 as ml
 import mausy5043libs.libsqlite3 as m3
 
 import constants
-import libzappi as zl
+import libmyenergi as zl
 
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
@@ -43,9 +43,10 @@ NODE = os.uname()[1]
 
 API_ZP = None
 
+
 # example values:
-# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'zappi.py']
-# MYID: zappi.py
+# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'myenergi.py']
+# MYID: myenergi.py
 # MYAPP: lektrix
 # MYROOT: /home/pi
 # NODE: rbelec
@@ -77,7 +78,7 @@ def main():
             start_dt = sql_db.latest_datapoint()
 
             try:
-                data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))    # noqa
+                data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
             except Exception:  # noqa
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -104,8 +105,8 @@ def main():
                           - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                           - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
-            pause_time += constants.ZAPPI['delay']      # allow the charger to update the data on the server.
-            next_time = pause_time + time.time()        # gives the actual time when the next loop should start
+            pause_time += constants.ZAPPI['delay']  # allow the charger to update the data on the server.
+            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time
