@@ -58,7 +58,7 @@ KAMSTRUP = {'database': _DATABASE,
                            "T1in, T2in, powerin, "
                            "T1out, T2out, powerout, "
                            "tarif, swits"
-                           ") "
+                           ");"
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             'report_time': 900,
             'samplespercycle': 88,      # meter runs at 1 telegram every ~10s
@@ -80,7 +80,7 @@ SOLAREDGE = {'database': _DATABASE,
              'sql_table': "production",
              'sql_command': "INSERT INTO production ("
                             "sample_time, sample_epoch, site_id, energy"
-                            ") "
+                            ");"
                             "VALUES (?, ?, ?, ?)",
              'report_time': 900,    # quarter of an hour resolution
              'samplespercycle': 1,
@@ -99,7 +99,7 @@ ZAPPI = {'database': _DATABASE,
                         "sample_time, sample_epoch, site_id,"
                         "exp, gen, gep, imp, h1b, h1d,"
                         "v1, frq"
-                        ") "
+                        ");"
                         "VALUES (?, ?, ?,"
                         "?, ?, ?, ?, ?, ?,"
                         "?, ?"
