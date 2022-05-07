@@ -1,6 +1,6 @@
 Flask
 # hanging_threads
-# matplotlib
+matplotlib
 numpy
 pandas
 pyserial
