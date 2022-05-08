@@ -51,7 +51,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     df_cmp = None
     df_t = None
     if DEBUG:
-        print("*** fetching MAINS data ***")
+        print("\n*** fetching MAINS data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
     s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition}"
     if DEBUG:
@@ -89,7 +89,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
         dict with data
     """
     if DEBUG:
-        print("*** fetching PRODUCTION data ***")
+        print("\n*** fetching PRODUCTION data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
     s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
     if DEBUG:
@@ -127,7 +127,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
         dict with data
     """
     if DEBUG:
-        print("*** fetching PRODUCTION data ***")
+        print("\n*** fetching PRODUCTION data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
     s3_query = f"SELECT * FROM {TABLE_CHRGR} WHERE {where_condition}"
     if DEBUG:
@@ -175,7 +175,7 @@ def plot_graph(output_file, data_dict, plot_title):
     :return: None
     """
     if DEBUG:
-        print("*** plotting ***")
+        print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         if DEBUG:
             print(parameter)
@@ -215,6 +215,8 @@ def plot_graph(output_file, data_dict, plot_title):
                     format='png',
                     # bbox_inches='tight'
                     )
+        print(f" --> {output_file}\n")
+
 
 
 def main():
