@@ -66,13 +66,14 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     for c in df.columns:
         if c not in ['sample_time']:
             df[c] = pd.to_numeric(df[c], errors='coerce')
-    df.index = pd.to_datetime(df.index, unit='s').tz_localize("Europe/Amsterdam")
+    df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min').max()
+    df = df.resample(f'{aggregation}min', label='right').max()
     df = df.interpolate(method='slinear')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
+    df.diff()   # KAMSTRUP data contains totalisers, we need the differential per timeframe
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
@@ -106,10 +107,10 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
         if c not in ['sample_time']:
             df[c] = pd.to_numeric(df[c], errors='coerce')
     # df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
-    df.index = pd.to_datetime(df.index, unit='s').tz_localize("Europe/Amsterdam")
+    df.index = pd.to_datetime(df.index, unit='s')
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min').mean()
+    df = df.resample(f'{aggregation}min', label='right').mean()
     df = df.interpolate(method='slinear')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
@@ -146,9 +147,9 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
         if c not in ['sample_time']:
             df[c] = pd.to_numeric(df[c], errors='coerce')
     # df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
-    df.index = pd.to_datetime(df.index, unit='s').tz_localize("Europe/Amsterdam")
+    df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min').mean()
+    df = df.resample(f'{aggregation}min', label='right').mean()
     df = df.interpolate(method='slinear')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
