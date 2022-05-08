@@ -238,7 +238,7 @@ def main():
             aggr = 1
         plot_graph(constants.TREND['hour_graph'],
                    fetch_data(hours_to_fetch=OPTION.hours, aggregation=aggr),
-                   f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
         aggr = 60 * 24  # int(float(OPTION.days) * 24. * 60. / 5760.)
@@ -246,7 +246,7 @@ def main():
             aggr = 1
         plot_graph(constants.TREND['day_graph'],
                    fetch_data(hours_to_fetch=OPTION.days * 24, aggregation=aggr),
-                   f" trend per uur afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   f" trend per uur afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.months:
         aggr = 60 * 24 * 31  # int(float(OPTION.months) * 30.5 * 24. * 60.  / 9900.)
