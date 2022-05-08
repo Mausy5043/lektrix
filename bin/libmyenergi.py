@@ -275,24 +275,26 @@ class Myenergi:
 
         def _convert_time_to_text(date_to_convert):
             return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
+        result_data = list()
 
-        df = pd.DataFrame(data)
-        df = df.set_index('sample_time')
-        df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
-        # resample to monotonic timeline
-        df = df.resample('15min', label='right').sum()
-        # recreate column 'sample_time' that was lost to the index
-        df['sample_time'] = df.index.to_frame(name='sample_time')
-        df['sample_time'] = df['sample_time'].apply(_convert_time_to_text)
-        # reset 'site_id'
-        df['site_id'] = 4.1
-        # fields 'v1' and 'frq' should be averaged so divide them by 15 here:
-        df['v1'] = np.array(df['v1'] / 15, dtype='int')
-        df['frq'] = np.array(df['frq'] / 15, dtype='int')
-        # recalculate 'sample_epoch'
-        df['sample_epoch'] = df['sample_time'].apply(_convert_time_to_epoch)
-        mf.syslog_trace(f"{df}", False, self.DEBUG)
-        result_data = df.to_dict('records')
+        if data:
+            df = pd.DataFrame(data)
+            df = df.set_index('sample_time')
+            df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
+            # resample to monotonic timeline
+            df = df.resample('15min', label='right').sum()
+            # recreate column 'sample_time' that was lost to the index
+            df['sample_time'] = df.index.to_frame(name='sample_time')
+            df['sample_time'] = df['sample_time'].apply(_convert_time_to_text)
+            # reset 'site_id'
+            df['site_id'] = 4.1
+            # fields 'v1' and 'frq' should be averaged so divide them by 15 here:
+            df['v1'] = np.array(df['v1'] / 15, dtype='int')
+            df['frq'] = np.array(df['frq'] / 15, dtype='int')
+            # recalculate 'sample_epoch'
+            df['sample_epoch'] = df['sample_time'].apply(_convert_time_to_epoch)
+            mf.syslog_trace(f"{df}", False, self.DEBUG)
+            result_data = df.to_dict('records')
         return result_data
 
 
