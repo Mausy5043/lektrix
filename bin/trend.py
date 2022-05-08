@@ -70,7 +70,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     df = df.resample(f'{aggregation}min').mean()
     df = df.interpolate(method='slinear')
 
-    # df.drop('sample_time', axis=1, inplace=True, errors='ignore')
+    df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
