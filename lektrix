@@ -1,49 +1,49 @@
 #!/usr/bin/env bash
 
-HERE=$(cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd)
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
 pushd "${HERE}" >/dev/null || exit 1
 
-    # shellcheck disable=SC1091
-    source ./bin/constants.sh
+# shellcheck disable=SC1091
+source ./bin/constants.sh
 
-    # check commandline parameters
-    for i in "$@"; do
-        case $i in
-        -i | --install)
-            install_lektrix "${HERE}"
-            ;;
-        -u | --uninstall)
-            unstall_lektrix
-            ;;
-        -s | --stop)
-            stop_lektrix
-            ;;
-        -g | --go)
-            start_lektrix
-            ;;
-        -b | --boot)
-            boot_lektrix
-            ;;
-        -r | --restart)
-            restart_lektrix "${HERE}" 0
-            ;;
-        --systemd | --graph)
-            restart_lektrix "${HERE}" 1
-            ;;
-        --update)
-            update_lektrix
-            ;;
-        *)
-            # unknown option
-            echo "** Unknown option **"
-            echo
-            echo "Syntax:"
-            echo "lektrix [-i|--install] [-g|--go] [-r|--restart|--graph]  [-s|--stop] [-u|--uninstall]"
-            echo
-            exit 1
-            ;;
-        esac
-    done
+# check commandline parameters
+for i in "$@"; do
+    case $i in
+    -i | --install)
+        install_lektrix "${HERE}"
+        ;;
+    -u | --uninstall)
+        unstall_lektrix
+        ;;
+    -s | --stop)
+        stop_lektrix
+        ;;
+    -g | --go)
+        start_lektrix
+        ;;
+    -b | --boot)
+        boot_lektrix
+        ;;
+    -r | --restart)
+        restart_lektrix "${HERE}" 0
+        ;;
+    --systemd | --graph)
+        restart_lektrix "${HERE}" 1
+        ;;
+    --update)
+        update_lektrix
+        ;;
+    *)
+        # unknown option
+        echo "** Unknown option **"
+        echo
+        echo "Syntax:"
+        echo "lektrix [-i|--install] [-g|--go] [-r|--restart|--graph]  [-s|--stop] [-u|--uninstall]"
+        echo
+        exit 1
+        ;;
+    esac
+done
 
 popd >/dev/null || exit 1
