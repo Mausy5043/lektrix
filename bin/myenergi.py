@@ -69,14 +69,13 @@ def main():
 
     report_time = int(constants.ZAPPI['report_time'])
     sample_time = report_time / int(constants.ZAPPI['samplespercycle'])
-
+    add_days = 1
     pause_time = 0
     next_time = pause_time + time.time()
+    start_dt = sql_db.latest_datapoint()  # type: str
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
-            start_dt = sql_db.latest_datapoint()
-
             try:
                 data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
             except Exception:  # noqa
@@ -100,6 +99,16 @@ def main():
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
+
+            new_start_dt = sql_db.latest_datapoint()  # type: str
+            if new_start_dt == start_dt:
+                # there is a hole in the data
+                mf.syslog_trace(f"Found a hole in the data at {start_dt}.", syslog.LOG_WARNING, DEBUG)
+                dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(days=add_days)
+                start_dt = dati.strftime('%Y-%m-%d %H:%M:%S')
+                mf.syslog_trace(f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG)
+                # next time check more days
+                add_days += 1
 
             pause_time = (sample_time
                           - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
