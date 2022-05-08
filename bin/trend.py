@@ -73,7 +73,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
-    df.diff()   # KAMSTRUP data contains totalisers, we need the differential per timeframe
+    df = df.diff()   # KAMSTRUP data contains totalisers, we need the differential per timeframe
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
