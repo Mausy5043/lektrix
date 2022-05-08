@@ -174,48 +174,53 @@ def plot_graph(output_file, data_dict, plot_title):
     :param plot_title: (str) title to be displayed above the plot
     :return: None
     """
+    data_frame = pd.DataFrame()
     if DEBUG:
         print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         if DEBUG:
             print(parameter)
         data_frame = data_dict[parameter]
-        fig_x = 20
-        fig_y = 7.5
-        fig_fontsize = 13
-        ahpla = 0.7
-        """
-        # ###############################
-        # Create a line plot of temperatures
-        # ###############################
-        """
-        plt.rc('font', size=fig_fontsize)
-        ax1 = data_frame.plot(kind='line',
-                              marker='.',
-                              figsize=(fig_x, fig_y)
-                              )
-        # linewidth and alpha need to be set separately
-        for i, l in enumerate(ax1.lines):
-            plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
-        ax1.set_ylabel(parameter)
-        ax1.legend(loc='lower left',
-                   ncol=8,
-                   framealpha=0.2
-                   )
-        ax1.set_xlabel("Datetime")
-        ax1.grid(which='major',
-                 axis='y',
-                 color='k',
-                 linestyle='--',
-                 linewidth=0.5
-                 )
-        plt.title(f'{parameter} {plot_title}')
-        plt.tight_layout()
-        plt.savefig(fname=f'{output_file}_{parameter}.png',
-                    format='png',
-                    # bbox_inches='tight'
-                    )
-        print(f" --> {output_file}\n")
+        if len(data_frame.index) == 0:
+            if DEBUG:
+                print("No data.")
+        else:
+            fig_x = 20
+            fig_y = 7.5
+            fig_fontsize = 13
+            ahpla = 0.7
+            """
+            # ###############################
+            # Create a line plot of temperatures
+            # ###############################
+            """
+            plt.rc('font', size=fig_fontsize)
+            ax1 = data_frame.plot(kind='line',
+                                  marker='.',
+                                  figsize=(fig_x, fig_y)
+                                  )
+            # linewidth and alpha need to be set separately
+            for i, l in enumerate(ax1.lines):
+                plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
+            ax1.set_ylabel(parameter)
+            ax1.legend(loc='lower left',
+                       ncol=8,
+                       framealpha=0.2
+                       )
+            ax1.set_xlabel("Datetime")
+            ax1.grid(which='major',
+                     axis='y',
+                     color='k',
+                     linestyle='--',
+                     linewidth=0.5
+                     )
+            plt.title(f'{parameter} {plot_title}')
+            plt.tight_layout()
+            plt.savefig(fname=f'{output_file}_{parameter}.png',
+                        format='png',
+                        # bbox_inches='tight'
+                        )
+            print(f" --> {output_file}\n")
 
 
 
