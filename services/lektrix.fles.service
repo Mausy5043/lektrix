@@ -6,7 +6,7 @@ After=network.target
 User=pi
 Group=www-data
 WorkingDirectory=/home/pi/lektrix/bin/
-Environment="PATH=/usr/bin:/home/pi/lektrix/:/home/pi/lektrix/bin/"
+Environment="PATH=/bin:/usr/bin:/home/pi/lektrix/:/home/pi/lektrix/bin/"
 ExecStartPre=/home/pi/lektrix/lektrix --boot
 ExecStart=/home/pi/.local/bin/uwsgi --socket 0.0.0.0:5000 --protocol=http --processes=1 -w wsgi:app
 
