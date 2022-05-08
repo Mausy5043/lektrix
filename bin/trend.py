@@ -74,6 +74,10 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
     df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
+    df['T1in'] *= 0.001     # -> kWh
+    df['T2in'] *= 0.001     # -> kWh
+    df['T1out'] *= -0.001   # -> kWh export
+    df['T2out'] *= -0.001   # -> kWh export
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
@@ -258,7 +262,7 @@ def main():
             aggr = 1
         plot_graph(constants.TREND['year_graph'],
                    fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation=aggr),
-                   f" trend per dag afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   f" trend per dag afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
 
 
