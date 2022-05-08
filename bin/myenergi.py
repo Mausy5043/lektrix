@@ -140,6 +140,7 @@ def main():
                 if DEBUG:
                     pause_time = 10
             else:
+                start_dt = new_start_dt
                 add_days = 1
 
             if pause_time > 0:
