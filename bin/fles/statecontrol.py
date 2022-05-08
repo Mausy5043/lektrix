@@ -45,7 +45,7 @@ def state():
                                  t1_out="n/a",  # f"{gld[0]:.1f} \u00B0C",
                                  t2_out="n/a",  # f"{gld[0]:.1f} \u00B0C",
                                  hour_m_img=hour_m_img,
-                                 day__m_img=day_m_img,
+                                 day_m_img=day_m_img,
                                  month_m_img=month_m_img,
                                  year_m_img=year_m_img
                                  )
