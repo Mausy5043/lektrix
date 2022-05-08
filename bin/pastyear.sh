@@ -3,10 +3,10 @@
 # query monthly totals for a period of n years
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
-PASTYEAR_IMAGE='/tmp/kamstrupd/site/img/kam_pastyear.png'
-PASTYEARVS_IMAGE='/tmp/kamstrupd/site/img/kam_vs_year.png'
-PASTMONTHVS_IMAGE='/tmp/kamstrupd/site/img/kam_vs_month.png'
-GAUGE_IMAGE='/tmp/kamstrupd/site/img/kam_gauge.png'
+PASTYEAR_IMAGE='/tmp/lektrix/site/img/lex_pastyear.png'
+PASTYEARVS_IMAGE='/tmp/lektrix/site/img/lex_vs_year.png'
+PASTMONTHVS_IMAGE='/tmp/lektrix/site/img/lex_vs_month.png'
+GAUGE_IMAGE='/tmp/lektrix/site/img/lex_gauge.png'
 
 pushd "${HERE}" >/dev/null || exit 1
 echo "no graphing defined"

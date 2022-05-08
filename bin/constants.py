@@ -43,12 +43,12 @@ BATTERY = {'database': _DATABASE,
            }
 
 TREND = {'database': _DATABASE,
-         'day_graph': '/tmp/kamstrupd/site/img/kam_pastday.png',
-         'month_graph': '/tmp/kamstrupd/site/img/kam_pastmonth.png',
-         'year_graph': '/tmp/kamstrupd/site/img/kam_pastyear.png',
-         'vsyear_graph': '/tmp/kamstrupd/site/img/kam_vs_year.png',
-         'yg_vs_month': '/tmp/kamstrupd/site/img/kam_vs_month.png',
-         'yg_gauge': '/tmp/kamstrupd/site/img/kam_gauge.png'
+         'day_graph': '/tmp/lektrix/site/img/lex_pastday.png',
+         'month_graph': '/tmp/lektrix/site/img/lex_pastmonth.png',
+         'year_graph': '/tmp/lektrix/site/img/lex_pastyear.png',
+         'vsyear_graph': '/tmp/lektrix/site/img/lex_vs_year.png',
+         'yg_vs_month': '/tmp/lektrix/site/img/lex_vs_month.png',
+         'yg_gauge': '/tmp/lektrix/site/img/lex_gauge.png'
          }
 
 KAMSTRUP = {'database': _DATABASE,

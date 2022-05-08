@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
-PASTDAY_IMAGE='/tmp/kamstrupd/site/img/kam_pastday.png'
+PASTDAY_IMAGE='/tmp/lektrix/site/img/lex_pastday.png'
 
 pushd "${HERE}" >/dev/null || exit 1
 echo "no graphing defined"
