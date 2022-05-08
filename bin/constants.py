@@ -62,7 +62,7 @@ KAMSTRUP = {'database': _DATABASE,
                            ");"
                            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             'report_time': 900,
-            'samplespercycle': 88,      # meter runs at 1 telegram every ~10s
+            'samplespercycle': 88,  # meter runs at 1 telegram every ~10s
             'delay': 0,
             'template': {'sample_time': "dd-mmm-yyyy hh:mm:ss",
                          'sample_epoch': 0,
@@ -83,7 +83,7 @@ SOLAREDGE = {'database': _DATABASE,
                             "sample_time, sample_epoch, site_id, energy"
                             ");"
                             "VALUES (?, ?, ?, ?)",
-             'report_time': 900,    # quarter of an hour resolution
+             'report_time': 900,  # quarter of an hour resolution
              'samplespercycle': 1,
              'delay': 360,
              'director': "https://monitoringapi.solaredge.com",
