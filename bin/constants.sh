@@ -19,26 +19,26 @@ database_path="/srv/databases"
 db_full_path="${database_path}/${database_filename}"
 
 # list of timers provided
-declare -a lektrix_timers=("lektrix.trend.day.timer" \
-                           "lektrix.trend.month.timer" \
-                           "lektrix.trend.year.timer" \
-                            "lektrix.update.timer")
+declare -a lektrix_timers=("lektrix.trend.day.timer"
+    "lektrix.trend.month.timer"
+    "lektrix.trend.year.timer"
+    "lektrix.update.timer")
 # list of services provided
-declare -a lektrix_services=("lektrix.kamstrup.service" \
-                             "lektrix.myenergi.service" \
-                             "lektrix.solaredge.service" \
-                             "lektrix.fles.service")
+declare -a lektrix_services=("lektrix.kamstrup.service"
+    "lektrix.myenergi.service"
+    "lektrix.solaredge.service"
+    "lektrix.fles.service")
 # Install python3 and develop packages
 # Support for matplotlib & numpy needs to be installed seperately
 # Support for serial port
 # SQLite3 support (incl python3)
-declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "python3-pip" \
-                                 "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5" \
-                                 "picocom" "python3-serial"
-                                 "sqlite3")
+declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "python3-pip"
+    "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
+    "picocom" "python3-serial"
+    "sqlite3")
 
 # start the application
-start_lektrix(){
+start_lektrix() {
     echo "Starting ${app_name} on $(date)"
     # make sure /tmp environment exists
     boot_lektrix
@@ -47,8 +47,9 @@ start_lektrix(){
 }
 
 # update the repository
-update_lektrix(){
-    git fetch origin || sleep 60; git fetch origin
+update_lektrix() {
+    git fetch origin || sleep 60
+    git fetch origin
     DIFFLIST=$(git --no-pager diff --name-only "${branch_name}..origin/${branch_name}")
     git pull
     git fetch origin
@@ -58,7 +59,7 @@ update_lektrix(){
 
 # stop, update the repo and start the application
 # do some additional stuff when called by systemd
-restart_lektrix(){
+restart_lektrix() {
     ROOT_DIR=$1
     # restarted by update..service or using --graph
     SYSTEMD_REQUEST=$2
@@ -89,14 +90,14 @@ restart_lektrix(){
 }
 
 # stop the application
-stop_lektrix(){
+stop_lektrix() {
     echo "Stopping ${app_name} on $(date)"
     action_timers stop
     action_services stop
 }
 
 # uninstall the application
-unstall_lektrix(){
+unstall_lektrix() {
     echo "Uninstalling ${app_name} on $(date)"
     stop_lektrix
     action_timers disable
@@ -107,7 +108,7 @@ unstall_lektrix(){
 }
 
 # install the application
-install_lektrix(){
+install_lektrix() {
     ROOT_DIR=$1
 
     # to suppress git detecting changes by chmod
@@ -140,7 +141,7 @@ install_lektrix(){
         echo "Found existing database."
     else
         echo "Creating database."
-        sqlite3 "${db_full_path}" < "${ROOT_DIR}/bin/lektrix.sql"
+        sqlite3 "${db_full_path}" <"${ROOT_DIR}/bin/lektrix.sql"
     fi
 
     # install services and timers
@@ -157,7 +158,7 @@ install_lektrix(){
 }
 
 # set-up the application
-boot_lektrix(){
+boot_lektrix() {
     # make sure Flask tree exists
     if [ ! -d "/tmp/${app_name}/site/img" ]; then
         mkdir -p "/tmp/${app_name}/site/img"
@@ -166,7 +167,7 @@ boot_lektrix(){
 }
 
 # perform systemctl actions on all timers
-action_timers(){
+action_timers() {
     ACTION=$1
     for TMR in "${lektrix_timers[@]}"; do
         if [ "${ACTION}" != "rm" ]; then
@@ -180,7 +181,7 @@ action_timers(){
 }
 
 # perform systemctl actions on all services
-action_services(){
+action_services() {
     ACTION=$1
     for SRVC in "${lektrix_services[@]}"; do
         if [ "${ACTION}" != "rm" ]; then
@@ -194,7 +195,7 @@ action_services(){
 }
 
 # See if packages are installed and install them using apt-get
-action_apt_install(){
+action_apt_install() {
     PKG=$1
     echo "*********************************************************"
     echo "* Requesting ${PKG}"
