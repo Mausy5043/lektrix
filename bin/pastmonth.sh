@@ -3,15 +3,10 @@
 # query daily totals for a period of one month
 
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
-PASTMONTH_IMAGE='/tmp/lektrix/site/img/lex_pastmonth.png'
 
 pushd "${HERE}" >/dev/null || exit 1
 # shellcheck disable=SC1091
 source ./constants.sh
-
-if [ ! -f ${PASTMONTH_IMAGE} ]; then
-    cp "${HERE}/fles/static/empty.png" ${PASTMONTH_IMAGE}
-fi
 
 CURRENT_EPOCH=$(date +'%s')
 # do some maintenance

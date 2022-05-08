@@ -18,6 +18,8 @@ database_filename="lektrix.sqlite3"
 database_path="/srv/databases"
 db_full_path="${database_path}/${database_filename}"
 
+constants_sh_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
+
 # list of timers provided
 declare -a lektrix_timers=("lektrix.trend.day.timer"
     "lektrix.trend.month.timer"
@@ -164,6 +166,14 @@ boot_lektrix() {
         mkdir -p "/tmp/${app_name}/site/img"
         chmod -R 755 "/tmp/${app_name}"
     fi
+    # allow Flask to work even if the graphics have not yet been created
+    create_graphic '/tmp/lektrix/site/img/lex_pastday.png'
+    create_graphic '/tmp/lektrix/site/img/zap_pastday.png'
+    create_graphic '/tmp/lektrix/site/img/lex_pastmonth.png'
+    create_graphic '/tmp/lektrix/site/img/lex_pastyear.png'
+    create_graphic '/tmp/lektrix/site/img/lex_vs_year.png'
+    create_graphic '/tmp/lektrix/site/img/lex_vs_month.png'
+    create_graphic '/tmp/lektrix/site/img/lex_gauge.png'
 }
 
 # perform systemctl actions on all timers
@@ -218,4 +228,12 @@ getfilefromserver() {
 
     cp -rvf "/srv/config/${file}" "${HOME}/.config/"
     chmod -R "${mode}" "${HOME}/.config/${file}"
+}
+
+# create a placeholder graphic for Fles
+create_graphic() {
+IMAGE="$1"
+if [ ! -f "${IMAGE}" ]; then
+    cp "${constants_sh_dir}/fles/static/empty.png" "${IMAGE}"
+fi
 }
