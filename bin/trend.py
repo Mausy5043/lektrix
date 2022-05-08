@@ -72,6 +72,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     df = df.interpolate(method='slinear')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
+    df.drop(['power_in', 'power_out', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
@@ -214,11 +215,9 @@ def plot_graph(output_file, data_dict, plot_title):
             plt.title(f'{parameter} {plot_title}')
             plt.tight_layout()
             plt.savefig(fname=f'{output_file}_{parameter}.png',
-                        format='png',
-                        # bbox_inches='tight'
+                        format='png'
                         )
             print(f" --> {output_file}\n")
-
 
 
 def main():
