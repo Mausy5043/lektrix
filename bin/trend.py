@@ -217,7 +217,7 @@ def plot_graph(output_file, data_dict, plot_title):
             plt.savefig(fname=f'{output_file}_{parameter}.png',
                         format='png'
                         )
-            print(f" --> {output_file}\n")
+            print(f" --> {output_file}_{parameter}.png\n")
 
 
 def main():
