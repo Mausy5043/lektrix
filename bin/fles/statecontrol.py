@@ -19,15 +19,25 @@ def state():
     if flask.request.method == 'GET':
         pass
 
-    day_img = "".join(["data:image/png;base64,",
-                       str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastday_mains.png",
-                                                 "rb"
-                                                 ).read()))[2:-1]
-                       ])
-    month_img = "".join(["data:image/png;base64,",
-                         str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastmonth.png",
-                                                   "rb").read()))[2:-1]
+    hour_m_img = "".join(["data:image/png;base64,",
+                          str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pasthours_mains.png",
+                                                    "rb"
+                                                    ).read()))[2:-1]
+                          ])
+    day_m_img = "".join(["data:image/png;base64,",
+                         str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastdays_mains.png",
+                                                   "rb"
+                                                   ).read()))[2:-1]
                          ])
+    month_m_img = "".join(["data:image/png;base64,",
+                           str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastmonths_mains.png",
+                                                     "rb").read()))[2:-1]
+                           ])
+    year_m_img = "".join(["data:image/png;base64,",
+                          str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastyears_mains.png",
+                                                    "rb"
+                                                    ).read()))[2:-1]
+                          ])
     zappi_img = "".join(["data:image/png;base64,",
                          str(base64.b64encode(open("/tmp/lektrix/site/img/zap_pastday.png",
                                                    "rb").read()))[2:-1]
@@ -37,9 +47,9 @@ def state():
                                                      "rb").read()))[2:-1]
                            ])
     year_trend_img = "".join(["data:image/png;base64,",
-                               str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastyear.png",
-                                                         "rb").read()))[2:-1]
-                               ])
+                              str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastyear_mains.png",
+                                                        "rb").read()))[2:-1]
+                              ])
     year_sum_img = "".join(["data:image/png;base64,",
                             str(base64.b64encode(open("/tmp/lektrix/site/img/lex_vs_year.png",
                                                       "rb").read()))[2:-1]
@@ -54,8 +64,10 @@ def state():
                                  t2_in="n/a",  # f"{gld[0]:.1f} \u00B0C",
                                  t1_out="n/a",  # f"{gld[0]:.1f} \u00B0C",
                                  t2_out="n/a",  # f"{gld[0]:.1f} \u00B0C",
-                                 day_img=day_img,
-                                 month_img=month_img,
+                                 hour_m_img=hour_m_img,
+                                 day__m_img=day_m_img,
+                                 month_m_img=month_m_img,
+                                 year_m_img=year_m_img,
                                  zappi_img=zappi_img,
                                  balance_img=balance_img,
                                  year_trend_img=year_trend_img,

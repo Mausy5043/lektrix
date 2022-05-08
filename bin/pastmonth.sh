@@ -35,7 +35,6 @@ if [ $? -eq 0 ]; then
     fi
 fi
 
-echo "no graphing defined"
-# ./trend.py --days 0
+./trend.py --days 0
 
 popd >/dev/null || exit

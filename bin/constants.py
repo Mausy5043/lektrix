@@ -43,9 +43,10 @@ BATTERY = {'database': _DATABASE,
            }
 
 TREND = {'database': _DATABASE,
-         'day_graph': '/tmp/lektrix/site/img/lex_pastday',
-         'month_graph': '/tmp/lektrix/site/img/lex_pastmonth',
-         'year_graph': '/tmp/lektrix/site/img/lex_pastyear',
+         'hour_graph': '/tmp/lektrix/site/img/lex_pasthours',
+         'day_graph': '/tmp/lektrix/site/img/lex_pastdays',
+         'month_graph': '/tmp/lektrix/site/img/lex_pastmonths',
+         'year_graph': '/tmp/lektrix/site/img/lex_pastyears',
          'vsyear_graph': '/tmp/lektrix/site/img/lex_vs_year',
          'yg_vs_month': '/tmp/lektrix/site/img/lex_vs_month',
          'yg_gauge': '/tmp/lektrix/site/img/lex_gauge'
