@@ -72,7 +72,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     df = df.interpolate(method='slinear')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
-    df.drop(['power_in', 'power_out', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
+    df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
