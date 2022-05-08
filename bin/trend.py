@@ -3,12 +3,12 @@
 """Create trendbargraphs of the data for various periods."""
 
 import argparse
-from datetime import datetime as dt
 import sqlite3 as s3
-import pandas as pd
+from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 import constants
 
@@ -73,7 +73,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
-    df = df.diff()   # KAMSTRUP data contains totalisers, we need the differential per timeframe
+    df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
     if DEBUG:
         print(df)
     mains_data_dict = {'mains': df}
@@ -185,7 +185,7 @@ def plot_graph(output_file, data_dict, plot_title):
     for parameter in data_dict:
         if DEBUG:
             print(parameter)
-        data_frame = data_dict[parameter]   # type: pd.DataFrame
+        data_frame = data_dict[parameter]  # type: pd.DataFrame
         if len(data_frame.index) == 0:
             if DEBUG:
                 print("No data.")
@@ -197,10 +197,9 @@ def plot_graph(output_file, data_dict, plot_title):
 
             # create a line plot
             plt.rc('font', size=fig_fontsize)
-            ax1 = data_frame.plot(kind='line',
-                                  marker='.',
-                                  figsize=(fig_x, fig_y)
-                                  )
+            ax1 = data_frame.plot.bar(stacked=True,
+                                      figsize=(fig_x, fig_y)
+                                      )
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
                 plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
@@ -229,7 +228,7 @@ def main():
     This is the main loop
     """
     if OPTION.hours:
-        aggr = 15       # int(float(OPTION.hours) * 60. / 480)
+        aggr = 15  # int(float(OPTION.hours) * 60. / 480)
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['day_graph'],
@@ -237,7 +236,7 @@ def main():
                    f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
-        aggr = 15       # int(float(OPTION.days) * 24. * 60. / 5760.)
+        aggr = 15  # int(float(OPTION.days) * 24. * 60. / 5760.)
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['month_graph'],
@@ -245,7 +244,7 @@ def main():
                    f" trend per uur afgelopen maand ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.months:
-        aggr = 60       # int(float(OPTION.months) * 30.5 * 24. * 60.  / 9900.)
+        aggr = 60  # int(float(OPTION.months) * 30.5 * 24. * 60.  / 9900.)
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['year_graph'],
