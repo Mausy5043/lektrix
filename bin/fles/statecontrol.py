@@ -20,7 +20,7 @@ def state():
         pass
 
     day_img = "".join(["data:image/png;base64,",
-                       str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastday.png",
+                       str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastday_mains.png",
                                                  "rb"
                                                  ).read()))[2:-1]
                        ])
