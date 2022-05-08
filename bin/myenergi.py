@@ -69,10 +69,10 @@ def main():
 
     report_time = int(constants.ZAPPI['report_time'])
     sample_time = report_time / int(constants.ZAPPI['samplespercycle'])
-    add_days = 1
     pause_time = 0
     next_time = pause_time + time.time()
     start_dt = sql_db.latest_datapoint()  # type: str
+    add_days = 1
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
