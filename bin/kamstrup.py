@@ -64,7 +64,7 @@ def main():
     report_time = int(constants.KAMSTRUP['report_time'])
     sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
 
-    pause_time = 0
+    # pause_time = 0
     next_time = time.time() + (sample_time - (time.time() % sample_time))
     rprt_time = time.time() + (report_time - (time.time() % report_time))
     while not killer.kill_now:
