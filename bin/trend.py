@@ -16,7 +16,6 @@ DATABASE = constants.TREND['database']
 TABLE_MAINS = constants.KAMSTRUP['sql_table']
 TABLE_PRDCT = constants.SOLAREDGE['sql_table']
 TABLE_CHRGR = constants.ZAPPI['sql_table']
-TABLE_BTTRY = constants.BATTERY['sql_table']
 OPTION = ""
 DEBUG = False
 
@@ -25,7 +24,6 @@ def fetch_data(hours_to_fetch=48, aggregation=1):
     data_dict_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict_batt = fetch_data_battery(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict = dict()
 
     for d in data_dict_mains:
@@ -34,8 +32,6 @@ def fetch_data(hours_to_fetch=48, aggregation=1):
         data_dict[d] = data_dict_prod[d]
     for d in data_dict_chrg:
         data_dict[d] = data_dict_chrg[d]
-    for d in data_dict_batt:
-        data_dict[d] = data_dict_batt[d]
     if DEBUG:
         print(data_dict)
     return data_dict
@@ -154,44 +150,6 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
     if DEBUG:
         print(df)
     prod_data_dict = {'charger': df}
-    return prod_data_dict
-
-
-def fetch_data_battery(hours_to_fetch=48, aggregation=1):
-    """
-    Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
-
-    Returns:
-        dict with data
-    """
-    if DEBUG:
-        print("*** fetching PRODUCTION data ***")
-    where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
-    s3_query = f"SELECT * FROM {TABLE_BTTRY} WHERE {where_condition}"
-    if DEBUG:
-        print(s3_query)
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query,
-                               con,
-                               parse_dates='sample_time',
-                               index_col='sample_epoch'
-                               )
-    for c in df.columns:
-        if c not in ['sample_time']:
-            df[c] = pd.to_numeric(df[c], errors='coerce')
-    df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
-    # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min').mean()
-    df = df.interpolate(method='slinear')
-
-    df.drop('sample_time', axis=1, inplace=True, errors='ignore')
-    if DEBUG:
-        print(df)
-    prod_data_dict = {'battery': df}
     return prod_data_dict
 
 
