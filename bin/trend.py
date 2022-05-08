@@ -228,7 +228,7 @@ def main():
     This is the main loop
     """
     if OPTION.hours:
-        aggr = 15  # int(float(OPTION.hours) * 60. / 480)
+        aggr = 60  # int(float(OPTION.hours) * 60. / 480)
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['day_graph'],
@@ -236,7 +236,7 @@ def main():
                    f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
-        aggr = 15  # int(float(OPTION.days) * 24. * 60. / 5760.)
+        aggr = 60  # int(float(OPTION.days) * 24. * 60. / 5760.)
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['month_graph'],
