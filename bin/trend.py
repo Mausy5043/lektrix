@@ -127,7 +127,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
         dict with data
     """
     if DEBUG:
-        print("\n*** fetching PRODUCTION data ***")
+        print("\n*** fetching CHARGER data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
     s3_query = f"SELECT * FROM {TABLE_CHRGR} WHERE {where_condition}"
     if DEBUG:
@@ -174,13 +174,12 @@ def plot_graph(output_file, data_dict, plot_title):
     :param plot_title: (str) title to be displayed above the plot
     :return: None
     """
-    data_frame = pd.DataFrame()
     if DEBUG:
         print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         if DEBUG:
             print(parameter)
-        data_frame = data_dict[parameter]
+        data_frame = data_dict[parameter]   # type: pd.DataFrame
         if len(data_frame.index) == 0:
             if DEBUG:
                 print("No data.")
@@ -189,11 +188,8 @@ def plot_graph(output_file, data_dict, plot_title):
             fig_y = 7.5
             fig_fontsize = 13
             ahpla = 0.7
-            """
-            # ###############################
-            # Create a line plot of temperatures
-            # ###############################
-            """
+
+            # create a line plot
             plt.rc('font', size=fig_fontsize)
             ax1 = data_frame.plot(kind='line',
                                   marker='.',
