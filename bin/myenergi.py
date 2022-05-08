@@ -101,7 +101,7 @@ def main():
                     raise  # may be changed to pass if errors can be corrected.
 
             new_start_dt = sql_db.latest_datapoint()  # type: str
-            if new_start_dt == start_dt:
+            if new_start_dt <= start_dt:
                 # there is a hole in the data
                 mf.syslog_trace(f"Found a hole in the data at {start_dt}.", syslog.LOG_WARNING, DEBUG)
                 dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(days=add_days)
@@ -109,6 +109,8 @@ def main():
                 mf.syslog_trace(f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG)
                 # next time check more days
                 add_days += 1
+            else:
+                add_days = 1
 
             pause_time = (sample_time
                           - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
