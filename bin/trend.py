@@ -33,6 +33,7 @@ def fetch_data(hours_to_fetch=48, aggregation=1):
     for d in data_dict_chrg:
         data_dict[d] = data_dict_chrg[d]
     if DEBUG:
+        print(f"\n\n")
         print(data_dict)
     return data_dict
 
