@@ -125,7 +125,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
     df.index = pd.to_datetime(df.index, unit='s')
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').mean()
+    df = df.resample(f'{aggregation}min', label='right').sum()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
@@ -163,7 +163,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
     # df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
     df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').mean()
+    df = df.resample(f'{aggregation}min', label='right').sum()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
