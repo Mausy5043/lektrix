@@ -3,7 +3,6 @@
 # query daily totals for a period of one month
 
 MAINTENANCE=${1}
-echo ${MAINTENANCE}
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
 pushd "${HERE}" >/dev/null || exit 1
