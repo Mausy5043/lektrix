@@ -21,17 +21,29 @@ DEBUG = False
 
 
 def fetch_data(hours_to_fetch=48, aggregation=1):
-    data_dict_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    if DEBUG:
+        print("fetch mains")
+    df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    if DEBUG:
+        print("fetch prod")
+    df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    if DEBUG:
+        print("fetch chrgr")
+    df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict = dict()
 
-    for d in data_dict_mains:
-        data_dict[d] = data_dict_mains[d]
-    for d in data_dict_prod:
-        data_dict[d] = data_dict_prod[d]
-    for d in data_dict_chrg:
-        data_dict[d] = data_dict_chrg[d]
+    try:
+        df_mains.insert(2, 'EB', df_prod['energy'])
+    except KeyError:
+        df_mains.insert(2, 'EB', 1.0)
+    categories = ['T2out', 'T1out', 'EB', 'T2in', 'T1in']
+    df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
+                                           ordered=True,
+                                           categories=categories)
+    df_mains = df_mains.sort_index(axis=1)
+    data_dict['mains'] = df_mains
+    data_dict['production'] = df_prod
+    data_dict['charger'] = df_chrg
     if DEBUG:
         print(f"\n\n")
         print(data_dict)
@@ -47,7 +59,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
         aggregation (int):         number of minutes to aggregate per datapoint
 
     Returns:
-        dict with data
+        pandas.DataFrame() with data
     """
     df_cmp = None
     df_t = None
@@ -74,14 +86,13 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
     df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
-    df['T1in'] *= 0.001     # -> kWh
-    df['T2in'] *= 0.001     # -> kWh
-    df['T1out'] *= -0.001   # -> kWh export
-    df['T2out'] *= -0.001   # -> kWh export
+    df['T1in'] *= 0.001  # -> kWh
+    df['T2in'] *= 0.001  # -> kWh
+    df['T1out'] *= -0.001  # -> kWh export
+    df['T2out'] *= -0.001  # -> kWh export
     if DEBUG:
         print(df)
-    mains_data_dict = {'mains': df}
-    return mains_data_dict
+    return df
 
 
 def fetch_data_production(hours_to_fetch=48, aggregation=1):
@@ -93,7 +104,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
         aggregation (int):         number of minutes to aggregate per datapoint
 
     Returns:
-        dict with data
+        pandas.DataFrame() with data
     """
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
@@ -120,8 +131,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     if DEBUG:
         print(df)
-    prod_data_dict = {'production': df}
-    return prod_data_dict
+    return df
 
 
 def fetch_data_charger(hours_to_fetch=48, aggregation=1):
@@ -133,7 +143,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
         aggregation (int):         number of minutes to aggregate per datapoint
 
     Returns:
-        dict with data
+        pandas.DataFrame() with data
     """
     if DEBUG:
         print("\n*** fetching CHARGER data ***")
@@ -159,8 +169,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation=1):
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     if DEBUG:
         print(df)
-    prod_data_dict = {'charger': df}
-    return prod_data_dict
+    return df
 
 
 def remove_nans(frame, col_name, default):
