@@ -35,7 +35,8 @@ def fetch_data(hours_to_fetch=48, aggregation=1):
     try:
         df_mains.insert(2, 'EB', df_prod['energy'])
     except KeyError:
-        df_mains.insert(2, 'EB', 1.0)
+        df_mains.insert(2, 'EB', np.nan)
+
     categories = ['T2out', 'T1out', 'EB', 'T2in', 'T1in']
     df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
                                            ordered=True,
