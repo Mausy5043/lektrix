@@ -40,6 +40,6 @@ if [ "${MAINTENANCE}" == "-" ]; then
     fi
 fi
 
-./trend.py --days 0
+./ms-trend.py --days 0
 
 popd >/dev/null || exit
