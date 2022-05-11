@@ -175,7 +175,7 @@ def plot_graph(output_file, data_dict, plot_title):
             plt.rc('font', size=fig_fontsize)
             ax1 = data_frame.plot.bar(stacked=True,
                                       figsize=(fig_x, fig_y),
-                                      color=['blue', 'skyblue', 'seagreen', 'salmon', 'red']
+                                      color=['skyblue', 'blue', 'seagreen', 'salmon', 'red']
                                       )
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
