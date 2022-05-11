@@ -80,7 +80,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
             df[c] = pd.to_numeric(df[c], errors='coerce')
     df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').max()
+    df = df.resample(f'{aggregation}min', label='left').max()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
@@ -126,10 +126,12 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
     df.index = pd.to_datetime(df.index, unit='s')
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').sum()
+    df = df.resample(f'{aggregation}min', label='left').sum()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
+    df.drop('site_id', axis=1, inplace=True, errors='ignore')
+    df['energy'] *= 0.001  # -> kWh
     if DEBUG:
         print(df)
     return df
