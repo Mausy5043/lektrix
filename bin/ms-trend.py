@@ -20,7 +20,16 @@ OPTION = ""
 DEBUG = False
 
 
-def fetch_data(hours_to_fetch=48, aggregation=1):
+def fetch_data(hours_to_fetch=48, aggregation='W'):
+    """
+
+    Args:
+        hours_to_fetch (int): hours of data to retrieve
+        aggregation (str): pandas resample rule
+
+    Returns:
+        dict with dataframes containing mains and production data
+    """
     if DEBUG:
         print("fetch mains")
     df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
@@ -34,7 +43,7 @@ def fetch_data(hours_to_fetch=48, aggregation=1):
         df_mains.insert(2, 'EB', df_prod['energy'])
     except KeyError:
         df_mains.insert(2, 'EB', np.nan)
-    df_mains['EB'] -= (df_mains['T1out'] - df_mains['T2out'])
+    df_mains['EB'] -= (df_mains['T1out'] + df_mains['T2out'])
     # put columns in the right order for plotting
     categories = ['T2out', 'T1out', 'EB', 'T2in', 'T1in']
     df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
@@ -50,13 +59,13 @@ def fetch_data(hours_to_fetch=48, aggregation=1):
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation=1):
+def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
     """
     Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
+        aggregation (str):         pandas resample rule
 
     Returns:
         pandas.DataFrame() with data
@@ -80,7 +89,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
             df[c] = pd.to_numeric(df[c], errors='coerce')
     df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='left').max()
+    df = df.resample(f'{aggregation}', label='left').max()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
@@ -96,13 +105,13 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
     return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation=1):
+def fetch_data_production(hours_to_fetch=48, aggregation='W'):
     """
     Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
+        aggregation (str):         pandas resample rule
 
     Returns:
         pandas.DataFrame() with data
@@ -126,7 +135,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
     df.index = pd.to_datetime(df.index, unit='s')
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='left').sum()
+    df = df.resample(f'{aggregation}', label='left').sum()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
@@ -201,7 +210,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['hour_graph'],
-                   fetch_data(hours_to_fetch=OPTION.hours, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.hours, aggregation='H'),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
@@ -209,7 +218,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['day_graph'],
-                   fetch_data(hours_to_fetch=OPTION.days * 24, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.days * 24, aggregation='D'),
                    f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.months:
@@ -217,7 +226,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['month_graph'],
-                   fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation='M'),
                    f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.years:
@@ -225,7 +234,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['year_graph'],
-                   fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation='A'),
                    f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
 
