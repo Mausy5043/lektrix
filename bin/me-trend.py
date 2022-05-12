@@ -22,117 +22,15 @@ DEBUG = False
 
 def fetch_data(hours_to_fetch=48, aggregation=1):
     if DEBUG:
-        print("fetch mains")
-    df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    if DEBUG:
-        print("fetch prod")
-    df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    if DEBUG:
         print("fetch chrgr")
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict = dict()
 
-    try:
-        df_mains.insert(2, 'EB', df_prod['energy'])
-    except KeyError:
-        df_mains.insert(2, 'EB', np.nan)
-
-    categories = ['T2out', 'T1out', 'EB', 'T2in', 'T1in']
-    df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
-                                           ordered=True,
-                                           categories=categories)
-    df_mains = df_mains.sort_index(axis=1)
-    data_dict['mains'] = df_mains
-    data_dict['production'] = df_prod
     data_dict['charger'] = df_chrg
     if DEBUG:
         print(f"\n\n")
         print(data_dict)
     return data_dict
-
-
-def fetch_data_mains(hours_to_fetch=48, aggregation=1):
-    """
-    Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
-
-    Returns:
-        pandas.DataFrame() with data
-    """
-    df_cmp = None
-    df_t = None
-    if DEBUG:
-        print("\n*** fetching MAINS data ***")
-    where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
-    s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition}"
-    if DEBUG:
-        print(s3_query)
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query,
-                               con,
-                               parse_dates='sample_time',
-                               index_col='sample_epoch'
-                               )
-    for c in df.columns:
-        if c not in ['sample_time']:
-            df[c] = pd.to_numeric(df[c], errors='coerce')
-    df.index = pd.to_datetime(df.index, unit='s')
-    # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').max()
-    # df = df.interpolate(method='bfill')
-
-    df.drop('sample_time', axis=1, inplace=True, errors='ignore')
-    df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
-    df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
-    df['T1in'] *= 0.001  # -> kWh
-    df['T2in'] *= 0.001  # -> kWh
-    df['T1out'] *= -0.001  # -> kWh export
-    df['T2out'] *= -0.001  # -> kWh export
-    if DEBUG:
-        print(df)
-    return df
-
-
-def fetch_data_production(hours_to_fetch=48, aggregation=1):
-    """
-    Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
-
-    Returns:
-        pandas.DataFrame() with data
-    """
-    if DEBUG:
-        print("\n*** fetching PRODUCTION data ***")
-    where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
-    s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
-    if DEBUG:
-        print(s3_query)
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query,
-                               con,
-                               parse_dates='sample_time',
-                               index_col='sample_epoch'
-                               )
-    for c in df.columns:
-        if c not in ['sample_time']:
-            df[c] = pd.to_numeric(df[c], errors='coerce')
-    # df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
-    df.index = pd.to_datetime(df.index, unit='s')
-
-    # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').sum()
-    # df = df.interpolate(method='bfill')
-
-    df.drop('sample_time', axis=1, inplace=True, errors='ignore')
-    if DEBUG:
-        print(df)
-    return df
 
 
 def fetch_data_charger(hours_to_fetch=48, aggregation=1):
