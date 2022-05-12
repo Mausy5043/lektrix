@@ -43,7 +43,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         df_mains.insert(2, 'EB', df_prod['energy'])
     except KeyError:
         df_mains.insert(2, 'EB', np.nan)
-    df_mains['EB'] -= (df_mains['T1out'] + df_mains['T2out'])
+    df_mains['EB'] += (df_mains['T1out'] + df_mains['T2out'])   # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
     categories = ['T2out', 'T1out', 'EB', 'T2in', 'T1in']
     df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
