@@ -89,7 +89,15 @@ def main():
 
             if site_list:
                 if start_dt > dt.datetime.today():
+                    mf.syslog_trace(f"Can't query {start_dt.strftime('%Y-%m-%d')} in the future.",
+                                    syslog.LOG_WARNING,
+                                    DEBUG
+                                    )
                     start_dt = dt.datetime.today()
+                    mf.syslog_trace(f"Will update data for  {start_dt.strftime('%Y-%m-%d')}.",
+                                    syslog.LOG_WARNING,
+                                    DEBUG
+                                    )
                 try:
                     data = do_work(site_list, start_dt=start_dt)
                 except Exception:   # noqa
