@@ -109,7 +109,8 @@ def main():
                         mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
                         mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
                         for element in data:
-                            sql_db.queue(element)
+                            if element['sample_epoch'] < time.time():
+                                sql_db.queue(element)
                     except Exception:  # noqa
                         mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
