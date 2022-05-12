@@ -72,7 +72,7 @@ def main():
     site_list = []
     pause_time = 0
     next_time = pause_time + time.time()
-    start_dt = sql_db.latest_datapoint()  # type: str
+    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
     add_days = 1
     while not killer.kill_now:
         if time.time() > next_time:
@@ -88,8 +88,10 @@ def main():
                     pass
 
             if site_list:
+                if start_dt > dt.datetime.today():
+                    start_dt = dt.datetime.today()
                 try:
-                    data = do_work(site_list, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))
+                    data = do_work(site_list, start_dt=start_dt)
                 except Exception:   # noqa
                     mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -134,19 +136,21 @@ def main():
              = 3 seconds behind (no waiting)
             """
 
-            new_start_dt = sql_db.latest_datapoint()  # type: str
+            new_start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
             if new_start_dt <= start_dt:
                 # there is a hole in the data
-                mf.syslog_trace(f"Found a hole in the data at {start_dt}.", syslog.LOG_WARNING, DEBUG)
-                dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(days=add_days)
+                mf.syslog_trace(f"Found a hole in the data at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.",
+                                syslog.LOG_WARNING,
+                                DEBUG)
+                dati = new_start_dt + dt.timedelta(days=add_days)
                 if dati > dt.datetime.today():
                     mf.syslog_trace(f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
                                     syslog.LOG_WARNING,
                                     DEBUG
                                     )
                     dati = dt.datetime.today()
-                start_dt = dati.strftime('%Y-%m-%d %H:%M:%S')
-                mf.syslog_trace(f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG)
+                start_dt = dati
+                mf.syslog_trace(f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.", syslog.LOG_WARNING, DEBUG)
                 # if we don't cross the gap then next time check more days ahead
                 add_days += 1
                 if DEBUG:
