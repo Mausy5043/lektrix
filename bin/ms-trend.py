@@ -45,7 +45,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         df_mains.insert(2, 'EB', np.nan)
     df_mains['EB'] += (df_mains['T1out'] + df_mains['T2out'])   # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
-    categories = ['T2out', 'T1out', 'EB', 'T2in', 'T1in']
+    categories = ['T1out', 'T2out', 'EB', 'T1in', 'T2in']
     df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
                                            ordered=True,
                                            categories=categories)
