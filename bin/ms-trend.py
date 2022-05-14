@@ -72,6 +72,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     Returns:
         pandas.DataFrame() with data
     """
+
     if DEBUG:
         print("\n*** fetching MAINS data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
