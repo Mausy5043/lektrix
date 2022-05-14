@@ -31,10 +31,10 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         dict with dataframes containing mains and production data
     """
     if DEBUG:
-        print("fetch mains")
+        print("\nRequest data from mains")
     df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     if DEBUG:
-        print("fetch production")
+        print("\nRequest data from production")
     df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict = dict()
 
@@ -49,17 +49,19 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
                                            ordered=True,
                                            categories=categories)
-
     df_mains = df_mains.sort_index(axis=1)
+    if DEBUG:
+        print(f"\n\n  ** MAINS data for plotting ** ")
+        print(df_mains)
+
+        print(f"\n\n  ** PRODUCTION data for plotting ** ")
+        print(df_prod)
     data_dict['mains'] = df_mains
     data_dict['production'] = df_prod
-    if DEBUG:
-        print(f"\n\n")
-        print(data_dict)
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
+def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     """
     Query the database to fetch the requested data
 
@@ -70,8 +72,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
     Returns:
         pandas.DataFrame() with data
     """
-    df_cmp = None
-    df_t = None
+
     if DEBUG:
         print("\n*** fetching MAINS data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
@@ -84,28 +85,32 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
                                parse_dates='sample_time',
                                index_col='sample_epoch'
                                )
+    if DEBUG:
+        print("o  database data")
+        print(df)
     for c in df.columns:
         if c not in ['sample_time']:
             df[c] = pd.to_numeric(df[c], errors='coerce')
     df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
     df = df.resample(f'{aggregation}', label='left').max()
-    # df = df.interpolate(method='bfill')
 
+    # drop sample_time separately!
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
 
     df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
-    df['T1in'] *= 0.001  # -> kWh
-    df['T2in'] *= 0.001  # -> kWh
+    df['T1in'] *= 0.001  # -> kWh import
+    df['T2in'] *= 0.001  # -> kWh import
     df['T1out'] *= -0.001  # -> kWh export
     df['T2out'] *= -0.001  # -> kWh export
     if DEBUG:
+        print("o  database data pre-processed")
         print(df)
     return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation='W'):
+def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     """
     Query the database to fetch the requested data
 
@@ -128,6 +133,9 @@ def fetch_data_production(hours_to_fetch=48, aggregation='W'):
                                parse_dates='sample_time',
                                index_col='sample_epoch'
                                )
+    if DEBUG:
+        print("o  database data")
+        print(df)
     for c in df.columns:
         if c not in ['sample_time']:
             df[c] = pd.to_numeric(df[c], errors='coerce')
@@ -136,12 +144,14 @@ def fetch_data_production(hours_to_fetch=48, aggregation='W'):
 
     # resample to monotonic timeline
     df = df.resample(f'{aggregation}', label='left').sum()
-    # df = df.interpolate(method='bfill')
 
+    # drop sample_time separately!
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop('site_id', axis=1, inplace=True, errors='ignore')
+
     df['energy'] *= 0.001  # -> kWh
     if DEBUG:
+        print("o  database data pre-processed")
         print(df)
     return df
 
@@ -268,7 +278,7 @@ if __name__ == "__main__":
                               )
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
-        OPTION.hours = 30
+        OPTION.hours = 6 * 12
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
