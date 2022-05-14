@@ -3,19 +3,19 @@
 
 Store the data in a SQLite3 database.
 """
-import time
 import argparse
 import configparser
-import syslog
-import constants
-import os
-import traceback
 import datetime as dt
+import os
+import syslog
+import time
+import traceback
 
 import mausy5043funcs.fileops3 as mf
 import mausy5043libs.libsignals3 as ml
 import mausy5043libs.libsqlite3 as m3
 
+import constants
 import libsolaredge as sl
 
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")
@@ -81,7 +81,7 @@ def main():
             if not site_list:
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
-                except Exception:   # noqa
+                except Exception:  # noqa
                     mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
@@ -100,7 +100,7 @@ def main():
                                     )
                 try:
                     data = do_work(site_list, start_dt=start_dt)
-                except Exception:   # noqa
+                except Exception:  # noqa
                     mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
@@ -117,18 +117,18 @@ def main():
                         raise  # may be changed to pass if errors can be corrected.
                     try:
                         sql_db.insert(method='replace')
-                    except Exception:   # noqa
+                    except Exception:  # noqa
                         mf.syslog_trace("Unexpected error while trying to commit the data to the database",
                                         syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
-                        raise   # may be changed to pass if errors can be corrected.
+                        raise  # may be changed to pass if errors can be corrected.
 
             pause_time = (sample_time
-                          - (time.time() - start_time)    # time spent in this loop           eg. (40-3) = 37s
-                          - (start_time % sample_time)    # number of seconds to next loop    eg. 3 % 60 = 3s
+                          - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+                          - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
-            pause_time += constants.SOLAREDGE['delay']    # allow the inverter to update the data on the server.
-            next_time = pause_time + time.time()          # gives the actual time when the next loop should start
+            pause_time += constants.SOLAREDGE['delay']  # allow the inverter to update the data on the server.
+            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -159,7 +159,8 @@ def main():
                                     )
                     dati = dt.datetime.today()
                 start_dt = dati
-                mf.syslog_trace(f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.", syslog.LOG_WARNING, DEBUG)
+                mf.syslog_trace(f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.",
+                                syslog.LOG_WARNING, DEBUG)
                 # if we don't cross the gap then next time check more days ahead
                 add_days += 1
                 if DEBUG:
@@ -175,12 +176,12 @@ def main():
                 mf.syslog_trace(f"Behind   : {pause_time:.1f}s", False, DEBUG, )
                 mf.syslog_trace("................................", False, DEBUG)
         else:
-            time.sleep(1.0)     # 1s resolution is enough
+            time.sleep(1.0)  # 1s resolution is enough
 
 
 def do_work(site_list, start_dt=dt.datetime.today()):
     """Extract the data from the dict(s)."""
-    back_dt = start_dt - dt.timedelta(days=1)   # start_dt will be 1 day ahead
+    back_dt = start_dt - dt.timedelta(days=1)  # start_dt will be 1 day ahead
     start_dt += dt.timedelta(days=1)
     # result_dict = constants.SOLAREDGE['template']
     data_list = list()
@@ -221,7 +222,8 @@ def do_work(site_list, start_dt=dt.datetime.today()):
                     energy = 0
 
                 result_dict['sample_time'] = date_time
-                result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
+                result_dict['sample_epoch'] = int(
+                    dt.datetime.strptime(date_time, constants.DT_FORMAT).replace(tzinfo=dt.timezone.utc).timestamp())
                 result_dict['site_id'] = site_id
                 result_dict['energy'] = int(energy)
                 mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
