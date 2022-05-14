@@ -20,34 +20,55 @@ OPTION = ""
 DEBUG = False
 
 
-def fetch_data(hours_to_fetch=48, aggregation=1):
-    data_dict_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+def fetch_data(hours_to_fetch=48, aggregation='W'):
+    """
+
+    Args:
+        hours_to_fetch (int): hours of data to retrieve
+        aggregation (str): pandas resample rule
+
+    Returns:
+        dict with dataframes containing mains and production data
+    """
+    if DEBUG:
+        print("fetch mains")
+    df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    if DEBUG:
+        print("fetch production")
+    df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict = dict()
 
-    for d in data_dict_mains:
-        data_dict[d] = data_dict_mains[d]
-    for d in data_dict_prod:
-        data_dict[d] = data_dict_prod[d]
-    for d in data_dict_chrg:
-        data_dict[d] = data_dict_chrg[d]
+    # Add production data then calculate self-use by extracting exported amount
+    try:
+        df_mains.insert(2, 'EB', df_prod['energy'])
+    except KeyError:
+        df_mains.insert(2, 'EB', np.nan)
+    df_mains['EB'] += (df_mains['T1out'] + df_mains['T2out'])   # T1out and T2out are (-)-ve values !
+    # put columns in the right order for plotting
+    categories = ['T1out', 'T2out', 'EB', 'T1in', 'T2in']
+    df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
+                                           ordered=True,
+                                           categories=categories)
+
+    df_mains = df_mains.sort_index(axis=1)
+    data_dict['mains'] = df_mains
+    data_dict['production'] = df_prod
     if DEBUG:
         print(f"\n\n")
         print(data_dict)
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation=1):
+def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
     """
     Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
+        aggregation (str):         pandas resample rule
 
     Returns:
-        dict with data
+        pandas.DataFrame() with data
     """
     df_cmp = None
     df_t = None
@@ -68,32 +89,32 @@ def fetch_data_mains(hours_to_fetch=48, aggregation=1):
             df[c] = pd.to_numeric(df[c], errors='coerce')
     df.index = pd.to_datetime(df.index, unit='s')
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').max()
+    df = df.resample(f'{aggregation}', label='left').max()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['powerin', 'powerout', 'tarif', 'swits'], axis=1, inplace=True, errors='ignore')
+
     df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
-    df['T1in'] *= 0.001     # -> kWh
-    df['T2in'] *= 0.001     # -> kWh
-    df['T1out'] *= -0.001   # -> kWh export
-    df['T2out'] *= -0.001   # -> kWh export
+    df['T1in'] *= 0.001  # -> kWh
+    df['T2in'] *= 0.001  # -> kWh
+    df['T1out'] *= -0.001  # -> kWh export
+    df['T2out'] *= -0.001  # -> kWh export
     if DEBUG:
         print(df)
-    mains_data_dict = {'mains': df}
-    return mains_data_dict
+    return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation=1):
+def fetch_data_production(hours_to_fetch=48, aggregation='W'):
     """
     Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
+        aggregation (str):         pandas resample rule
 
     Returns:
-        dict with data
+        pandas.DataFrame() with data
     """
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
@@ -114,64 +135,15 @@ def fetch_data_production(hours_to_fetch=48, aggregation=1):
     df.index = pd.to_datetime(df.index, unit='s')
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').mean()
+    df = df.resample(f'{aggregation}', label='left').sum()
     # df = df.interpolate(method='bfill')
 
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
+    df.drop('site_id', axis=1, inplace=True, errors='ignore')
+    df['energy'] *= 0.001  # -> kWh
     if DEBUG:
         print(df)
-    prod_data_dict = {'production': df}
-    return prod_data_dict
-
-
-def fetch_data_charger(hours_to_fetch=48, aggregation=1):
-    """
-    Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (int):         number of minutes to aggregate per datapoint
-
-    Returns:
-        dict with data
-    """
-    if DEBUG:
-        print("\n*** fetching CHARGER data ***")
-    where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
-    s3_query = f"SELECT * FROM {TABLE_CHRGR} WHERE {where_condition}"
-    if DEBUG:
-        print(s3_query)
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query,
-                               con,
-                               parse_dates='sample_time',
-                               index_col='sample_epoch'
-                               )
-    for c in df.columns:
-        if c not in ['sample_time']:
-            df[c] = pd.to_numeric(df[c], errors='coerce')
-    # df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
-    df.index = pd.to_datetime(df.index, unit='s')
-    # resample to monotonic timeline
-    df = df.resample(f'{aggregation}min', label='right').mean()
-    # df = df.interpolate(method='bfill')
-
-    df.drop('sample_time', axis=1, inplace=True, errors='ignore')
-    if DEBUG:
-        print(df)
-    prod_data_dict = {'charger': df}
-    return prod_data_dict
-
-
-def remove_nans(frame, col_name, default):
-    """remove NANs from a series"""
-    for idx, tmpr in enumerate(frame[col_name]):
-        if np.isnan(tmpr):
-            if idx == 0:
-                frame.at[idx, col_name] = default
-            else:
-                frame.at[idx, col_name] = frame.at[idx - 1, col_name]
-    return frame
+    return df
 
 
 def plot_graph(output_file, data_dict, plot_title):
@@ -202,7 +174,8 @@ def plot_graph(output_file, data_dict, plot_title):
             # create a line plot
             plt.rc('font', size=fig_fontsize)
             ax1 = data_frame.plot.bar(stacked=True,
-                                      figsize=(fig_x, fig_y)
+                                      figsize=(fig_x, fig_y),
+                                      color=['skyblue', 'blue', 'seagreen', 'salmon', 'red']
                                       )
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
@@ -237,7 +210,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['hour_graph'],
-                   fetch_data(hours_to_fetch=OPTION.hours, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.hours, aggregation='H'),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
@@ -245,7 +218,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['day_graph'],
-                   fetch_data(hours_to_fetch=OPTION.days * 24, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.days * 24, aggregation='D'),
                    f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.months:
@@ -253,7 +226,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['month_graph'],
-                   fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation='M'),
                    f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.years:
@@ -261,7 +234,7 @@ def main():
         if aggr < 1:
             aggr = 1
         plot_graph(constants.TREND['year_graph'],
-                   fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation=aggr),
+                   fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation='A'),
                    f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
 
@@ -295,7 +268,7 @@ if __name__ == "__main__":
                               )
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
-        OPTION.hours = 80
+        OPTION.hours = 30
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
