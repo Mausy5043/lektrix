@@ -59,7 +59,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
+def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     """
     Query the database to fetch the requested data
 
@@ -105,7 +105,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='W'):
     return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation='W'):
+def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     """
     Query the database to fetch the requested data
 
@@ -268,7 +268,7 @@ if __name__ == "__main__":
                               )
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
-        OPTION.hours = 30
+        OPTION.hours = 6 * 12
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
