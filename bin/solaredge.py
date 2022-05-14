@@ -71,12 +71,12 @@ def main():
 
     site_list = []
     pause_time = 0
-    next_time = pause_time + time.time()
+    next_time = pause_time + local_now()
     start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
     add_days = 1
     while not killer.kill_now:
-        if time.time() > next_time:
-            start_time = time.time()
+        if local_now() > next_time:
+            start_time = local_now()
 
             if not site_list:
                 try:
@@ -109,7 +109,7 @@ def main():
                         mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
                         mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
                         for element in data:
-                            if element['sample_epoch'] < time.time():
+                            if element['sample_epoch'] < (local_now() + 15*60):
                                 sql_db.queue(element)
                     except Exception:  # noqa
                         mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
@@ -124,11 +124,11 @@ def main():
                         raise  # may be changed to pass if errors can be corrected.
 
             pause_time = (sample_time
-                          - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+                          - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                           - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
             pause_time += constants.SOLAREDGE['delay']  # allow the inverter to update the data on the server.
-            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
+            next_time = pause_time + local_now()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_time = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -229,6 +229,10 @@ def do_work(site_list, start_dt=dt.datetime.today()):
                 mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
                 result_list.append(result_dict)
     return result_list
+
+
+def local_now():
+    return dt.datetime.today().replace(tzinfo=dt.timezone.utc).timestamp()
 
 
 if __name__ == "__main__":
