@@ -102,7 +102,8 @@ def main():
                     raise  # may be changed to pass if errors can be corrected.
 
             # electricity meter determines the tempo, so no need to wait.
-            pause_interval = 0.     # faux variable
+            pause_interval = 0.  # faux variable
+
             next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
             # determine moment of next report
             rprt_time = time.time() + (report_interval - (time.time() % report_interval))
