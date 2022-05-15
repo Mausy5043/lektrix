@@ -20,7 +20,7 @@ for i in "$@"; do
         stop_lektrix
         ;;
     -g | --go)
-        start_lektrix
+        start_lektrix "-nograph"
         ;;
     -b | --boot)
         boot_lektrix
@@ -28,8 +28,11 @@ for i in "$@"; do
     -r | --restart)
         restart_lektrix "${HERE}" 0
         ;;
-    --systemd | --graph)
+    --systemd )
         restart_lektrix "${HERE}" 1
+        ;;
+    --graph)
+        graph_lektrix "${HERE}"
         ;;
     --update)
         update_lektrix

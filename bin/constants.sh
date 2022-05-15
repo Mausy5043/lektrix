@@ -38,14 +38,36 @@ declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "pyth
     "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
     "picocom" "python3-serial"
     "sqlite3")
+# placeholders for trendgraphs to make Flask website work regardless of the state of the graphs.
+declare -a lektrix_graphs=('lex_pastdays_mains.png'
+    'lex_pastdays_production.png'
+    'lex_pasthours_mains.png'
+    'lex_pasthours_production.png'
+    'lex_pastmonths_mains.png'
+    'lex_pastmonths_production.png'
+    'lex_pastyears_mains.png'
+    'lex_pastyears_production.png'
+    'lex_vs_month.png'
+    'lex_vs_year.png')
 
 # start the application
 start_lektrix() {
+    GRAPH=$1
     echo "Starting ${app_name} on $(date)"
     # make sure /tmp environment exists
     boot_lektrix
+    if [ "${GRAPH}" == "-graph" ]; then
+        graph_lektrix
+    fi
     action_timers start
     action_services start
+}
+
+# stop the application
+stop_lektrix() {
+    echo "Stopping ${app_name} on $(date)"
+    action_timers stop
+    action_services stop
 }
 
 # update the repository
@@ -59,11 +81,24 @@ update_lektrix() {
     git reset --hard "origin/${branch_name}" && git clean -f -d
 }
 
+# create graphs
+graph_lektrix() {
+    ROOT_DIR=$1
+
+    echo "Creating graphs [1]"
+    . "${ROOT_DIR}/bin/pastday.sh"
+    echo "Creating graphs [2]"
+    . "${ROOT_DIR}/bin/pastmonth.sh"
+    echo "Creating graphs [3]"
+    . "${ROOT_DIR}/bin/pastyear.sh"
+}
+
 # stop, update the repo and start the application
 # do some additional stuff when called by systemd
 restart_lektrix() {
     ROOT_DIR=$1
-    # restarted by update..service or using --graph
+
+    # restarted by lektrix.update.service
     SYSTEMD_REQUEST=$2
 
     echo "Restarting ${app_name} on $(date)"
@@ -72,14 +107,10 @@ restart_lektrix() {
     update_lektrix
 
     if [ "${SYSTEMD_REQUEST}" -eq 1 ]; then
-        echo "Creating graphs [1]"
-        . "${ROOT_DIR}/bin/pastday.sh"
-        echo "Creating graphs [2]"
-        . "${ROOT_DIR}/bin/pastmonth.sh"
-        echo "Creating graphs [3]"
-        . "${ROOT_DIR}/bin/pastyear.sh"
+        SYSTEMD_REQUEST="-graph"
     else
         echo "Skipping graph creation"
+        SYSTEMD_REQUEST="-nograph"
     fi
 
     # re-install services and timers in case they were changed
@@ -88,14 +119,7 @@ restart_lektrix() {
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
-    start_lektrix
-}
-
-# stop the application
-stop_lektrix() {
-    echo "Stopping ${app_name} on $(date)"
-    action_timers stop
-    action_services stop
+    start_lektrix "${SYSTEMD_REQUEST}"
 }
 
 # uninstall the application
@@ -156,7 +180,6 @@ install_lektrix() {
 
     echo "Installation complete. To start the application use:"
     echo "   lektrix --go"
-    # start_lektrix
 }
 
 # set-up the application
@@ -167,13 +190,9 @@ boot_lektrix() {
         chmod -R 755 "/tmp/${app_name}"
     fi
     # allow Flask to work even if the graphics have not yet been created
-    create_graphic '/tmp/lektrix/site/img/lex_pastday.png'
-    create_graphic '/tmp/lektrix/site/img/zap_pastday.png'
-    create_graphic '/tmp/lektrix/site/img/lex_pastmonth.png'
-    create_graphic '/tmp/lektrix/site/img/lex_pastyear.png'
-    create_graphic '/tmp/lektrix/site/img/lex_vs_year.png'
-    create_graphic '/tmp/lektrix/site/img/lex_vs_month.png'
-    create_graphic '/tmp/lektrix/site/img/lex_gauge.png'
+    for GRPH in "${lektrix_graphs[@]}"; do
+        create_graphic "${GRPH}"
+    done
 }
 
 # perform systemctl actions on all timers
@@ -230,10 +249,10 @@ getfilefromserver() {
     chmod -R "${mode}" "${HOME}/.config/${file}"
 }
 
-# create a placeholder graphic for Fles
+# create a placeholder graphic for Fles if it doesn't exist already
 create_graphic() {
-IMAGE="$1"
-if [ ! -f "${IMAGE}" ]; then
-    cp "${constants_sh_dir}/fles/static/empty.png" "${IMAGE}"
-fi
+    IMAGE="$1"
+    if [ ! -f "${IMAGE}" ]; then
+        cp "${constants_sh_dir}/fles/static/empty.png" "${IMAGE}"
+    fi
 }
