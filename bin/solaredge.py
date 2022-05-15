@@ -109,8 +109,8 @@ def main():
                         mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
                         mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
                         for element in data:
-                            if element['sample_epoch'] < (
-                                local_now() + 15 * 60):  # also add data for the running quarter
+                            # also add data for the running quarter
+                            if element['sample_epoch'] < (local_now() + 15 * 60):
                                 sql_db.queue(element)
                     except Exception:  # noqa
                         mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
@@ -182,7 +182,8 @@ def main():
 
 def do_work(site_list, start_dt=dt.datetime.today()):
     """Extract the data from the dict(s)."""
-    back_dt = start_dt - dt.timedelta(days=1)  # start_dt will be 1 day ahead
+    # request 4 hours back and 1 day ahead
+    back_dt = start_dt - dt.timedelta(hours=4)
     start_dt += dt.timedelta(days=1)
     # result_dict = constants.SOLAREDGE['template']
     data_list = list()
