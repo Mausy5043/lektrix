@@ -43,7 +43,6 @@ NODE = os.uname()[1]
 
 API_ZP = None
 
-
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'myenergi.py']
 # MYID: myenergi.py
@@ -67,10 +66,10 @@ def main():
                             debug=DEBUG
                             )
 
-    report_time = int(constants.ZAPPI['report_time'])
-    sample_time = report_time / int(constants.ZAPPI['samplespercycle'])
-    pause_time = 0
-    next_time = pause_time + time.time()
+    report_interval = int(constants.ZAPPI['report_interval'])
+    sample_interval = report_interval / int(constants.ZAPPI['samplespercycle'])
+    pause_interval = 0
+    next_time = pause_interval + time.time()
     start_dt = sql_db.latest_datapoint()  # type: str
     add_days = 1
     while not killer.kill_now:
@@ -100,18 +99,18 @@ def main():
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
 
-            pause_time = (sample_time
+            pause_interval = (sample_interval
                           - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-                          - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
+                          - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
                           )
-            pause_time += constants.ZAPPI['delay']  # allow the charger to update the data on the server.
-            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
+            pause_interval += constants.ZAPPI['delay']  # allow the charger to update the data on the server.
+            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
-            sample_time = 60s   # target duration one loop
+            sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
             start_time = 3      # actual current time when the loop was started
 
-            sample_time - ( time.time() - start_time ) - ( start_time % sample_time )
+            sample_interval - ( time.time() - start_time ) - ( start_time % sample_interval )
                 60      - (     40      -     3      ) - (     3      %    60       )
                 60      -             37               -            3
              = 20 s waiting time
@@ -138,16 +137,16 @@ def main():
                 # if we don't cross the gap then next time check more days ahead
                 add_days += 1
                 if DEBUG:
-                    pause_time = 10
+                    pause_interval = 10
             else:
                 start_dt = new_start_dt
                 add_days = 1
 
-            if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time:.1f}s", False, DEBUG, )
+            if pause_interval > 0:
+                mf.syslog_trace(f"Waiting  : {pause_interval:.1f}s", False, DEBUG, )
                 mf.syslog_trace("................................", False, DEBUG)
             else:
-                mf.syslog_trace(f"Behind   : {pause_time:.1f}s", False, DEBUG, )
+                mf.syslog_trace(f"Behind   : {pause_interval:.1f}s", False, DEBUG, )
                 mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)  # 1s resolution is enough
