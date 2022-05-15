@@ -61,12 +61,11 @@ def main():
                             debug=DEBUG
                             )
 
-    report_time = int(constants.KAMSTRUP['report_time'])
-    sample_time = report_time / int(constants.KAMSTRUP['samplespercycle'])
+    report_interval = int(constants.KAMSTRUP['report_interval'])
+    sample_interval = report_interval / int(constants.KAMSTRUP['samplespercycle'])
 
-    # pause_time = 0
-    next_time = time.time() + (sample_time - (time.time() % sample_time))
-    rprt_time = time.time() + (report_time - (time.time() % report_time))
+    next_time = time.time() + (sample_interval - (time.time() % sample_interval))
+    rprt_time = time.time() + (report_interval - (time.time() % report_interval))
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
@@ -78,13 +77,13 @@ def main():
                 raise
             if not succes:
                 mf.syslog_trace("Getting telegram failed", syslog.LOG_WARNING, DEBUG)
+            # check if we already need to report the result data
             if time.time() > rprt_time:
                 mf.syslog_trace("Reporting", False, DEBUG)
                 mf.syslog_trace(f"Result   : {API_KL.list_data}", False, DEBUG)
+                # resample to 15m entries
                 data, API_KL.list_data = API_KL.compact_data(API_KL.list_data)
-                mf.syslog_trace(f"Remain   : {API_KL.list_data}", False, DEBUG)
-
-                rprt_time += constants.KAMSTRUP['delay']
+                mf.syslog_trace(f"Remainder: {API_KL.list_data}", False, DEBUG)
                 try:
                     mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
                     mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
@@ -102,36 +101,14 @@ def main():
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
 
-            # pause_time = (sample_time
-            #               - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-            #               - (start_time % sample_time)  # number of seconds to next loop    eg. 3 % 60 = 3s
-            #               )
             # electricity meter determines the tempo, so no need to wait.
-            pause_time = 0.
-            next_time = pause_time + time.time()  # gives the actual time when the next loop should start
-            """Example calculation:
-            sample_time = 60s   # target duration one loop
-            time.time() = 40    # actual current time
-            start_time = 3      # actual current time when the loop was started
-
-            sample_time - ( time.time() - start_time ) - ( start_time % sample_time )
-                60      - (     40      -     3      ) - (     3      %    60       )
-                60      -             37               -            3
-             = 20 s waiting time
-
-            Example 2:
-                60      - (     181     -     122      ) - (     122      %    60       )
-                60      -             59                -            2
-             = 3 seconds behind (no waiting)
-            """
+            pause_interval = 0.     # faux variable
+            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
             # determine moment of next report
-            rprt_time = time.time() + (report_time - (time.time() % report_time))
-            if pause_time > 0:
-                mf.syslog_trace(f"Waiting  : {pause_time:.1f}s. Report in {rprt_time - time.time():.0f}s", False, DEBUG)
-                mf.syslog_trace("................................", False, DEBUG)
-            else:
-                mf.syslog_trace(f"Behind   : {pause_time:.1f}s. Report in {rprt_time - time.time():.0f}s", False, DEBUG)
-                mf.syslog_trace("................................", False, DEBUG)
+            rprt_time = time.time() + (report_interval - (time.time() % report_interval))
+            mf.syslog_trace(f"Spent {time.time() - start_time:.1f}s getting data", False, DEBUG)
+            mf.syslog_trace(f"Report in {rprt_time - time.time():.0f}s", False, DEBUG)
+            mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)  # 1s resolution is enough
 
