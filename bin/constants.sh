@@ -52,12 +52,13 @@ declare -a lektrix_graphs=('lex_pastdays_mains.png'
 
 # start the application
 start_lektrix() {
-    GRAPH=$1
+    GRAPH=$2
+    ROOT_DEAR=$1
     echo "Starting ${app_name} on $(date)"
     # make sure /tmp environment exists
     boot_lektrix
     if [ "${GRAPH}" == "-graph" ]; then
-        graph_lektrix
+        graph_lektrix "${ROOT_DEAR}"
     fi
     action_timers start
     action_services start
@@ -98,7 +99,7 @@ graph_lektrix() {
 restart_lektrix() {
     ROOT_DIR=$1
 
-    # restarted by lektrix.update.service
+    # restarted by --systemd flag
     SYSTEMD_REQUEST=$2
 
     echo "Restarting ${app_name} on $(date)"
@@ -119,7 +120,7 @@ restart_lektrix() {
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
-    start_lektrix "${SYSTEMD_REQUEST}"
+    start_lektrix "${ROOT_DIR}" "${SYSTEMD_REQUEST}"
 }
 
 # uninstall the application

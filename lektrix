@@ -20,7 +20,7 @@ for i in "$@"; do
         stop_lektrix
         ;;
     -g | --go)
-        start_lektrix "-nograph"
+        start_lektrix "${HERE}" "-nograph"
         ;;
     -b | --boot)
         boot_lektrix
