@@ -156,7 +156,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     return df
 
 
-def plot_graph(output_file, data_dict, plot_title):
+def plot_graph(output_file, data_dict, plot_title, show_data=False):
     """
     Plot the data into a graph
 
@@ -190,6 +190,13 @@ def plot_graph(output_file, data_dict, plot_title):
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
                 plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
+            if show_data:
+                x_offset = -0.1
+                y_offset = 2
+                for p in ax1.patches:
+                    b = p.get_bbox()
+                    val = "{:+.3f}".format(b.y1 + b.y0)
+                    ax1.annotate(val, ((b.x0 + b.x1)/2 + x_offset, b.y1 + y_offset))
             ax1.set_ylabel(parameter)
             ax1.legend(loc='lower left',
                        ncol=8,
@@ -238,7 +245,7 @@ def main():
         plot_graph(constants.TREND['month_graph'],
                    fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation='M'),
                    f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   )
+                   show_data=True)
     if OPTION.years:
         aggr = 24 * 60 * 366  # int(float(OPTION.years) * 366 * 24. * 60.)
         if aggr < 1:
@@ -246,7 +253,7 @@ def main():
         plot_graph(constants.TREND['year_graph'],
                    fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation='A'),
                    f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   )
+                   show_data=True)
 
 
 if __name__ == "__main__":
