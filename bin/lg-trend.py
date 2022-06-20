@@ -312,7 +312,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     # Fit every nicely
     plt.xlim([min(tick_pos) - bar_width, max(tick_pos) + bar_width])
     plt.tight_layout()
-    plt.savefig(fname=f"{output_file}", format="png")
+    plt.savefig(fname=f"{output_file}_mains.png", format="png")
 
 
 def main():
@@ -320,23 +320,23 @@ def main():
     This is the main loop
     """
     if OPTION.hours:
-        plot_graph(constants.TREND['day_graph'],
+        plot_graph(constants.TREND['hour_graph'],
                    fetch_last_day(OPTION.hours),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.days:
-        plot_graph(constants.TREND['month_graph'],
+        plot_graph(constants.TREND['day_graph'],
                    fetch_last_month(OPTION.days),
                    f"trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    )
     if OPTION.months:
-        plot_graph(constants.TREND['year_graph'],
+        plot_graph(constants.TREND['month_graph'],
                    fetch_last_year(OPTION.months),
                    f"trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=1,
                    )
     if OPTION.years:
-        plot_graph(constants.TREND['vsyear_graph'],
+        plot_graph(constants.TREND['year_graph'],
                    fetch_last_years(OPTION.years),
                    f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=2,
