@@ -40,15 +40,30 @@ def fetch_last_day(hours_to_fetch):
                               )
 
     opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy")
+    if DEBUG:
+        print(prod_lbls)
+        print(opwekking)
     config["table"] = TABLE_MAINS
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in")
+    if DEBUG:
+        print(data_lbls)
+        print(import_lo)
     import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in")
+    if DEBUG:
+        print(import_hi)
     export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out")
+    if DEBUG:
+        print(export_lo)
     export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out")
+    if DEBUG:
+        print(export_hi)
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
+    if DEBUG:
+        print(prod_lbls)
+        print(opwekking)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
