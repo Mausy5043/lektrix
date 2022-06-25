@@ -321,6 +321,38 @@ def interplate(epochrng, epoch, data):
     return epochrng, datarng
 
 
+def contract(arr1, arr2):
+    """
+    Add two arrays together.
+    """
+    size = max(len(arr1), len(arr2))
+    rev_arr1 = np.zeros(size, dtype=float)
+    rev_arr2 = np.zeros(size, dtype=float)
+    for idx in range(0, len(arr1)):
+        rev_arr1[idx] = arr1[::-1][idx]
+    for idx in range(0, len(arr2)):
+        rev_arr2[idx] = arr2[::-1][idx]
+    result = np.sum([rev_arr1, rev_arr2], axis=0)
+    return result[::-1]
+
+
+def distract(arr1, arr2):
+    """
+    Subtract two arrays.
+    Note: order is important!
+    """
+    size = max(len(arr1), len(arr2))
+    rev_arr1 = np.zeros(size, dtype=float)
+    rev_arr2 = np.zeros(size, dtype=float)
+    for idx in range(0, len(arr1)):
+        rev_arr1[idx] = arr1[::-1][idx]
+    for idx in range(0, len(arr2)):
+        rev_arr2[idx] = arr2[::-1][idx]
+    result = np.subtract(rev_arr1, rev_arr2)
+    result[result < 0] = 0.0
+    return result[::-1]
+
+
 def fast_group_data(x_epochs, y_data, grouping, dif=True):
     """A faster version of group_data()."""
     # convert y-values to numpy array
@@ -353,35 +385,3 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     returned_y_data = np.where(y > 0, y, 0)
 
     return unique_x_texts, returned_y_data
-
-
-def contract(arr1, arr2):
-    """
-    Add two arrays together.
-    """
-    size = max(len(arr1), len(arr2))
-    rev_arr1 = np.zeros(size, dtype=float)
-    rev_arr2 = np.zeros(size, dtype=float)
-    for idx in range(0, len(arr1)):
-        rev_arr1[idx] = arr1[::-1][idx]
-    for idx in range(0, len(arr2)):
-        rev_arr2[idx] = arr2[::-1][idx]
-    result = np.sum([rev_arr1, rev_arr2], axis=0)
-    return result[::-1]
-
-
-def distract(arr1, arr2):
-    """
-    Subtract two arrays.
-    Note: order is important!
-    """
-    size = max(len(arr1), len(arr2))
-    rev_arr1 = np.zeros(size, dtype=float)
-    rev_arr2 = np.zeros(size, dtype=float)
-    for idx in range(0, len(arr1)):
-        rev_arr1[idx] = arr1[::-1][idx]
-    for idx in range(0, len(arr2)):
-        rev_arr2[idx] = arr2[::-1][idx]
-    result = np.subtract(rev_arr1, rev_arr2)
-    result[result < 0] = 0.0
-    return result[::-1]
