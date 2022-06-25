@@ -54,7 +54,7 @@ def fetch_last_day(hours_to_fetch):
         print(export_hi)
 
     config["table"] = TABLE_PRDCT
-    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy")
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", dif=False)
     if DEBUG:
         print(prod_lbls)
         print(opwekking)
@@ -184,6 +184,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     own_usage = kl.distract(opwekking, exprt)
     usage = kl.contract(own_usage, imprt)
     btm_hi = kl.contract(import_lo, own_usage)
+    if DEBUG:
+        plot_title = " ".join(["(DEBUG)", plot_title])
     """
     --- Start debugging:
     np.set_printoptions(precision=3)
