@@ -373,15 +373,25 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     # compress x_texts to a unique list
     # order must be preserved
     _, loc1 = np.unique(x_texts, return_index=True)
-    loc1 = np.sort(loc1)
+    loc_from = np.sort(loc1)
     unique_x_texts = x_texts[loc1]
     loc2 = (len(x_texts) - 1 - np.unique(np.flip(x_texts),
                                          return_index=True)[1]
             )
-    loc2 = np.sort(loc2)
+    loc_to = np.sort(loc2)
 
-    # if dif:
-    y = y_data[loc2] - y_data[loc1]
+    if not dif:
+        # print(y_data)
+        # print(loc1, loc2)
+        y = []
+        for i, v in enumerate(loc1):
+            # f1 = y_data[v:loc2[i]]
+            # print(i, v, loc2[i], f1, f1.sum())
+            y.append(y_data[v:loc2[i]].sum())
+        y = np.array(y)
+    if dif:
+        y = y_data[loc_to] - y_data[loc_from]
+
     returned_y_data = np.where(y > 0, y, 0)
 
     return unique_x_texts, returned_y_data
