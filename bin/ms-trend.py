@@ -76,7 +76,10 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     if DEBUG:
         print("\n*** fetching MAINS data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
-    s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition}"
+    group_condition = ""
+    if aggregation == 'H':
+        group_condition = "GROUP BY strftime('%H', sample_time)"
+    s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition} {group_condition};"
     if DEBUG:
         print(s3_query)
     with s3.connect(DATABASE) as con:
@@ -157,14 +160,16 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
 
 
 def plot_graph(output_file, data_dict, plot_title, show_data=False):
-    """
-    Plot the data into a graph
+    """Plot the data in a chart.
 
-    :param output_file: (str) name of the trendgraph file
-    :param data_dict: (dict) contains the data for the lines. Each paramter is a separate pandas Dataframe
-                      {'df': Dataframe}
-    :param plot_title: (str) title to be displayed above the plot
-    :return: None
+    Args:
+        output_file (str): path & filestub of the resulting plot. The parametername will be appended as will the
+        extension .png.
+        data_dict (dict): dict containing the datasets to be plotted
+        plot_title (str): text for the title to be placed above the plot
+        show_data (bool): whether to show numerical values in the plot.
+
+    Returns: nothing
     """
     if DEBUG:
         print("\n\n*** PLOTTING ***")
