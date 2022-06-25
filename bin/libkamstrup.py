@@ -251,10 +251,11 @@ def add_time_line(config):
     return config
 
 
-def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_today=True):
+def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True):
     """Fetch historic data from SQLITE3 database.
 
     Args:
+        dif: whether to treat the data as a cumulative counter or as single values
         include_today (bool): whether or not to include today's data
         dicti (dict): containing settings
         telwerk (str): columnname to be collected
@@ -305,7 +306,8 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
     # group the data by dicti['grouping']
     ret_lbls, ret_grpdata = fast_group_data(ret_epoch,
                                             ret_intdata,
-                                            dicti["grouping"]
+                                            dicti["grouping"],
+                                            dif=dif
                                             )
 
     ret_data = ret_grpdata / 1000
@@ -319,7 +321,7 @@ def interplate(epochrng, epoch, data):
     return epochrng, datarng
 
 
-def fast_group_data(x_epochs, y_data, grouping):
+def fast_group_data(x_epochs, y_data, grouping, dif=True):
     """A faster version of group_data()."""
     # convert y-values to numpy array
     y_data = np.array(y_data)
@@ -346,6 +348,7 @@ def fast_group_data(x_epochs, y_data, grouping):
             )
     loc2 = np.sort(loc2)
 
+    # if dif:
     y = y_data[loc2] - y_data[loc1]
     returned_y_data = np.where(y > 0, y, 0)
 
