@@ -18,26 +18,38 @@ def state():
 
     if flask.request.method == 'GET':
         pass
+    try:
+        hour_m_img = "".join(["data:image/png;base64,",
+                              str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pasthours_mains.png",
+                                                        "rb"
+                                                        ).read()))[2:-1]
+                              ])
+    except FileNotFoundError:
+        hour_m_img = None
+    try:
+        day_m_img = "".join(["data:image/png;base64,",
+                             str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastdays_mains.png",
+                                                       "rb"
+                                                       ).read()))[2:-1]
+                             ])
+    except FileNotFoundError:
+        day_m_img = None
+    try:
+        month_m_img = "".join(["data:image/png;base64,",
+                               str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastmonths_mains.png",
+                                                         "rb").read()))[2:-1]
+                               ])
+    except FileNotFoundError:
+        month_m_img = None
+    try:
+        year_m_img = "".join(["data:image/png;base64,",
+                              str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastyears_mains.png",
+                                                        "rb"
+                                                        ).read()))[2:-1]
+                              ])
+    except FileNotFoundError:
+        year_m_img = None
 
-    hour_m_img = "".join(["data:image/png;base64,",
-                          str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pasthours_mains.png",
-                                                    "rb"
-                                                    ).read()))[2:-1]
-                          ])
-    day_m_img = "".join(["data:image/png;base64,",
-                         str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastdays_mains.png",
-                                                   "rb"
-                                                   ).read()))[2:-1]
-                         ])
-    month_m_img = "".join(["data:image/png;base64,",
-                           str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastmonths_mains.png",
-                                                     "rb").read()))[2:-1]
-                           ])
-    year_m_img = "".join(["data:image/png;base64,",
-                          str(base64.b64encode(open("/tmp/lektrix/site/img/lex_pastyears_mains.png",
-                                                    "rb"
-                                                    ).read()))[2:-1]
-                          ])
     # gld = KRAT.get_latest_data('volt_bat, load_ups, charge_bat')
     return flask.render_template('state.html',
                                  t1_in="n/a",  # f"{gld[0]:.1f} \u00B0C",
