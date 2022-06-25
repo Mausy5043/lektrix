@@ -76,15 +76,16 @@ def fetch_last_month(days_to_fetch):
                                "period": days_to_fetch,
                                "timeframe": "day",
                                "database": DATABASE,
-                               "table": TABLE_PRDCT,
+                               "table": TABLE_MAINS,
                                }
                               )
-    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy")
-    config["table"] = TABLE_MAINS
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in")
     import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in")
     export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out")
     export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out")
+
+    config["table"] = TABLE_PRDCT
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", dif=False)
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -100,14 +101,9 @@ def fetch_last_year(months_to_fetch):
                                "period": months_to_fetch,
                                "timeframe": "month",
                                "database": DATABASE,
-                               "table": TABLE_PRDCT,
+                               "table": TABLE_MAINS,
                                }
                               )
-    opwekking, prod_lbls = kl.get_historic_data(config,
-                                                telwerk="energy",
-                                                from_start_of_year=True
-                                                )
-    config["table"] = TABLE_MAINS
     import_lo, data_lbls = kl.get_historic_data(config,
                                                 telwerk="T1in",
                                                 from_start_of_year=True
@@ -123,6 +119,13 @@ def fetch_last_year(months_to_fetch):
     export_hi, data_lbls = kl.get_historic_data(config,
                                                 telwerk="T2out",
                                                 from_start_of_year=True
+                                                )
+
+    config["table"] = TABLE_PRDCT
+    opwekking, prod_lbls = kl.get_historic_data(config,
+                                                telwerk="energy",
+                                                from_start_of_year=True,
+                                                dif=False
                                                 )
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
@@ -139,14 +142,9 @@ def fetch_last_years(years_to_fetch):
                                "period": years_to_fetch,
                                "timeframe": "year",
                                "database": DATABASE,
-                               "table": TABLE_PRDCT,
+                               "table": TABLE_MAINS,
                                }
                               )
-    opwekking, prod_lbls = kl.get_historic_data(config,
-                                                telwerk="energy",
-                                                from_start_of_year=True
-                                                )
-    config["table"] = TABLE_MAINS
     import_lo, data_lbls = kl.get_historic_data(config,
                                                 telwerk="T1in",
                                                 from_start_of_year=True
@@ -162,6 +160,13 @@ def fetch_last_years(years_to_fetch):
     export_hi, data_lbls = kl.get_historic_data(config,
                                                 telwerk="T2out",
                                                 from_start_of_year=True
+                                                )
+
+    config["table"] = TABLE_PRDCT
+    opwekking, prod_lbls = kl.get_historic_data(config,
+                                                telwerk="energy",
+                                                from_start_of_year=True,
+                                                dif=False
                                                 )
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
