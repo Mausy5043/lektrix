@@ -191,27 +191,24 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     btm_hi = kl.contract(import_lo, own_usage)
     if DEBUG:
         plot_title = " ".join(["(DEBUG)", plot_title])
-    """
-    --- Start debugging:
-    np.set_printoptions(precision=3)
-    print("data_lbls: ", np.size(data_lbls), data_lbls[-5:])
-    print(" ")
-    print("opwekking: ", np.size(opwekking), opwekking[-5:])
-    print(" ")
-    print("export_hi: ", np.size(export_hi), export_hi[-5:])
-    print("export_lo: ", np.size(export_lo), export_lo[-5:])
-    print("exprt    : ", np.size(exprt), exprt[-5:])
-    print(" ")
-    print("import_hi: ", np.size(import_hi), import_hi[-5:])
-    print("import_lo: ", np.size(import_lo), import_lo[-5:])
-    print("imprt    : ", np.size(imprt), imprt[-5:])
-    print(" ")
-    print("own_usage: ", np.size(own_usage), own_usage[-5:])
-    print("usage    : ", np.size(usage), usage[-5:])
-    print(" ")
-    print("btm_hi   : ", np.size(btm_hi), btm_hi[-5:])
-    --- End debugging.
-    """
+        np.set_printoptions(precision=3)
+        print("data_lbls: ", np.size(data_lbls), data_lbls[-5:])
+        print(" ")
+        print("opwekking: ", np.size(opwekking), opwekking[-5:])
+        print(" ")
+        print("export_hi: ", np.size(export_hi), export_hi[-5:])
+        print("export_lo: ", np.size(export_lo), export_lo[-5:])
+        print("exprt    : ", np.size(exprt), exprt[-5:])
+        print(" ")
+        print("import_hi: ", np.size(import_hi), import_hi[-5:])
+        print("import_lo: ", np.size(import_lo), import_lo[-5:])
+        print("imprt    : ", np.size(imprt), imprt[-5:])
+        print(" ")
+        print("own_usage: ", np.size(own_usage), own_usage[-5:])
+        print("usage    : ", np.size(usage), usage[-5:])
+        print(" ")
+        print("btm_hi   : ", np.size(btm_hi), btm_hi[-5:])
+
     # Set the bar width
     bar_width = 0.75
     # Set the color alpha
