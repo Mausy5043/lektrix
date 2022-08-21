@@ -1,0 +1,86 @@
+
+digraph graphname {
+  graph [
+    labelloc = t
+    label="lektrix options and execution paths"
+    fontname = "Helvetica,Arial,sans-serif"
+    fontsize = 30
+    layout = dot
+    rankdir = LR
+    newrank = true
+    ]
+    install [style=filled color=lightyellow shape=box]
+    uninstall [style=filled color=lightyellow shape=box]
+    stop [style=filled color=lightyellow shape=box]
+    go [style=filled color=lightyellow shape=box]
+    boot [style=filled color=lightyellow shape=box]
+    restart [style=filled color=lightyellow shape=box]
+    systemd [style=filled color=lightyellow shape=box]
+    "graph" [style=filled color=lightyellow shape=box]
+    update [style=filled color=lightyellow shape=box]
+
+    pastday [shape=component]
+    pastmonth [shape=component]
+    pastyear [shape=component]
+    timers [shape=Mcircle]
+    services [shape=Msquare]
+
+
+    lektrix -> install;
+    lektrix -> uninstall;
+    lektrix -> stop;
+    lektrix -> go;
+    lektrix -> boot;
+    lektrix -> restart;
+    lektrix -> "systemd";
+    lektrix -> "graph";
+    lektrix -> update;
+
+    install -> install_lektrix
+    install_lektrix -> action_apt_install
+    install_lektrix -> action_timers [label=enable color=green]
+    install_lektrix -> action_services [label=enable color=green]
+
+    uninstall -> unstall_lektrix
+    unstall_lektrix -> stop_lektrix
+    unstall_lektrix -> action_timers [label=disable color=blue]
+    unstall_lektrix -> action_services [label=disable color=blue]
+    unstall_lektrix -> action_timers [label=rm color=red fontcolor=red]
+    unstall_lektrix -> action_services [label=rm color=red fontcolor=red]
+
+    stop -> stop_lektrix
+    stop_lektrix -> action_timers [label=stop]
+    stop_lektrix -> action_services [label=stop]
+
+    go -> start_lektrix [label=nograph]
+    start_lektrix -> boot_lektrix
+    start_lektrix -> graph_lektrix [color=purple style=dotted]
+    start_lektrix -> action_timers [label=start]
+    start_lektrix -> action_services [label=start]
+
+    boot -> boot_lektrix
+    boot_lektrix -> create_graphic
+
+    restart -> restart_lektrix [color=red label="nograph"]
+    restart_lektrix -> stop_lektrix
+    restart_lektrix -> update_lektrix
+    restart_lektrix -> start_lektrix [color=red label="nograph"]
+    restart_lektrix -> start_lektrix [color=green label="graph"]
+
+    systemd -> restart_lektrix [color=green label="graph"]
+
+    "graph" -> graph_lektrix
+    graph_lektrix -> pastday
+    graph_lektrix -> pastmonth
+    graph_lektrix -> pastyear
+
+    update -> update_lektrix
+
+    action_timers -> timers
+    action_services -> services
+    timers -> services
+    services -> pastday
+    services -> pastmonth
+    services -> pastyear
+
+}
