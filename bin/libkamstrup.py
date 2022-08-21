@@ -395,3 +395,27 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     returned_y_data = np.where(y > 0, y, 0)
 
     return unique_x_texts, returned_y_data
+
+
+def build_arrays44(lbls, use_data, expo_data):
+    """Use the input to build two arrays and return them.
+    example input line : "2015-01; 329811; 0"  : YYYY-MM; T1; T2
+    the list comes ordered by the first field
+    the first line and last line can be inspected to find
+    the first and last year in the dataset.
+    """
+    first_year = int(lbls[0].split("-")[0])
+    last_year = int(lbls[-1].split("-")[0]) + 1
+    num_years = last_year - first_year
+
+    label_lists = [np.arange(first_year, last_year), np.arange(1, 13)]
+    usage = np.zeros((num_years, 12))
+    exprt = np.zeros((num_years, 12))
+
+    for data_point in zip(lbls, use_data, expo_data):
+        [year, month] = data_point[0].split("-")
+        col_idx = int(month) - 1
+        row_idx = int(year) - first_year
+        usage[row_idx][col_idx] = data_point[1]
+        exprt[row_idx][col_idx] = data_point[2]
+    return label_lists, usage, exprt
