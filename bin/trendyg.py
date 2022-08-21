@@ -15,7 +15,11 @@ import numpy as np
 import libkamstrup as kl
 
 DATABASE = constants.TREND['database']
+TABLE_MAINS = constants.KAMSTRUP['sql_table']
+TABLE_PRDCT = constants.SOLAREDGE['sql_table']
+TABLE_CHRGR = constants.ZAPPI['sql_table']
 OPTION = ""
+DEBUG = False
 
 
 def fetch_last_months(months_to_fetch):
@@ -26,14 +30,14 @@ def fetch_last_months(months_to_fetch):
                                "period": months_to_fetch,
                                "timeframe": "month",
                                "database": DATABASE,
-                               "table": "production",
+                               "table": TABLE_PRDCT,
                                }
                               )
     opwekking, prod_lbls = kl.get_historic_data(config,
                                                 telwerk="energy",
                                                 from_start_of_year=True
                                                 )
-    config["table"] = "kamstrup"
+    config["table"] = TABLE_MAINS
     import_lo, data_lbls = kl.get_historic_data(config,
                                                 telwerk="T1in",
                                                 from_start_of_year=True
@@ -65,14 +69,14 @@ def fetch_last_year(year_to_fetch):
                                "period": 12,
                                "timeframe": "month",
                                "database": DATABASE,
-                               "table": "production",
+                               "table": TABLE_PRDCT,
                                "year": year_to_fetch,
                                }
                               )
     opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy",
                                                 from_start_of_year=True
                                                 )
-    config["table"] = "kamstrup"
+    config["table"] = TABLE_MAINS
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in",
                                                 from_start_of_year=True
                                                 )
