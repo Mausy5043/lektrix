@@ -282,7 +282,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         plt.legend(loc="upper left", ncol=6, framealpha=0.2)
     # Fit every nicely
     plt.tight_layout()
-    plt.savefig(fname=f"{output_file}", format="png")
+    plt.savefig(fname=f"{output_file}.png", format="png")
 
 
 def main():
