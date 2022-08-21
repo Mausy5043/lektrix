@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-"""Create trendbargraphs of the data for various periods."""
+"""Create trendbargraphs of the data for various periods.
+Using kamstrup data
+"""
 
 import argparse
 import sqlite3 as s3

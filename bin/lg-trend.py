@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
-"""Create trendbargraphs for various periods of electricity use and production."""
+"""Create trendbargraphs for various periods of electricity use and production.
+Legacy method.
+"""
 
 # NOTE: Due to ms-trend.py not working properly, the legacy trend.py is provided to do the trending.
 
