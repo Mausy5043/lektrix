@@ -4,6 +4,8 @@
 Using kamstrup data
 """
 
+# FIXME: still needs work
+
 import argparse
 import sqlite3 as s3
 from datetime import datetime as dt
