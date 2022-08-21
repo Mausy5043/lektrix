@@ -8,3 +8,11 @@
  * Store the data in an SQLite3 database.
  * Regularly create trendgraphs.
  * Show trendgraphs on a local website.
+
+### Installing
+Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.
+
+
+### Usage
+`lektrix <options>`
+
