@@ -45,7 +45,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         df_mains.insert(2, 'EB', df_prod['energy'])
     except KeyError:
         df_mains.insert(2, 'EB', np.nan)
-    df_mains['EB'] += (df_mains['T1out'] + df_mains['T2out'])   # T1out and T2out are (-)-ve values !
+    df_mains['EB'] += (df_mains['T1out'] + df_mains['T2out'])  # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
     categories = ['T1out', 'T2out', 'EB', 'T1in', 'T2in']
     df_mains.columns = pd.CategoricalIndex(df_mains.columns.values,
@@ -203,7 +203,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False):
                 for p in ax1.patches:
                     b = p.get_bbox()
                     val = "{:+.3f}".format(b.y1 + b.y0)
-                    ax1.annotate(val, ((b.x0 + b.x1)/2 + x_offset, b.y1 + y_offset))
+                    ax1.annotate(val, ((b.x0 + b.x1) / 2 + x_offset, b.y1 + y_offset))
             ax1.set_ylabel(parameter)
             ax1.legend(loc='lower left',
                        ncol=8,

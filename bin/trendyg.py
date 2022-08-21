@@ -3,14 +3,13 @@
 """Create multi-year graphs"""
 
 import argparse
-import os
-import constants
 import time
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
 import numpy as np
 
+import constants
 # noinspection PyUnresolvedReferences
 import libkamstrup as kl
 

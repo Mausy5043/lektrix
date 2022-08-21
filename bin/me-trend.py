@@ -123,7 +123,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False):
                 for p in ax1.patches:
                     b = p.get_bbox()
                     val = "{:+.3f}".format(b.y1 - b.y0)
-                    ax1.annotate(val, ((b.x0 + b.x1)/2 + x_offset, b.y1 + y_offset))
+                    ax1.annotate(val, ((b.x0 + b.x1) / 2 + x_offset, b.y1 + y_offset))
             ax1.set_ylabel(parameter)
             ax1.legend(loc='lower left',
                        ncol=8,

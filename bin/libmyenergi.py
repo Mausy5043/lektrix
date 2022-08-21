@@ -275,6 +275,7 @@ class Myenergi:
 
         def _convert_time_to_text(date_to_convert):
             return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
+
         result_data = list()
 
         if data:
