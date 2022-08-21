@@ -49,6 +49,22 @@ def state():
                               ])
     except FileNotFoundError:
         year_m_img = None
+    try:
+        gauge_img = "".join(["data:image/png;base64,",
+                             str(base64.b64encode(open("/tmp/lektrix/site/img/lex_gauge.png",
+                                                       "rb"
+                                                       ).read()))[2:-1]
+                             ])
+    except FileNotFoundError:
+        gauge_img = None
+    try:
+        vs_month_img = "".join(["data:image/png;base64,",
+                                str(base64.b64encode(open("/tmp/lektrix/site/img/lex_vs_month.png",
+                                                          "rb"
+                                                          ).read()))[2:-1]
+                                ])
+    except FileNotFoundError:
+        vs_month_img = None
 
     # gld = KRAT.get_latest_data('volt_bat, load_ups, charge_bat')
     return flask.render_template('state.html',
@@ -59,5 +75,7 @@ def state():
                                  hour_m_img=hour_m_img,
                                  day_m_img=day_m_img,
                                  month_m_img=month_m_img,
-                                 year_m_img=year_m_img
+                                 year_m_img=year_m_img,
+                                 gauge_img=gauge_img,
+                                 vs_month_img=vs_month_img
                                  )
