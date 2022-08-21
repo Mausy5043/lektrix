@@ -4,6 +4,7 @@
 
 import datetime as dt
 import re
+import sqlite3 as s3
 import syslog
 import traceback
 
@@ -11,7 +12,6 @@ import mausy5043funcs.fileops3 as mf
 import numpy as np
 import pandas as pd
 import serial
-import sqlite3 as s3
 
 import constants
 
@@ -207,7 +207,7 @@ class Kamstrup:
         # recalculate 'sample_epoch'
         df_out['sample_epoch'] = df_out['sample_time'].apply(_convert_time_to_epoch)
         mf.syslog_trace(f"{df_out}", False, self.debug)
-        result_data = df_out.to_dict('records')     # list of dicts
+        result_data = df_out.to_dict('records')  # list of dicts
         df = df[df['sample_epoch'] > np.max(df_out['sample_epoch'])]
         remain_data = df.to_dict('records')
         return result_data, remain_data
