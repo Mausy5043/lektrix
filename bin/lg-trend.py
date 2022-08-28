@@ -404,14 +404,14 @@ if __name__ == "__main__":
                         type=int,
                         help="number of months of data to use for the graph",
                         )
+    parser.add_argument("--balance",
+                              action="store_true",
+                              help="calculate balance"
+                              )
     parser_group = parser.add_mutually_exclusive_group(required=False)
     parser_group.add_argument("--debug",
                               action="store_true",
                               help="start in debugging mode"
-                              )
-    parser_group.add_argument("--balance",
-                              action="store_true",
-                              help="calculate balance"
                               )
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
