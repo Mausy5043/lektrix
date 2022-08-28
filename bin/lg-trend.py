@@ -194,11 +194,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     export_lo = data_tuple[4]   # light-blue bar in trends
     export_hi = data_tuple[5]   # blue bar in trends
 
-    imprt = kl.contract(import_lo, import_hi)  # not used for trends
-    exprt = kl.contract(export_lo, export_hi)  # used for show_data=1 and show_data = 2
-
-    own_usage = kl.distract(opwekking, exprt)  # green bar in all trends
-    usage = kl.contract(own_usage, imprt)      # not used for trends
+    own_usage = kl.distract(opwekking, kl.contract(export_lo, export_hi))  # green bar in all trends
 
     if balancing:
         # balance import and export with own_usage
@@ -208,6 +204,12 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
                                                                            export_hi,
                                                                            own_usage,
                                                                            balans=balancing)
+
+    imprt = kl.contract(import_lo, import_hi)  # not used for trends
+    exprt = kl.contract(export_lo, export_hi)  # used for show_data=1 and show_data = 2
+
+    usage = kl.contract(own_usage, imprt)      # not used for trends
+
     btm_hi = kl.contract(import_lo, own_usage)
     if DEBUG:
         plot_title = " ".join(["(DEBUG)", plot_title])
