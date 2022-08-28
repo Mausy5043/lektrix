@@ -359,7 +359,7 @@ def distract(arr1, arr2, allow_negatives=False):
     return result[::-1]
 
 
-def balance(ilo, ihi, xlo, xhi, own):
+def balance(ilo, ihi, xlo, xhi, own, balans=2):
     """Calculate the balance
     """
     import_lo = np.zeros(len(ilo), dtype=float)

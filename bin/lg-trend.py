@@ -177,7 +177,7 @@ def fetch_last_years(years_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=False):
+def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     """...
 
     Args:
@@ -185,7 +185,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=False
         data_tuple (tuple): tuple containing the 6 lists of data to be graphed
         plot_title (str): title to be put above the graph
         show_data (int): whether or not to show some textual data
-        balancing (bool): whether to balance imports and exports against each other
+        balancing (int): how to balance imports and exports against each other (0=not; 1=single; 2=double)
     """
     data_lbls = data_tuple[0]
     import_lo = data_tuple[1]   # light-red bar in trends
@@ -206,7 +206,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=False
                                                                            import_hi,
                                                                            export_lo,
                                                                            export_hi,
-                                                                           own_usage)
+                                                                           own_usage,
+                                                                           balans=balancing)
     btm_hi = kl.contract(import_lo, own_usage)
     if DEBUG:
         plot_title = " ".join(["(DEBUG)", plot_title])
@@ -358,27 +359,27 @@ def main():
         plot_graph(constants.TREND['hour_graph'],
                    fetch_last_day(OPTION.hours),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   balancing=OPTION.balance
+                   balancing=OPTION.balancing
                    )
     if OPTION.days:
         plot_graph(constants.TREND['day_graph'],
                    fetch_last_month(OPTION.days),
                    f"trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   balancing=OPTION.balance
+                   balancing=OPTION.balancing
                    )
     if OPTION.months:
         plot_graph(constants.TREND['month_graph'],
                    fetch_last_year(OPTION.months),
                    f"trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=1,
-                   balancing=OPTION.balance
+                   balancing=OPTION.balancing
                    )
     if OPTION.years:
         plot_graph(constants.TREND['year_graph'],
                    fetch_last_years(OPTION.years),
                    f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=2,
-                   balancing=OPTION.balance
+                   balancing=OPTION.balancing
                    )
 
 
@@ -405,9 +406,13 @@ if __name__ == "__main__":
                         help="number of months of data to use for the graph",
                         )
     parser.add_argument("--balance",
-                              action="store_true",
-                              help="calculate balance"
-                              )
+                        action="store_true",
+                        help="calculate balance (double)"
+                        )
+    parser.add_argument("--balances",
+                        action="store_true",
+                        help="calculate balance (single)"
+                        )
     parser_group = parser.add_mutually_exclusive_group(required=False)
     parser_group.add_argument("--debug",
                               action="store_true",
@@ -422,6 +427,12 @@ if __name__ == "__main__":
         OPTION.months = 38
     if OPTION.years == 0:
         OPTION.years = 6
+
+    OPTION.balancing = 0
+    if OPTION.balance:
+        OPTION.balancing = 2
+    if OPTION.balances:
+        OPTION.balancing = 1
 
     if OPTION.debug:
         print(OPTION)
