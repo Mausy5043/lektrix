@@ -336,10 +336,15 @@ def contract(arr1, arr2):
     return result[::-1]
 
 
-def distract(arr1, arr2):
+def distract(arr1, arr2, allow_negatives=False):
     """
     Subtract two arrays.
     Note: order is important!
+
+    Args:
+        arr1 (numpy.array) : first array
+        arr2 (numpy.array) : second array to subtract elementally from the first
+        allow_negatives: when False (default), negative results of the subtractions are zeroed.
     """
     size = max(len(arr1), len(arr2))
     rev_arr1 = np.zeros(size, dtype=float)
@@ -349,8 +354,43 @@ def distract(arr1, arr2):
     for idx in range(0, len(arr2)):
         rev_arr2[idx] = arr2[::-1][idx]
     result = np.subtract(rev_arr1, rev_arr2)
-    result[result < 0] = 0.0
+    if not allow_negatives:
+        result[result < 0] = 0.0
     return result[::-1]
+
+
+def balance(ilo, ihi, xlo, xhi, own):
+    """Calculate the balance
+    """
+    import_lo = np.zeros(len(ilo), dtype=float)
+    import_hi = np.zeros(len(ihi), dtype=float)
+    export_lo = np.zeros(len(xlo), dtype=float)
+    export_hi = np.zeros(len(xhi), dtype=float)
+    own_usage = np.zeros(len(own), dtype=float)
+
+    diflo = distract(ilo, xlo, allow_negatives=True)
+    for idx, value in enumerate(diflo):
+        if value >= 0:
+            import_lo[idx] = diflo[idx]
+            own_usage[idx] = own[idx] + xlo[idx]
+            export_lo[idx] = 0.0
+        if value < 0:
+            import_lo[idx] = 0.0
+            own_usage[idx] = own[idx] + ilo[idx]
+            export_lo[idx] = abs(diflo[idx])
+
+    difhi = distract(ihi, xhi, allow_negatives=True)
+    for idx, value in enumerate(difhi):
+        if value >= 0:
+            import_hi[idx] = difhi[idx]
+            own_usage[idx] = own[idx] + xhi[idx]
+            export_hi[idx] = 0.0
+        if value < 0:
+            import_hi[idx] = 0.0
+            own_usage[idx] = own[idx] + ihi[idx]
+            export_hi[idx] = abs(difhi[idx])
+
+    return import_lo, import_hi, export_lo, export_hi, own_usage
 
 
 def fast_group_data(x_epochs, y_data, grouping, dif=True):

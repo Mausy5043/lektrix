@@ -177,19 +177,36 @@ def fetch_last_years(years_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def plot_graph(output_file, data_tuple, plot_title, show_data=0):
+def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=False):
     """...
+
+    Args:
+        output_file (str): path and filename of the outputfile (excl. trailing extension)
+        data_tuple (tuple): tuple containing the 6 lists of data to be graphed
+        plot_title (str): title to be put above the graph
+        show_data (int): whether or not to show some textual data
+        balancing (bool): whether to balance imports and exports against each other
     """
     data_lbls = data_tuple[0]
-    import_lo = data_tuple[1]
-    import_hi = data_tuple[2]
-    opwekking = data_tuple[3]
-    export_lo = data_tuple[4]
-    export_hi = data_tuple[5]
-    imprt = kl.contract(import_lo, import_hi)
-    exprt = kl.contract(export_lo, export_hi)
-    own_usage = kl.distract(opwekking, exprt)
-    usage = kl.contract(own_usage, imprt)
+    import_lo = data_tuple[1]   # light-red bar in trends
+    import_hi = data_tuple[2]   # red bar in trends
+    opwekking = data_tuple[3]   # for calculating own_usage
+    export_lo = data_tuple[4]   # light-blue bar in trends
+    export_hi = data_tuple[5]   # blue bar in trends
+
+    imprt = kl.contract(import_lo, import_hi)  # not used for trends
+    exprt = kl.contract(export_lo, export_hi)  # used for show_data=1 and show_data = 2
+
+    own_usage = kl.distract(opwekking, exprt)  # green bar in all trends
+    usage = kl.contract(own_usage, imprt)      # not used for trends
+
+    if balancing:
+        # balance import and export with own_usage
+        import_lo, import_hi, export_lo, export_hi, own_usage = kl.balance(import_lo,
+                                                                           import_hi,
+                                                                           export_lo,
+                                                                           export_hi,
+                                                                           own_usage)
     btm_hi = kl.contract(import_lo, own_usage)
     if DEBUG:
         plot_title = " ".join(["(DEBUG)", plot_title])
@@ -225,7 +242,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
     col_export = "blue"
     col_usage = "green"
 
-    # Create a bar plot of import_lo
     ax1.bar(tick_pos,
             import_hi,
             width=bar_width,
@@ -235,7 +251,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
             align="center",
             bottom=btm_hi,  # [sum(i) for i in zip(import_lo, own_usage)]
             )
-    # Create a bar plot of import_hi
     ax1.bar(tick_pos,
             import_lo,
             width=bar_width,
@@ -271,7 +286,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
                      fontsize=12,
                      )
     # Exports hang below the y-axis
-    # Create a bar plot of export_lo
     ax1.bar(tick_pos,
             [-1 * i for i in export_lo],
             width=bar_width,
@@ -280,7 +294,6 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0):
             color=col_export,
             align="center",
             )
-    # Create a bar plot of export_hi
     ax1.bar(tick_pos,
             [-1 * i for i in export_hi],
             width=bar_width,
@@ -345,23 +358,27 @@ def main():
         plot_graph(constants.TREND['hour_graph'],
                    fetch_last_day(OPTION.hours),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   balancing=OPTION.balance
                    )
     if OPTION.days:
         plot_graph(constants.TREND['day_graph'],
                    fetch_last_month(OPTION.days),
                    f"trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   balancing=OPTION.balance
                    )
     if OPTION.months:
         plot_graph(constants.TREND['month_graph'],
                    fetch_last_year(OPTION.months),
                    f"trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=1,
+                   balancing=OPTION.balance
                    )
     if OPTION.years:
         plot_graph(constants.TREND['year_graph'],
                    fetch_last_years(OPTION.years),
                    f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
                    show_data=2,
+                   balancing=OPTION.balance
                    )
 
 
@@ -391,6 +408,10 @@ if __name__ == "__main__":
     parser_group.add_argument("--debug",
                               action="store_true",
                               help="start in debugging mode"
+                              )
+    parser_group.add_argument("--balance",
+                              action="store_true",
+                              help="calculate balance"
                               )
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
