@@ -368,6 +368,11 @@ def balance(ilo, ihi, xlo, xhi, own, balans=2):
     export_hi = np.zeros(len(xhi), dtype=float)
     own_usage = np.zeros(len(own), dtype=float)
 
+    if balans == 1:
+        # for single balancing we add both meters together
+        contract(ilo, ihi)
+        contract(xlo, xhi)
+
     diflo = distract(ilo, xlo, allow_negatives=True)
     for idx, value in enumerate(diflo):
         if value >= 0:
@@ -379,16 +384,19 @@ def balance(ilo, ihi, xlo, xhi, own, balans=2):
             own_usage[idx] = own[idx] + ilo[idx]
             export_lo[idx] = abs(diflo[idx])
 
-    difhi = distract(ihi, xhi, allow_negatives=True)
-    for idx, value in enumerate(difhi):
-        if value >= 0:
-            import_hi[idx] = difhi[idx]
-            own_usage[idx] = own[idx] + xhi[idx]
-            export_hi[idx] = 0.0
-        if value < 0:
-            import_hi[idx] = 0.0
-            own_usage[idx] = own[idx] + ihi[idx]
-            export_hi[idx] = abs(difhi[idx])
+    if balans == 2:
+        # for single balancing we don't need to calculate the hi-meter, as it was
+        # previously added tot the lo-meter
+        difhi = distract(ihi, xhi, allow_negatives=True)
+        for idx, value in enumerate(difhi):
+            if value >= 0:
+                import_hi[idx] = difhi[idx]
+                own_usage[idx] = own[idx] + xhi[idx]
+                export_hi[idx] = 0.0
+            if value < 0:
+                import_hi[idx] = 0.0
+                own_usage[idx] = own[idx] + ihi[idx]
+                export_hi[idx] = abs(difhi[idx])
 
     return import_lo, import_hi, export_lo, export_hi, own_usage
 
