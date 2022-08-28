@@ -370,8 +370,8 @@ def balance(ilo, ihi, xlo, xhi, own, balans=2):
 
     if balans == 1:
         # for single balancing we add both meters together
-        contract(ilo, ihi)
-        contract(xlo, xhi)
+        ilo = contract(ilo, ihi)
+        xlo = contract(xlo, xhi)
 
     diflo = distract(ilo, xlo, allow_negatives=True)
     for idx, value in enumerate(diflo):
