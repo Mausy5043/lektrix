@@ -17,6 +17,8 @@ host_name=$(hostname)
 database_filename="lektrix.sqlite3"
 database_path="/srv/databases"
 db_full_path="${database_path}/${database_filename}"
+website_dir="/tmp/${app_name}/site"
+website_image_dir="${website_dir}/img"
 
 constants_sh_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
@@ -192,8 +194,10 @@ boot_lektrix() {
     fi
     # allow Flask to work even if the graphics have not yet been created
     for GRPH in "${lektrix_graphs[@]}"; do
-        create_graphic "${GRPH}"
+        create_graphic "${website_image_dir}/${GRPH}"
     done
+    #cp "${constants_sh_dir}/../www/index.html" "${website_dir}"
+    #cp "${constants_sh_dir}/../www/favicon.ico" "${website_dir}"
 }
 
 # perform systemctl actions on all timers
