@@ -78,6 +78,10 @@ def main():
             start_time = time.time()
             try:
                 data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
+            except ConnectionError:
+                data = None
+                mf.syslog_trace("ConnectionError occured. Will try again later.", syslog.LOG_WARNING, DEBUG)
+                pass
             except Exception:  # noqa
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -95,7 +99,7 @@ def main():
                 try:
                     sql_db.insert(method='replace')
                 except Exception:  # noqa
-                    mf.syslog_trace("Unexpected error while trying to commit the data to the database",
+                    mf.syslog_trace("Unexpected error while trying to commit the queued data to the database",
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
