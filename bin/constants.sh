@@ -175,6 +175,8 @@ install_lektrix() {
 
     # install services and timers
     echo "Installing timers & services."
+    # remove execute-bit from services and timers
+    sudo chmod -x "${ROOT_DIR}"/services/*
     sudo cp "${ROOT_DIR}"/services/*.service /etc/systemd/system/
     sudo cp "${ROOT_DIR}"/services/*.timer /etc/systemd/system/
     sudo systemctl daemon-reload
