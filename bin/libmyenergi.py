@@ -7,7 +7,7 @@ import os
 import syslog
 import time
 
-import mausy5043funcs.fileops3 as mf
+import mausy5043_common.funfile as mf
 import numpy as np
 import pandas as pd
 import pytz
