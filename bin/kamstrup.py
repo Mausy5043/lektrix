@@ -9,9 +9,9 @@ import syslog
 import time
 import traceback
 
-import mausy5043funcs.fileops3 as mf
-import mausy5043libs.libsignals3 as ml
-import mausy5043libs.libsqlite3 as m3
+import mausy5043_common.funfile as mf
+import mausy5043_common.libsignals as ml
+import mausy5043_common.libsqlite3 as m3
 
 import constants
 import libkamstrup as kl

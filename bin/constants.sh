@@ -156,11 +156,6 @@ install_lektrix() {
     python3 -m pip install --upgrade pip setuptools wheel
     python3 -m pip install -r requirements.txt
     echo
-    echo "Uninstalling common python functions..."
-    python3 -m pip uninstall -y mausy5043-common-python
-    echo
-    echo "Installing common python functions..."
-    python3 -m pip install "git+https://github.com/Mausy5043/mausy5043-common-python.git@${commonlibbranch}#egg=mausy5043-common-python"
 
     # install account keys from local fileserver
     getfilefromserver "solaredge" "0740"
