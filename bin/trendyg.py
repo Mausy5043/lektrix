@@ -273,7 +273,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.set_xlim([power_rng / -2, power_rng / 2])
         # ax1.axhline(y=0, color='k')
         ax1.axvline(x=0, color="k")
-        ax1.set_yticks([2])
+        ax1.set_yticks([1])
 
     # Set general plot stuff
     plt.title(f"{plot_title}")
