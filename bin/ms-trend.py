@@ -5,6 +5,8 @@ Using kamstrup data
 """
 
 # FIXME: still needs work
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import argparse
 import sqlite3 as s3
