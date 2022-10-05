@@ -242,7 +242,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
                  align="edge",
                  )
         ax1.text((power_rng / -2) + power_out + abs(power_dif) / 2,
-                 tick_pos + (bars_width * 0.75),
+                 tick_pos + (bars_width / 2),
                  "{:4.0f}".format(power_dif),
                  {"ha": "center", "va": "center"},
                  fontsize=12,
