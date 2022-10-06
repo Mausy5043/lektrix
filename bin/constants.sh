@@ -30,8 +30,7 @@ declare -a lektrix_timers=("lektrix.trend.day.timer"
 # list of services provided
 declare -a lektrix_services=("lektrix.kamstrup.service"
     "lektrix.myenergi.service"
-    "lektrix.solaredge.service"
-    "lektrix.fles.service")
+    "lektrix.solaredge.service")
 # Install python3 and develop packages
 # Support for matplotlib & numpy needs to be installed seperately
 # Support for serial port
@@ -177,6 +176,9 @@ install_lektrix() {
     sudo systemctl daemon-reload
     action_timers enable
     action_services enable
+
+    # install a link to the website on /tmp/....
+    sudo ln -s "${website_dir}" /var/www/state
 
     echo "Installation complete. To start the application use:"
     echo "   lektrix --go"
