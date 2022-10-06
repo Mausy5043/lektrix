@@ -1,15 +1,10 @@
-Flask
-# hanging_threads
 matplotlib
 mausy5043-common
 numpy
 pandas
 pyserial
 python-dateutil
-# python-dotenv
 pytz
 requests
-# scipy
-# skyfield
 uwsgi
 
