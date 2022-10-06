@@ -39,7 +39,7 @@ declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "pyth
     "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
     "picocom" "python3-serial"
     "sqlite3")
-# placeholders for trendgraphs to make Flask website work regardless of the state of the graphs.
+# placeholders for trendgraphs to make website work regardless of the state of the graphs.
 declare -a lektrix_graphs=('lex_pastdays_mains.png'
     'lex_pastdays_production.png'
     'lex_pasthours_mains.png'
@@ -49,7 +49,8 @@ declare -a lektrix_graphs=('lex_pastdays_mains.png'
     'lex_pastyears_mains.png'
     'lex_pastyears_production.png'
     'lex_vs_month.png'
-    'lex_vs_year.png')
+    'lex_vs_year.png'
+    'lex_gauge.png')
 
 # start the application
 start_lektrix() {
