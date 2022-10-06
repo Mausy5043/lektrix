@@ -7,6 +7,7 @@ import argparse
 import configparser
 import datetime as dt
 import os
+import shutil
 import syslog
 import time
 import traceback
@@ -38,6 +39,7 @@ MYID = HERE[-1]
 # app_name :
 MYAPP = HERE[-3]
 MYROOT = "/".join(HERE[0:-3])
+APPROOT = "/".join(HERE[0:-2])
 # host_name :
 NODE = os.uname()[1]
 
@@ -55,6 +57,7 @@ API_ZP = None
 def main():
     """Execute main loop until killed."""
     global API_ZP
+    set_led('mains', 'yellow')
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/zappi/keys.ini
@@ -78,11 +81,14 @@ def main():
             start_time = time.time()
             try:
                 data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
+                set_led('mains', 'green')
             except ConnectionError:
+                set_led('mains', 'yellow')
                 data = None
                 mf.syslog_trace("ConnectionError occured. Will try again later.", syslog.LOG_WARNING, DEBUG)
                 pass
             except Exception:  # noqa
+                set_led('mains', 'red')
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
@@ -93,23 +99,25 @@ def main():
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
+                    set_led('mains', 'red')
                     mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     sql_db.insert(method='replace')
                 except Exception:  # noqa
+                    set_led('mains', 'red')
                     mf.syslog_trace("Unexpected error while trying to commit the queued data to the database",
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
 
             pause_interval = (sample_interval
-                              - (time.time() - start_time)      # time spent in this loop           eg. (40-3) = 37s
+                              - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                               - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
                               )
             pause_interval += constants.ZAPPI['delay']  # allow the charger to update the data on the server.
-            next_time = pause_interval + time.time()    # gives the actual time when the next loop should start
+            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -178,6 +186,14 @@ def do_work(zappi, start_dt=dt.datetime.today()):
      }
     """
     return zappi.zappi_data
+
+
+def set_led(dev, colour):
+    mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
+
+    in_dirfile = f'{APPROOT}/www/{colour}.png'
+    out_dirfile = f'{constants.TREND["website"]}/img/{dev}.png'
+    shutil.copy(f'{in_dirfile}', out_dirfile)
 
 
 if __name__ == "__main__":
