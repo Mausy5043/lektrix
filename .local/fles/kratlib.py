@@ -7,7 +7,7 @@ import sys
 import sqlite3
 import time
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../bin'))
 import constants    # noqa
 
 
