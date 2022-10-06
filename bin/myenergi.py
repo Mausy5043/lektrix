@@ -57,7 +57,7 @@ API_ZP = None
 def main():
     """Execute main loop until killed."""
     global API_ZP
-    set_led('mains', 'yellow')
+    set_led('mains', 'orange')
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/zappi/keys.ini
@@ -83,7 +83,7 @@ def main():
                 data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
                 set_led('mains', 'green')
             except ConnectionError:
-                set_led('mains', 'yellow')
+                set_led('mains', 'orange')
                 data = None
                 mf.syslog_trace("ConnectionError occured. Will try again later.", syslog.LOG_WARNING, DEBUG)
                 pass
