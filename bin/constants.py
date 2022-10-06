@@ -7,6 +7,7 @@ import pytz
 
 _MYHOME = os.environ["HOME"]
 _DATABASE = '/srv/databases/lektrix.sqlite3'
+_WEBSITE = '/tmp/lektrix/site'
 
 if not os.path.isfile(_DATABASE):
     _DATABASE = '/srv/data/lektrix.sqlite3'
@@ -43,6 +44,7 @@ BATTERY = {'database': _DATABASE,
            }
 
 TREND = {'database': _DATABASE,
+         'website': _WEBSITE,
          'hour_graph': '/tmp/lektrix/site/img/lex_pasthours',
          'day_graph': '/tmp/lektrix/site/img/lex_pastdays',
          'month_graph': '/tmp/lektrix/site/img/lex_pastmonths',
