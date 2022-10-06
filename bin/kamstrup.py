@@ -5,6 +5,7 @@ Store the data in a SQLite3 database.
 """
 import argparse
 import os
+import shutil
 import syslog
 import time
 import traceback
@@ -36,6 +37,7 @@ MYID = HERE[-1]
 # app_name :
 MYAPP = HERE[-3]
 MYROOT = "/".join(HERE[0:-3])
+APPROOT = "/".join(HERE[0:-2])
 # host_name :
 NODE = os.uname()[1]
 
@@ -53,6 +55,7 @@ API_KL = None
 def main():
     """Execute main loop until killed."""
     global API_KL
+    set_led('mains', 'orange')
     killer = ml.GracefulKiller()
     API_KL = kl.Kamstrup(DEBUG)
 
@@ -71,11 +74,14 @@ def main():
             start_time = time.time()
             try:
                 succes = API_KL.get_telegram()
+                set_led('mains', 'green')
             except Exception:  # noqa
+                set_led('mains', 'red')
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
             if not succes:
+                set_led('mains', 'orange')
                 mf.syslog_trace("Getting telegram failed", syslog.LOG_WARNING, DEBUG)
             # check if we already need to report the result data
             if time.time() > rprt_time:
@@ -90,12 +96,14 @@ def main():
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
+                    set_led('mains', 'red')
                     mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     sql_db.insert(method='replace')
                 except Exception:  # noqa
+                    set_led('mains', 'red')
                     mf.syslog_trace("Unexpected error while trying to commit the data to the database",
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
@@ -112,6 +120,14 @@ def main():
             mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)  # 1s resolution is enough
+
+
+def set_led(dev, colour):
+    mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
+
+    in_dirfile = f'{APPROOT}/www/{colour}.png'
+    out_dirfile = f'{constants.TREND["website"]}/img/{dev}.png'
+    shutil.copy(f'{in_dirfile}', out_dirfile)
 
 
 if __name__ == "__main__":
