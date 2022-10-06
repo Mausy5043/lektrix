@@ -56,7 +56,7 @@ API_SE = sl.Solaredge('000000')
 def main():
     """Execute main loop until killed."""
     global API_SE
-    set_led('mains', 'orange')
+    set_led('solar', 'orange')
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
@@ -85,7 +85,7 @@ def main():
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
                 except Exception:  # noqa
-                    set_led('mains', 'orange')
+                    set_led('solar', 'orange')
                     mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
@@ -104,9 +104,9 @@ def main():
                                     )
                 try:
                     data = do_work(site_list, start_dt=start_dt)
-                    set_led('mains', 'green')
+                    set_led('solar', 'green')
                 except Exception:  # noqa
-                    set_led('mains', 'red')
+                    set_led('solar', 'red')
                     mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
@@ -119,14 +119,14 @@ def main():
                             if element['sample_epoch'] < (local_now() + 15 * 60):
                                 sql_db.queue(element)
                     except Exception:  # noqa
-                        set_led('mains', 'red')
+                        set_led('solar', 'red')
                         mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                         raise  # may be changed to pass if errors can be corrected.
                     try:
                         sql_db.insert(method='replace')
                     except Exception:  # noqa
-                        set_led('mains', 'red')
+                        set_led('solar', 'red')
                         mf.syslog_trace("Unexpected error while trying to commit the data to the database",
                                         syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)

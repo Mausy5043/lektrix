@@ -57,7 +57,7 @@ API_ZP = None
 def main():
     """Execute main loop until killed."""
     global API_ZP
-    set_led('mains', 'orange')
+    set_led('ev', 'orange')
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/zappi/keys.ini
@@ -81,14 +81,14 @@ def main():
             start_time = time.time()
             try:
                 data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
-                set_led('mains', 'green')
+                set_led('ev', 'green')
             except ConnectionError:
-                set_led('mains', 'orange')
+                set_led('ev', 'orange')
                 data = None
                 mf.syslog_trace("ConnectionError occured. Will try again later.", syslog.LOG_WARNING, DEBUG)
                 pass
             except Exception:  # noqa
-                set_led('mains', 'red')
+                set_led('ev', 'red')
                 mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
@@ -99,14 +99,14 @@ def main():
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
-                    set_led('mains', 'red')
+                    set_led('ev', 'red')
                     mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     sql_db.insert(method='replace')
                 except Exception:  # noqa
-                    set_led('mains', 'red')
+                    set_led('ev', 'red')
                     mf.syslog_trace("Unexpected error while trying to commit the queued data to the database",
                                     syslog.LOG_ALERT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
