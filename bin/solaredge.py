@@ -7,6 +7,7 @@ import argparse
 import configparser
 import datetime as dt
 import os
+import shutil
 import syslog
 import time
 import traceback
@@ -38,6 +39,7 @@ MYID = HERE[-1]
 # app_name :
 MYAPP = HERE[-3]
 MYROOT = "/".join(HERE[0:-3])
+APPROOT = "/".join(HERE[0:-2])
 # host_name :
 NODE = os.uname()[1]
 
@@ -54,6 +56,7 @@ API_SE = sl.Solaredge('000000')
 def main():
     """Execute main loop until killed."""
     global API_SE
+    set_led('mains', 'orange')
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
@@ -82,6 +85,7 @@ def main():
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
                 except Exception:  # noqa
+                    set_led('mains', 'orange')
                     mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
@@ -100,7 +104,9 @@ def main():
                                     )
                 try:
                     data = do_work(site_list, start_dt=start_dt)
+                    set_led('mains', 'green')
                 except Exception:  # noqa
+                    set_led('mains', 'red')
                     mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     raise
@@ -113,12 +119,14 @@ def main():
                             if element['sample_epoch'] < (local_now() + 15 * 60):
                                 sql_db.queue(element)
                     except Exception:  # noqa
+                        set_led('mains', 'red')
                         mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                         raise  # may be changed to pass if errors can be corrected.
                     try:
                         sql_db.insert(method='replace')
                     except Exception:  # noqa
+                        set_led('mains', 'red')
                         mf.syslog_trace("Unexpected error while trying to commit the data to the database",
                                         syslog.LOG_ALERT, DEBUG)
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
@@ -235,6 +243,14 @@ def do_work(site_list, start_dt=dt.datetime.today()):
 
 def local_now():
     return dt.datetime.today().replace(tzinfo=dt.timezone.utc).timestamp()
+
+
+def set_led(dev, colour):
+    mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
+
+    in_dirfile = f'{APPROOT}/www/{colour}.png'
+    out_dirfile = f'{constants.TREND["website"]}/img/{dev}.png'
+    shutil.copy(f'{in_dirfile}', out_dirfile)
 
 
 if __name__ == "__main__":
