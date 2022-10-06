@@ -49,7 +49,6 @@ declare -a lektrix_graphs=('lex_pastdays_mains.png'
     'lex_pastyears_mains.png'
     'lex_pastyears_production.png'
     'lex_vs_month.png'
-    'lex_vs_year.png'
     'lex_gauge.png')
 
 # start the application
