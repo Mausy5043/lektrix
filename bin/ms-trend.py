@@ -85,7 +85,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
     group_condition = ""
     if aggregation == 'H':
-        group_condition = "GROUP BY strftime('%H', sample_time)"
+        group_condition = "GROUP BY strftime('%d %H', sample_time)"
     s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition} {group_condition};"
     if DEBUG:
         print(s3_query)
@@ -166,7 +166,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     return df
 
 
-def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=['hour', '%m-%d %Hh']):
+def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=['hour', '%d-%m %Hh']):
     """Plot the data in a chart.
 
     Args:
@@ -247,7 +247,7 @@ def main():
         plot_graph(constants.TREND['hour_graph'],
                    fetch_data(hours_to_fetch=OPTION.hours, aggregation='H'),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   locatorformat=['hour','%m-%d %Hh']
+                   locatorformat=['hour','%d-%m %Hh']
                    )
     if OPTION.days:
         aggr = 60 * 24  # int(float(OPTION.days) * 24. * 60. / 5760.)
