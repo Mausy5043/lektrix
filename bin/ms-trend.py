@@ -13,7 +13,7 @@ import sqlite3 as s3
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
@@ -166,7 +166,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     return df
 
 
-def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=['hour', '%b %d']):
+def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=['hour', '%m-%d %Hh']):
     """Plot the data in a chart.
 
     Args:
@@ -181,9 +181,13 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
     if DEBUG:
         print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
+        data_frame = data_dict[parameter]  # type: pd.DataFrame
         if DEBUG:
             print(parameter)
-        data_frame = data_dict[parameter]  # type: pd.DataFrame
+            print(data_frame)
+        ticklabels = [item.strftime(locatorformat[1]) for item in data_frame.index]
+        if DEBUG:
+            print(ticklabels)
         if len(data_frame.index) == 0:
             if DEBUG:
                 print("No data.")
@@ -221,10 +225,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                      linestyle='--',
                      linewidth=0.5
                      )
-            # DayLocator seems to work for all intervals.
-            ax1.xaxis.set_major_locator(mdates.DayLocator())
-            #set major ticks format
-            ax1.xaxis.set_major_formatter(mdates.DateFormatter(locatorformat[1]))
+            ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
+            plt.gcf().autofmt_xdate()
             plt.title(f'{parameter} {plot_title}')
             plt.tight_layout()
             plt.savefig(fname=f'{output_file}_{parameter}.png',
