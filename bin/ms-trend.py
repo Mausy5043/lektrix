@@ -13,6 +13,7 @@ import sqlite3 as s3
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 import numpy as np
 import pandas as pd
 
@@ -165,7 +166,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     return df
 
 
-def plot_graph(output_file, data_dict, plot_title, show_data=False):
+def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=['hour', '%b %d']):
     """Plot the data in a chart.
 
     Args:
@@ -220,6 +221,10 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False):
                      linestyle='--',
                      linewidth=0.5
                      )
+            # DayLocator seems to work for all intervals.
+            ax1.xaxis.set_major_locator(mdates.DayLocator())
+            #set major ticks format
+            ax1.xaxis.set_major_formatter(mdates.DateFormatter(locatorformat[1]))
             plt.title(f'{parameter} {plot_title}')
             plt.tight_layout()
             plt.savefig(fname=f'{output_file}_{parameter}.png',
@@ -240,6 +245,7 @@ def main():
         plot_graph(constants.TREND['hour_graph'],
                    fetch_data(hours_to_fetch=OPTION.hours, aggregation='H'),
                    f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   locatorformat=['hour','%m-%d %Hh']
                    )
     if OPTION.days:
         aggr = 60 * 24  # int(float(OPTION.days) * 24. * 60. / 5760.)
@@ -248,6 +254,7 @@ def main():
         plot_graph(constants.TREND['day_graph'],
                    fetch_data(hours_to_fetch=OPTION.days * 24, aggregation='D'),
                    f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+                   locatorformat=['day','%Y-%m-%d']
                    )
     if OPTION.months:
         aggr = 60 * 24 * 31  # int(float(OPTION.months) * 30.5 * 24. * 60.  / 9900.)
@@ -256,7 +263,9 @@ def main():
         plot_graph(constants.TREND['month_graph'],
                    fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation='M'),
                    f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   show_data=True)
+                   show_data=True,
+                   locatorformat=['month','%Y-%m']
+                   )
     if OPTION.years:
         aggr = 24 * 60 * 366  # int(float(OPTION.years) * 366 * 24. * 60.)
         if aggr < 1:
@@ -264,7 +273,9 @@ def main():
         plot_graph(constants.TREND['year_graph'],
                    fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation='A'),
                    f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-                   show_data=True)
+                   show_data=True,
+                   locatorformat=['year','%Y']
+                   )
 
 
 if __name__ == "__main__":
