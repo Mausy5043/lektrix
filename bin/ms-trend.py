@@ -186,6 +186,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             print(parameter)
             print(data_frame)
         mjr_ticks = int(len(data_frame.index) / (5 * 12))
+        if mjr_ticks <= 0:
+            mjr_ticks = 1
         ticklabels = [''] * len(data_frame.index)
         ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]]
         if DEBUG:
@@ -213,8 +215,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 y_offset = 2
                 for p in ax1.patches:
                     b = p.get_bbox()
-                    val = "{:+.3f}".format(b.y1 + b.y0)
-                    ax1.annotate(val, ((b.x0 + b.x1) / 2 + x_offset, b.y1 + y_offset))
+                    val = "{:+.3f}".format(b.y1 - b.y0)
+                    ax1.annotate(val, ((b.x0 + b.x1) / 2 + x_offset, b.y1 + y_offset), rotation=90)
             ax1.set_ylabel(parameter)
             ax1.legend(loc='lower left',
                        ncol=8,
