@@ -91,7 +91,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     with s3.connect(DATABASE) as con:
         df = pd.read_sql_query(s3_query, con, parse_dates='sample_time', index_col='sample_epoch')
     if DEBUG:
-        print("o  database data")
+        print("o  database mains data")
         print(df)
     for c in df.columns:
         if c not in ['sample_time']:
@@ -110,7 +110,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     df['T1out'] *= -0.001  # -> kWh export
     df['T2out'] *= -0.001  # -> kWh export
     if DEBUG:
-        print("o  database data pre-processed")
+        print("o  database mains data pre-processed")
         print(df)
     return df
 
@@ -135,7 +135,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     with s3.connect(DATABASE) as con:
         df = pd.read_sql_query(s3_query, con, parse_dates='sample_time', index_col='sample_epoch')
     if DEBUG:
-        print("o  database data")
+        print("o  database production data")
         print(df)
     for c in df.columns:
         if c not in ['sample_time']:
@@ -152,7 +152,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
 
     df['energy'] *= 0.001  # -> kWh
     if DEBUG:
-        print("o  database data pre-processed")
+        print("o  database production data pre-processed")
         print(df)
     return df
 
