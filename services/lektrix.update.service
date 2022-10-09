@@ -10,7 +10,4 @@ Wants=lektrix.update.timer
 Type=oneshot
 User=pi
 ExecStart=/home/pi/lektrix/lektrix --systemd
-TimeoutSec=900
-
-# [Install]
-# WantedBy=multi-user.target
+TimeoutStopSec=900
