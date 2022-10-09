@@ -53,6 +53,7 @@ declare -a lektrix_graphs=('lex_pastdays_mains.png'
 
 # start the application
 start_lektrix() {
+    echo "*** lektrix >>>>>>: start $1 $2"
     GRAPH=$2
     ROOT_DEAR=$1
     echo "Starting ${app_name} on $(date)"
@@ -67,6 +68,7 @@ start_lektrix() {
 
 # stop the application
 stop_lektrix() {
+    echo "*** lektrix >>>>>>: stop"
     echo "Stopping ${app_name} on $(date)"
     action_timers stop
     action_services stop
@@ -74,6 +76,7 @@ stop_lektrix() {
 
 # update the repository
 update_lektrix() {
+    echo "*** lektrix >>>>>>: update"
     git fetch origin || sleep 60
     git fetch origin
     DIFFLIST=$(git --no-pager diff --name-only "${branch_name}..origin/${branch_name}")
@@ -85,6 +88,7 @@ update_lektrix() {
 
 # create graphs
 graph_lektrix() {
+    echo "*** lektrix >>>>>>: graph $1"
     ROOT_DIR=$1
 
     echo "Creating graphs [1]"
@@ -98,6 +102,7 @@ graph_lektrix() {
 # stop, update the repo and start the application
 # do some additional stuff when called by systemd
 restart_lektrix() {
+    echo "*** lektrix >>>>>>: restart $1 $2"
     ROOT_DIR=$1
 
     # restarted by --systemd flag
@@ -126,6 +131,7 @@ restart_lektrix() {
 
 # uninstall the application
 unstall_lektrix() {
+    echo "*** lektrix >>>>>>: uninstall"
     echo "Uninstalling ${app_name} on $(date)"
     stop_lektrix
     action_timers disable
@@ -137,6 +143,7 @@ unstall_lektrix() {
 
 # install the application
 install_lektrix() {
+    echo "*** lektrix >>>>>>: install $1"
     ROOT_DIR=$1
 
     # to suppress git detecting changes by chmod
@@ -186,6 +193,7 @@ install_lektrix() {
 
 # set-up the application
 boot_lektrix() {
+    echo "*** lektrix >>>>>>: boot"
     # make sure website filetree exists
     if [ ! -d "${website_image_dir}" ]; then
         mkdir -p "${website_image_dir}"
@@ -201,6 +209,7 @@ boot_lektrix() {
 
 # perform systemctl actions on all timers
 action_timers() {
+    echo "*** lektrix >>>>>>: action_timers $1"
     ACTION=$1
     for TMR in "${lektrix_timers[@]}"; do
         if [ "${ACTION}" != "rm" ]; then
@@ -215,6 +224,7 @@ action_timers() {
 
 # perform systemctl actions on all services
 action_services() {
+    echo "*** lektrix >>>>>>: action services $1"
     ACTION=$1
     for SRVC in "${lektrix_services[@]}"; do
         if [ "${ACTION}" != "rm" ]; then
