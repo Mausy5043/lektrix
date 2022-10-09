@@ -179,7 +179,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         if DEBUG:
             print(parameter)
             print(data_frame)
-        mjr_ticks = int(len(data_frame.index) / (5 * 12))
+        mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
             mjr_ticks = 1
         ticklabels = [''] * len(data_frame.index)
