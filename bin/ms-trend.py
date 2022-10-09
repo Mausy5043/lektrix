@@ -185,8 +185,9 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         if DEBUG:
             print(parameter)
             print(data_frame)
-        ticklabels = ['']*len(data_frame.index)
-        ticklabels[::4] = [item.strftime(locatorformat[1]) for item in data_frame.index[::4]]
+        mjr_ticks = int(len(data_frame.index) / (5 * 12))
+        ticklabels = [''] * len(data_frame.index)
+        ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]]
         if DEBUG:
             print(ticklabels)
         if len(data_frame.index) == 0:
