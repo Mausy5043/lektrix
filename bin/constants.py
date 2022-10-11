@@ -18,6 +18,8 @@ if not os.path.isfile(_DATABASE):
 if not os.path.isfile(_DATABASE):
     _DATABASE = f'{_MYHOME}/.sqlite3/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
+    _DATABASE = f'lektrix.sqlite3'
+if not os.path.isfile(_DATABASE):
     print("Database is missing.")
     sys.exit(1)
 
