@@ -30,6 +30,7 @@ DEBUG = False
 
 def fetch_data(hours_to_fetch=48, aggregation='W'):
     """
+    Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int): hours of data to retrieve
@@ -144,7 +145,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     df.index = pd.to_datetime(df.index, unit='s')  # noqa
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}').sum()
+    df = df.resample(f'{aggregation}', label='right').sum()
 
     # drop sample_time separately!
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
