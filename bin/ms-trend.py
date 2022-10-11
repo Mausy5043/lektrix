@@ -145,7 +145,10 @@ def fetch_data_production(hours_to_fetch=48, aggregation='H'):
     df.index = pd.to_datetime(df.index, unit='s')  # noqa
 
     # resample to monotonic timeline
-    df = df.resample(f'{aggregation}', label='right').sum()
+    lbl = 'left'
+    if aggregation == 'H':
+        lbl = 'right'
+    df = df.resample(f'{aggregation}', label=lbl).sum()
 
     # drop sample_time separately!
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
