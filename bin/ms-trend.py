@@ -271,7 +271,7 @@ if __name__ == "__main__":
     parser_group.add_argument("--debug", action="store_true", help="start in debugging mode")
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
-        OPTION.hours = 6 * 12
+        OPTION.hours = 80
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:

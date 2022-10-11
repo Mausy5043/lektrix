@@ -8,6 +8,6 @@ pushd "${HERE}" >/dev/null || exit 1
 
 ./ms-trend.py --months 0 --years 0
 ./trendyg.py --months 0 --gauge 0
-./lg-trend.py --months 0 --years 0
+# ./lg-trend.py --months 0 --years 0
 
 popd >/dev/null || exit
