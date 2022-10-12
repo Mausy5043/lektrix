@@ -428,7 +428,7 @@ if __name__ == "__main__":
     if OPTION.months == 0:
         OPTION.months = 38
     if OPTION.years == 0:
-        OPTION.years = 6
+        OPTION.years = 8
 
     OPTION.balancing = 0
     if OPTION.balance:
