@@ -47,8 +47,12 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     df_chrg['gep'] += df_chrg['exp']    # diverted production ('exp' is negative!)
     df_chrg['gep'] += df_chrg['gen']    # diverted storage ('gen' is negative!)
 
+    df_chrg['EVzon'] = df_chrg['h1b']
+    df_chrg['EVnet'] = df_chrg['h1b']
+    df.drop(['h1b', 'h1d'], axis=1, inplace=True, errors='ignore')
+
     # put columns in the right order for plotting
-    categories = ['exp', 'gen', 'gep', 'h1d', 'imp', 'h1b']
+    categories = ['exp', 'gen', 'gep', 'EVzon', 'EVnet', 'imp']
     df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
