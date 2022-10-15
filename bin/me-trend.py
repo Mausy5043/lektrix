@@ -45,6 +45,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
 
     df_chrg['imp'] -= df_chrg['h1b']    # diverted import
     df_chrg['gep'] += df_chrg['exp']    # diverted production ('exp' is negative!)
+    df_chrg['gep'] += df_chrg['gen']    # diverted storage ('gen' is negative!)
 
     # put columns in the right order for plotting
     categories = ['exp', 'gen', 'gep', 'h1d', 'imp', 'h1b']
@@ -100,7 +101,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation='H'):
     J_to_kWh = 1 / (60 * 60 * 1000)
     df['exp'] *= (-1 * J_to_kWh)    # -> kWh export
     df['imp'] *= J_to_kWh           # -> kWh import
-    df['gen'] *= J_to_kWh           # -> kWh
+    df['gen'] *= (-1 * J_to_kWh)    # -> kWh storage
     df['gep'] *= J_to_kWh           # -> kWh solar production
     df['h1b'] *= J_to_kWh           # -> kWh import to EV
     df['h1d'] *= J_to_kWh           # -> kWh solar production to EV
