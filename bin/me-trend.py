@@ -44,6 +44,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
     df_chrg['imp'] -= df_chrg['h1b']    # diverted import
+    df_chrg['gep'] += df_chrg['exp']    # diverted production ('exp' is negative!)
 
     # put columns in the right order for plotting
     categories = ['exp', 'gen', 'gep', 'h1d', 'imp', 'h1b']
