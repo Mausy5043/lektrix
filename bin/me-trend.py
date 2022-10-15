@@ -43,13 +43,14 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         print("\nRequest data from charger")
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
-    df_chrg['imp'] -= df_chrg['h1b']    # diverted import
-    df_chrg['gep'] += df_chrg['exp']    # diverted production ('exp' is negative!)
-    # df_chrg['gep'] -= df_chrg['h1d']
-    df_chrg['gep'] += df_chrg['gen']    # diverted storage ('gen' is negative!)
-
-    df_chrg['EVzon'] = df_chrg['h1d']
     df_chrg['EVnet'] = df_chrg['h1b']
+    df_chrg['EVzon'] = df_chrg['h1d']
+
+    df_chrg['imp'] -= df_chrg['EVnet']      # diverted import
+    df_chrg['gep'] += df_chrg['exp']        # diverted production ('exp' is negative!)
+    # df_chrg['gep'] -= df_chrg['h1d']
+    df_chrg['gep'] += df_chrg['gen']        # diverted storage ('gen' is negative!)
+
     df_chrg.drop(['h1b', 'h1d'], axis=1, inplace=True, errors='ignore')
 
     # put columns in the right order for plotting
