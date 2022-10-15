@@ -14,6 +14,7 @@ import sqlite3 as s3
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
+import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
@@ -142,7 +143,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         if DEBUG:
             print(parameter)
             print(data_frame)
-        mjr_ticks = int(len(data_frame.index) / 40)
+        mjr_ticks = int(len(data_frame.index) / 30)
         if mjr_ticks <= 0:
             mjr_ticks = 1
         ticklabels = [''] * len(data_frame.index)
@@ -175,6 +176,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             ax1.legend(loc='lower left', ncol=8, framealpha=0.2)
             ax1.set_xlabel("Datetime")
             ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
+            ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
+            plt.gcf().autofmt_xdate()
             plt.title(f'{parameter} {plot_title}')
             plt.tight_layout()
             plt.savefig(fname=f'{output_file}_{parameter}.png', format='png')
