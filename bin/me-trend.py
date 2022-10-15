@@ -176,7 +176,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                     val = "{:+.3f}".format(b.y1 - b.y0)
                     ax1.annotate(val, ((b.x0 + b.x1) / 2 + x_offset, b.y0 + 0.5 * (b.y1 - b.y0)), rotation=30)
             ax1.set_ylabel(parameter)
-            ax1.legend(loc='lower left', ncol=8, framealpha=0.2)
+            ax1.legend(loc='upper left', ncol=8, framealpha=0.2)
             ax1.set_xlabel("Datetime")
             ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
             ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
