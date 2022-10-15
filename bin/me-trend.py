@@ -49,9 +49,9 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     df_chrg['imp'] -= df_chrg['EVnet']      # diverted import
     df_chrg['gep'] += df_chrg['exp']        # diverted production ('exp' is negative!)
     # df_chrg['gep'] -= df_chrg['h1d']
-    df_chrg['gep'] += df_chrg['gen']        # diverted storage ('gen' is negative!)
+    # df_chrg['gep'] += df_chrg['gen']        # diverted storage ('gen' is negative!)
 
-    df_chrg.drop(['h1b', 'h1d'], axis=1, inplace=True, errors='ignore')
+    df_chrg.drop(['h1b', 'h1d', 'gen'], axis=1, inplace=True, errors='ignore')
 
     # put columns in the right order for plotting
     categories = ['exp', 'gen', 'gep', 'EVzon', 'EVnet', 'imp']
