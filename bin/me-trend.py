@@ -44,7 +44,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     data_dict = dict()
 
     # put columns in the right order for plotting
-    categories = ['gen', gep, imp, 'exp', 'h1b', 'h1d', 'v1', 'frq', 'site_id']
+    categories = ['gen', 'gep', 'imp', 'exp', 'h1b', 'h1d', 'v1', 'frq', 'site_id']
     df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
