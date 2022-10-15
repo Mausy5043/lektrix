@@ -46,7 +46,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     df_chrg['imp'] -= df_chrg['h1b']    # diverted import
 
     # put columns in the right order for plotting
-    categories = ['exp', 'gen', 'gep', 'imp', 'h1b', 'h1d']
+    categories = ['exp', 'gen', 'gep', 'h1d', 'imp', 'h1b']
     df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
@@ -165,7 +165,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             # create a line plot
             plt.rc('font', size=fig_fontsize)
             ax1 = data_frame.plot(kind='bar', stacked=True, width=0.9, figsize=(fig_x, fig_y),
-                                  color=['skyblue', 'blue', 'seagreen', 'salmon', 'red', 'orange'])
+                                  color=['skyblue', 'blue', 'seagreen', 'orange', 'salmon', 'red'])
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
                 plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
@@ -220,6 +220,7 @@ def main():
         plot_graph(constants.TREND['year_graph'], fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation='A'),
                    f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})", show_data=True,
                    locatorformat=['year', '%Y'])
+    return
 
 
 if __name__ == "__main__":
