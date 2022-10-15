@@ -14,7 +14,6 @@ import sqlite3 as s3
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
@@ -79,7 +78,6 @@ def fetch_data_mains(hours_to_fetch=48, aggregation='H'):
     Returns:
         pandas.DataFrame() with data
     """
-
     if DEBUG:
         print("\n*** fetching MAINS data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
@@ -201,10 +199,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
 
             # create a line plot
             plt.rc('font', size=fig_fontsize)
-            ax1 = data_frame.plot(kind='bar', stacked=True, width=0.9,
-                                  figsize=(fig_x, fig_y),
-                                  color=['skyblue', 'blue', 'seagreen', 'salmon', 'red']
-                                  )
+            ax1 = data_frame.plot(kind='bar', stacked=True, width=0.9, figsize=(fig_x, fig_y),
+                                  color=['skyblue', 'blue', 'seagreen', 'salmon', 'red'])
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
                 plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
@@ -218,8 +214,6 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             ax1.legend(loc='lower left', ncol=8, framealpha=0.2)
             ax1.set_xlabel("Datetime")
             ax1.grid(which='major', axis='y', color='k', linestyle='--', linewidth=0.5)
-            ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
-            plt.gcf().autofmt_xdate()
             plt.title(f'{parameter} {plot_title}')
             plt.tight_layout()
             plt.savefig(fname=f'{output_file}_{parameter}.png', format='png')
