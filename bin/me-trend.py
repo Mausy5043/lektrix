@@ -73,8 +73,8 @@ def fetch_data_charger(hours_to_fetch=48, aggregation='H'):
         print("\n*** fetching CHARGER data ***")
     where_condition = f" (sample_time >= datetime(\'now\', \'-{hours_to_fetch + 1} hours\'))"
     group_condition = ""
-    if aggregation == 'H':
-        group_condition = "GROUP BY strftime('%d %H', sample_time)"
+    # if aggregation == 'H':
+    #     group_condition = "GROUP BY strftime('%d %H', sample_time)"
     s3_query = f"SELECT * FROM {TABLE_CHRGR} WHERE {where_condition} {group_condition};"
     if DEBUG:
         print(s3_query)
