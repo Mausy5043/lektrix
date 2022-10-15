@@ -96,6 +96,8 @@ def fetch_data_charger(hours_to_fetch=48, aggregation='H'):
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['site_id', 'v1', 'frq'], axis=1, inplace=True, errors='ignore')
 
+    df['exp'] *= -1  # -> kWh export
+
     if DEBUG:
         print("o  database charger data pre-processed")
         print(df)
