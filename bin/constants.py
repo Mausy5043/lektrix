@@ -52,7 +52,14 @@ TREND = {'database': _DATABASE,
          'month_graph': '/tmp/lektrix/site/img/lex_pastmonths',
          'year_graph': '/tmp/lektrix/site/img/lex_pastyears',
          'yg_vs_month': '/tmp/lektrix/site/img/lex_vs_month',
-         'yg_gauge': '/tmp/lektrix/site/img/lex_gauge'
+         'yg_gauge': '/tmp/lektrix/site/img/lex_gauge',
+
+         'hour_graph_v2': '/tmp/lektrix/site/test/img/lex_pasthours',
+         'day_graph_v2': '/tmp/lektrix/site/test/img/lex_pastdays',
+         'month_graph_v2': '/tmp/lektrix/site/test/img/lex_pastmonths',
+         'year_graph_v2': '/tmp/lektrix/site/test/img/lex_pastyears',
+         'yg_vs_month_v2': '/tmp/lektrix/site/test/img/lex_vs_month',
+         'yg_gauge_v2': '/tmp/lektrix/site/test/img/lex_gauge'
          }
 
 KAMSTRUP = {'database': _DATABASE,
