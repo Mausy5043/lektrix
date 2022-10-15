@@ -44,11 +44,11 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     data_dict = dict()
 
     # put columns in the right order for plotting
-    categories = ['gen', 'gep', 'imp', 'exp', 'h1b', 'h1d', 'v1', 'frq', 'site_id']
+    categories = ['gen', 'gep', 'imp', 'exp', 'h1b', 'h1d']
     df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
-        print(f"\n\n ** CHARGER data for plottingm  **")
+        print(f"\n\n ** CHARGER data for plotting  **")
         print(df_chrg)
 
     data_dict['charger'] = df_chrg
@@ -94,7 +94,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation='H'):
 
     # drop sample_time separately!
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
-    df.drop('site_id', axis=1, inplace=True, errors='ignore')
+    df.drop(['site_id', 'v1', 'frq'], axis=1, inplace=True, errors='ignore')
 
     if DEBUG:
         print("o  database charger data pre-processed")
