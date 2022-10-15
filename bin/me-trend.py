@@ -42,7 +42,8 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     if DEBUG:
         print("\nRequest data from charger")
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict = dict()
+
+    df_chrg['imp'] -= df_chrg['h1b']    # diverted import
 
     # put columns in the right order for plotting
     categories = ['exp', 'gen', 'gep', 'imp', 'h1b', 'h1d']
@@ -52,6 +53,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         print(f"\n\n ** CHARGER data for plotting  **")
         print(df_chrg)
 
+    data_dict = dict()
     data_dict['charger'] = df_chrg
     return data_dict
 
@@ -97,12 +99,13 @@ def fetch_data_charger(hours_to_fetch=48, aggregation='H'):
     df.drop('sample_time', axis=1, inplace=True, errors='ignore')
     df.drop(['site_id', 'v1', 'frq'], axis=1, inplace=True, errors='ignore')
 
-    df['exp'] *= -0.001  # -> kWh export
-    df['imp'] *= 0.001   # -> kWh import
-    df['gen'] *= 0.001   # -> kWh
-    df['gep'] *= 0.001  # -> kWh
-    df['h1b'] *= 0.001  # -> kWh
-    df['h1d'] *= 0.001  # -> kWh
+    J_to_kWh = 1 / (60 * 60 * 1000)
+    df['exp'] *= (-1 * J_to_kWh)    # -> kWh export
+    df['imp'] *= J_to_kWh           # -> kWh import
+    df['gen'] *= J_to_kWh           # -> kWh
+    df['gep'] *= J_to_kWh           # -> kWh solar production
+    df['h1b'] *= J_to_kWh           # -> kWh import to EV
+    df['h1d'] *= J_to_kWh           # -> kWh solar production to EV
 
     if DEBUG:
         print("o  database charger data pre-processed")
