@@ -115,7 +115,7 @@ ZAPPI = {'database': _DATABASE,
                         "?, ?, ?, ?, ?, ?,"
                         "?, ?"
                         ")",
-         'report_interval': 900,  # 3599,
+         'report_interval': 3599,
          'samplespercycle': 1,
          'delay': 180,
          'director': "https://director.myenergi.net",
