@@ -43,18 +43,22 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
         print("\nRequest data from charger")
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
-    df_chrg['EVnet'] = df_chrg['h1b']
-    df_chrg['EVzon'] = df_chrg['h1d']
-
-    df_chrg['imp'] -= df_chrg['EVnet']      # diverted import
-    df_chrg['gep'] += df_chrg['exp']        # diverted production ('exp' is negative!)
-    # df_chrg['gep'] -= df_chrg['h1d']
-    # df_chrg['gep'] += df_chrg['gen']        # diverted storage ('gen' is negative!)
-
-    df_chrg.drop(['h1b', 'h1d', 'gen'], axis=1, inplace=True, errors='ignore')
+    # rename rows and perform calculations
+    df_chrg['EVnet'] = df_chrg['h1b']               # imported and used for EV
+    df_chrg['EVsol'] = df_chrg['h1d']               # solar used for EV
+    df_chrg['import'] = df_chrg['imp'] \
+                        - df_chrg['EVnet']          # compensate for import diverted to EV
+    df_chrg['export'] = df_chrg['exp']
+    df_chrg['solar'] = df_chrg['gep'] \
+                       + df_chrg['export'] \
+                       - df_chrg['EVsol']           # compensate for solar diverted to EV
+                                                    # and/or export ('export' is negative!)
+    # 'gep' is energy consumed by solar (operational power to converter) mainly at night.
+    # TODO: 'gep' is currently disregarded
+    df_chrg.drop(['h1b', 'h1d', 'gen', 'imp', 'exp', 'gep'], axis=1, inplace=True, errors='ignore')
 
     # put columns in the right order for plotting
-    categories = ['exp', 'imp', 'gep', 'EVzon', 'EVnet']
+    categories = ['export', 'import', 'solar', 'EVsol', 'EVnet']
     df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
