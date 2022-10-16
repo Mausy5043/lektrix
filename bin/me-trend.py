@@ -54,7 +54,7 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
     df_chrg.drop(['h1b', 'h1d', 'gen'], axis=1, inplace=True, errors='ignore')
 
     # put columns in the right order for plotting
-    categories = ['exp', 'gep', 'EVzon', 'EVnet', 'imp']
+    categories = ['exp', 'imp', 'gep', 'EVzon', 'EVnet']
     df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
@@ -170,7 +170,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             # create a line plot
             plt.rc('font', size=fig_fontsize)
             ax1 = data_frame.plot(kind='bar', stacked=True, width=0.9, figsize=(fig_x, fig_y),
-                                  color=['skyblue', 'blue', 'seagreen', 'orange', 'salmon', 'red'])
+                                  color=['blue', 'red', 'seagreen', 'orange', 'salmon'])
             # linewidth and alpha need to be set separately
             for i, l in enumerate(ax1.lines):
                 plt.setp(l, alpha=ahpla, linewidth=1, linestyle=' ')
