@@ -50,8 +50,9 @@ def fetch_data(hours_to_fetch=48, aggregation='W'):
                         - df_chrg['EVnet']          # compensate for import diverted to EV
     df_chrg['export'] = df_chrg['exp']
     df_chrg['solar'] = df_chrg['gep'] \
-                       + df_chrg['export'] \
-                       - df_chrg['EVsol']           # compensate for solar diverted to EV
+                       + df_chrg['export']
+    # \
+    #                   # - df_chrg['EVsol']           # compensate for solar diverted to EV
                                                     # and/or export ('export' is negative!)
     # 'gep' is energy consumed by solar (operational power to converter) mainly at night.
     # TODO: 'gep' is currently disregarded
