@@ -35,7 +35,7 @@ class Kamstrup:
         self.PORT.open()
         serial.XON  # noqa
 
-        self.dt_format = "%Y-%m-%d %H:%M:%S"
+        self.dt_format = constants.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
         # starting values
         self.electra1in = np.nan
         self.electra2in = np.nan
