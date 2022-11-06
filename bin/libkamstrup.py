@@ -208,6 +208,7 @@ class Kamstrup:
         df_out['sample_epoch'] = df_out['sample_time'].apply(_convert_time_to_epoch)
         mf.syslog_trace(f"{df_out}", False, self.debug)
         result_data = df_out.to_dict('records')  # list of dicts
+
         df = df[df['sample_epoch'] > np.max(df_out['sample_epoch'])]
         remain_data = df.to_dict('records')
         return result_data, remain_data
