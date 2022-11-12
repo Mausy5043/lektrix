@@ -18,6 +18,3 @@ Two different modifiers are possible:
 
 `--balances`
 ![alt](lex_pasthours_mains_balances.png)
-
-
-
