@@ -352,7 +352,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     plt.tight_layout()
     plt.savefig(fname=f"{output_file}_mains.png", format="png")
     if DEBUG:
-        print(f" --> {output_file}.png\n")
+        print(f" --> {output_file}_mains.png\n")
 
 
 def main():
