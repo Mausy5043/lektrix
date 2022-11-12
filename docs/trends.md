@@ -12,7 +12,7 @@
 
 Example:
 `lektrix/bin/lg-trend.py --hours 84`  
-![alt](lex_pasthours_mains.png)
+![alt](lex_pasthours_mains.lg.png)
 
 Two different modifiers are possible:  
 `--balance`  
@@ -23,7 +23,7 @@ Two different modifiers are possible:
 
 
 `lektrix/bin/lg-trend.py --days 84`  
-![alt](lex_pastdays_mains.png)
+![alt](lex_pastdays_mains.lg.png)
   
 `--balance`  
 ![alt](lex_pastdays_mains_balance.png)
@@ -32,14 +32,13 @@ Two different modifiers are possible:
 ![alt](lex_pastdays_mains_balances.png)
 
 `lektrix/bin/lg-trend.py --months 36`  
-![alt](lex_pastmonths_mains.png)
-  
+![alt](lex_pastmonths_mains.lg.png)
+
 `--balance`  
 ![alt](lex_pastmonths_mains_balance.png)
 
 `--balances`
 ![alt](lex_pastmonths_mains_balances.png)
-
 
 ### Balancing
 Balancing is a mathematical excercise that is meant 
@@ -59,3 +58,32 @@ So, energy exported during the peak hours is only
 canceled out against the energy imported during those
 same peak hours.
 
+## ms-trend.py
+
+### Usage:
+`ms-trend.py <option>`
+
+### Options:
+`lektrix/bin/ms-trend.py --hours 84`  
+![alt](lex_pasthours_mains.ms.png)
+
+`lektrix/bin/ms-trend.py --days 84`  
+![alt](lex_pastdays_mains.ms.png)
+
+`lektrix/bin/ms-trend.py --months 36`  
+![alt](lex_pastmonths_mains.ms.png)
+
+## me-trend.py
+
+### Usage:
+`me-trend.py <option>`
+
+### Options:
+`lektrix/bin/me-trend.py --hours 84`  
+![alt](lex_pasthours_mains.ms.png)
+
+`lektrix/bin/me-trend.py --days 84`  
+![alt](lex_pastdays_mains.ms.png)
+
+`lektrix/bin/me-trend.py --months 36`  
+![alt](lex_pastmonths_mains.ms.png)
