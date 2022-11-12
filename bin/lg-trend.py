@@ -351,6 +351,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     plt.xlim([min(tick_pos) - bar_width, max(tick_pos) + bar_width])
     plt.tight_layout()
     plt.savefig(fname=f"{output_file}_mains.png", format="png")
+    if DEBUG:
+        print(f" --> {output_file}.png\n")
 
 
 def main():
