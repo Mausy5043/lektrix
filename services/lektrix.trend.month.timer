@@ -4,7 +4,7 @@
 Description=regularly trending electricity data from past month (timer)
 
 [Timer]
-OnCalendar=*-*-* 06,17,21:06
+OnCalendar=*-*-* 05,15,23:56
 RandomizedDelaySec=10m
 
 [Install]
