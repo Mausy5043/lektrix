@@ -6,9 +6,11 @@ import sys
 import pytz
 
 _MYHOME = os.environ["HOME"]
-_DATABASE = '/srv/databases/lektrix.sqlite3'
+_DATABASE = '/srv/rmt/_databases/lektrix/lektrix.sqlite3'
 _WEBSITE = '/tmp/lektrix/site'
 
+if not os.path.isfile(_DATABASE):
+    _DATABASE = '/srv/databases/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
     _DATABASE = '/srv/data/lektrix.sqlite3'
 if not os.path.isfile(_DATABASE):
@@ -145,3 +147,8 @@ ZAPPI = {'database': _DATABASE,
                       },
          'template_keys_to_drop': ['yr', 'mon', 'dom', 'hr', 'min']
          }
+
+
+if __name__ == "__main__":
+    print(f"home              = {_MYHOME}")
+    print(f"database location = {_DATABASE}")
