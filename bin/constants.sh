@@ -1,22 +1,25 @@
 #!/usr/bin/env bash
 
+HEREcon=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
+APPDIR="${HEREcon}/.."
+APPROOT="${APPDIR}/.."
+
 # shellcheck disable=SC2034
 app_name="lektrix"
-if [ -f "${HOME}/.${app_name}.branch" ]; then
-    branch_name=$(<"${HOME}/.${app_name}.branch")
+if [ -f "${APPROOT}/.${app_name}.branch" ]; then
+    branch_name=$(<"${APPROOT}/.${app_name}.branch")
 else
-    branch_name="master"
+    branch_name=$(git symbolic-ref --short -q HEAD)
 fi
-# Python library of common functions to be used
-commonlibbranch="v2_0"
 
 # determine machine identity
 host_name=$(hostname)
 
 # construct database paths
+database_local_root="/srv/rmt/_databases"
+database_remote_root="remote:raspi/_databases"
 database_filename="lektrix.sqlite3"
-database_path="/srv/databases"
-db_full_path="${database_path}/${database_filename}"
+db_full_path="${database_local_root}/${app_name}/${database_filename}"
 website_dir="/tmp/${app_name}/site"
 website_image_dir="${website_dir}/img"
 
@@ -53,7 +56,7 @@ declare -a lektrix_graphs=('lex_pastdays_mains.png'
 
 # start the application
 start_lektrix() {
-    echo "*** lektrix >>>>>>: start $1 $2"
+    echo "*** $app_name running on $host_name >>>>>>: start $1 $2"
     GRAPH=$2
     ROOT_DEAR=$1
     echo "Starting ${app_name} on $(date)"
@@ -68,18 +71,23 @@ start_lektrix() {
 
 # stop the application
 stop_lektrix() {
-    echo "*** lektrix >>>>>>: stop"
+    echo "*** $app_name running on $host_name >>>>>>: stop"
     echo "Stopping ${app_name} on $(date)"
     action_timers stop
     action_services stop
+    # sync the database into the cloud
+    if command -v rclone &> /dev/null; then
+        rclone copyto -v \
+               "${database_local_root}/${app_name}/${database_filename}" \
+               "${database_remote_root}/${app_name}/${database_filename}"
+    fi
 }
 
 # update the repository
 update_lektrix() {
-    echo "*** lektrix >>>>>>: update"
+    echo "*** $app_name running on $host_name >>>>>>: update"
     git fetch origin || sleep 60
     git fetch origin
-    DIFFLIST=$(git --no-pager diff --name-only "${branch_name}..origin/${branch_name}")
     git pull
     git fetch origin
     git checkout "${branch_name}"
@@ -88,7 +96,7 @@ update_lektrix() {
 
 # create graphs
 graph_lektrix() {
-    echo "*** lektrix >>>>>>: graph $1"
+    echo "*** $app_name running on $host_name >>>>>>: graph $1"
     ROOT_DIR=$1
 
     echo "Creating graphs [1]"
@@ -102,7 +110,7 @@ graph_lektrix() {
 # stop, update the repo and start the application
 # do some additional stuff when called by systemd
 restart_lektrix() {
-    echo "*** lektrix >>>>>>: restart $1 $2"
+    echo "*** $app_name running on $host_name >>>>>>: restart $1 $2"
     ROOT_DIR=$1
 
     # restarted by --systemd flag
@@ -131,26 +139,26 @@ restart_lektrix() {
 
 # uninstall the application
 unstall_lektrix() {
-    echo "*** lektrix >>>>>>: uninstall"
+    echo "*** $app_name running on $host_name >>>>>>: uninstall"
     echo "Uninstalling ${app_name} on $(date)"
     stop_lektrix
     action_timers disable
     action_services disable
     action_timers rm
     action_services rm
-    rm "${HOME}/.${app_name}.branch"
+    rm "${APPROOT}/.${app_name}.branch"
 }
 
 # install the application
 install_lektrix() {
-    echo "*** lektrix >>>>>>: install $1"
+    echo "*** $app_name running on $host_name >>>>>>: install $1"
     ROOT_DIR=$1
 
     # to suppress git detecting changes by chmod
     git config core.fileMode false
     # note the branchname being used
-    if [ ! -e "${HOME}/.${app_name}.branch" ]; then
-        echo "${branch_name}" >"${HOME}/.${app_name}.branch"
+    if [ ! -e "${APPROOT}/.${app_name}.branch" ]; then
+        echo "${branch_name}" >"${APPROOT}/.${app_name}.branch"
     fi
 
     echo "Installing ${app_name} on $(date)"
@@ -167,11 +175,12 @@ install_lektrix() {
     getfilefromserver "solaredge" "0740"
     getfilefromserver "zappi" "0740"
 
-    if [ -f "${db_full_path}" ]; then
-        echo "Found existing database."
-    else
-        echo "Creating database."
-        sqlite3 "${db_full_path}" <"${ROOT_DIR}/bin/lektrix.sql"
+    echo "Fetching existing database from cloud."
+    # sync the database from the cloud
+    if command -v rclone &> /dev/null; then
+        rclone copyto -v \
+               "${database_remote_root}/${app_name}/${database_filename}" \
+               "${database_local_root}/${app_name}/${database_filename}"
     fi
 
     # install services and timers
@@ -193,7 +202,7 @@ install_lektrix() {
 
 # set-up the application
 boot_lektrix() {
-    echo "*** lektrix >>>>>>: boot"
+    echo "*** $app_name running on $host_name >>>>>>: boot"
     # make sure website filetree exists
     if [ ! -d "${website_image_dir}" ]; then
         mkdir -p "${website_image_dir}"
@@ -226,7 +235,7 @@ action_timers() {
 
 # perform systemctl actions on all services
 action_services() {
-    echo "*** lektrix >>>>>>: action services $1"
+    echo "*** $app_name running on $host_name >>>>>>: action services $1"
     ACTION=$1
     for SRVC in "${lektrix_services[@]}"; do
         if [ "${ACTION}" != "rm" ]; then
@@ -243,7 +252,7 @@ action_services() {
 action_apt_install() {
     PKG=$1
     echo "*********************************************************"
-    echo "* Requesting ${PKG}"
+    echo "* $app_name running on $host_name requesting ${PKG}"
     status=$(dpkg -l | awk '{print $2}' | grep -c -e "^${PKG}*")
     if [ "${status}" -eq 0 ]; then
         echo -n "* Installing ${PKG} "
@@ -261,8 +270,8 @@ getfilefromserver() {
     file="${1}"
     mode="${2}"
 
-    cp -rvf "/srv/config/${file}" "${HOME}/.config/"
-    chmod -R "${mode}" "${HOME}/.config/${file}"
+    cp -rvf "/srv/config/${file}" "${APPROOT}/.config/"
+    chmod -R "${mode}" "${APPROOT}/.config/${file}"
 }
 
 # create a placeholder graphic for Fles if it doesn't exist already
