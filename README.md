@@ -10,8 +10,9 @@
  * Show trendgraphs on a local website.
 
 ### Installing
-Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.
-
+Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.   
+To install run `lektrix --install`.   
+Use `lektrix --uninstall` to uninstall.
 
 ### Usage
 `lektrix <options>`
