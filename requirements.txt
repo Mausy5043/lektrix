@@ -1,5 +1,5 @@
 matplotlib==3.6.*
-mausy5043-common==1.0.2
+mausy5043-common==1.0.*
 numpy==1.23.*
 pandas==1.5.*
 pyserial==3.5
