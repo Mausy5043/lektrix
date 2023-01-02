@@ -19,21 +19,21 @@ import constants
 pd.options.display.float_format = "{:.3f}".format
 
 # constants
-HERE = os.path.realpath(__file__).split('/')
+HERE = os.path.realpath(__file__).split("/")
 # runlist id :
 MYID = HERE[-1]
 # app_name :
 MYAPP = HERE[-3]
-MYROOT = '/'.join(HERE[0:-3])
+MYROOT = "/".join(HERE[0:-3])
 # host_name :
 NODE = os.uname()[1]
 
 
 # CONFIG_FILE = os.environ["HOME"] + "/.config/kamstrup/key.ini"
 
+
 class Myenergi:
-    """Class to interact with the myenergi servers
-    """
+    """Class to interact with the myenergi servers"""
 
     def __init__(self, keys_file, debug=False):
         """Initialise the Myenergi object
@@ -61,9 +61,9 @@ class Myenergi:
 
         """
         self.DEBUG = debug
-        self.base_url = constants.ZAPPI['director']
+        self.base_url = constants.ZAPPI["director"]
         self.zappi_data = list()
-        self.zappi_data_template = constants.ZAPPI['template']
+        self.zappi_data_template = constants.ZAPPI["template"]
 
         iniconf = configparser.ConfigParser()
         iniconf.read(keys_file)
@@ -75,9 +75,9 @@ class Myenergi:
         self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
 
         # First call to the API to get the ASN
-        _response = requests.get(self.base_url,
-                                 auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
-                                 )
+        _response = requests.get(
+            self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
+        )
         # if self.DEBUG:
         #     mf.syslog_trace("Response :", False, self.DEBUG)
         #     for key in self.response.headers:
@@ -86,10 +86,12 @@ class Myenergi:
 
         # construct the URL for the ASN
         if "X_MYENERGI-asn" in _response.headers:
-            _asn = _response.headers['X_MYENERGI-asn']
+            _asn = _response.headers["X_MYENERGI-asn"]
             self.base_url = "https://" + _asn
             mf.syslog_trace(f"ASN             : {_asn}", syslog.LOG_INFO, self.DEBUG)
-            mf.syslog_trace(f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG)
+            mf.syslog_trace(
+                f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG
+            )
         else:
             raise RuntimeError("myenergi ASN not found in myenergi header")
 
@@ -108,11 +110,18 @@ class Myenergi:
         try:
             key_value = confobj.get(key_section, key_option)
         except configparser.NoSectionError:
-            mf.syslog_trace(f"Section [{key_section}] does not exist.", syslog.LOG_WARNING, self.DEBUG)
+            mf.syslog_trace(
+                f"Section [{key_section}] does not exist.",
+                syslog.LOG_WARNING,
+                self.DEBUG,
+            )
             pass
         except configparser.NoOptionError:
-            mf.syslog_trace(f"Option [{key_section}]\n{key_option} = ...    does not exist.",
-                            syslog.LOG_WARNING, self.DEBUG)
+            mf.syslog_trace(
+                f"Option [{key_section}]\n{key_option} = ...    does not exist.",
+                syslog.LOG_WARNING,
+                self.DEBUG,
+            )
             pass
         return key_value
 
@@ -130,11 +139,12 @@ class Myenergi:
         call_url = "/".join([self.base_url, command])
         mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
         try:
-            response = requests.get(call_url,
-                                    headers=hdrs,
-                                    auth=HTTPDigestAuth(self.hub_serial, self.hub_password),
-                                    timeout=10,
-                                    )
+            response = requests.get(
+                call_url,
+                headers=hdrs,
+                auth=HTTPDigestAuth(self.hub_serial, self.hub_password),
+                timeout=10,
+            )
         except requests.exceptions.ReadTimeout:
             # We raise the time-out here. If desired, retries should be handled by caller
             mf.syslog_trace(f"{call_url} timed out!", syslog.LOG_WARNING, self.DEBUG)
@@ -167,14 +177,15 @@ class Myenergi:
             except KeyError:
                 result_dict[key] = self.zappi_data_template[key]
 
-        utc_date_time = dt.datetime.strptime(f"{result_dict['yr']}-{result_dict['mon']:02d}-{result_dict['dom']:02d} "
-                                             f"{result_dict['hr']:02d}:{result_dict['min']:02d}:00",
-                                             constants.DT_FORMAT
-                                             )  # UTC!
+        utc_date_time = dt.datetime.strptime(
+            f"{result_dict['yr']}-{result_dict['mon']:02d}-{result_dict['dom']:02d} "
+            f"{result_dict['hr']:02d}:{result_dict['min']:02d}:00",
+            constants.DT_FORMAT,
+        )  # UTC!
         # if result_dict['min'] == 0:
         #     mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
         # discard fields we nolonger need
-        for key in constants.ZAPPI['template_keys_to_drop']:
+        for key in constants.ZAPPI["template_keys_to_drop"]:
             try:
                 del result_dict[key]
             except KeyError:
@@ -183,8 +194,10 @@ class Myenergi:
         lcl_date_time = utc_date_time.replace(tzinfo=pytz.utc)
         lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
         date_time = lcl_date_time.strftime(constants.DT_FORMAT)
-        result_dict['sample_time'] = date_time
-        result_dict['sample_epoch'] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
+        result_dict["sample_time"] = date_time
+        result_dict["sample_epoch"] = int(
+            dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp()
+        )
 
         # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
@@ -192,27 +205,29 @@ class Myenergi:
     def fetch_data(self, day_to_fetch):
         """Fetch data from the API for <day_to_fetch> and store it as a list of dicts in `zappi_data`
 
-           This will fetch at least 24 hours and including the previous day to compensate for
-           any hours that might be lost due to the offset from UTC.
-           The dates are converted to local time and the data returned is
-           for 00:00 u/i 23:59 LOCAL CLOCK TIME of the requested <day_to_fetch>
+        This will fetch at least 24 hours and including the previous day to compensate for
+        any hours that might be lost due to the offset from UTC.
+        The dates are converted to local time and the data returned is
+        for 00:00 u/i 23:59 LOCAL CLOCK TIME of the requested <day_to_fetch>
 
-            Args:
-                day_to_fetch (datetime.date): object containing the day for which to fetch data
+         Args:
+             day_to_fetch (datetime.date): object containing the day for which to fetch data
 
-            Returns:
-                None
+         Returns:
+             None
         """
         self.zappi_data = list()
         result = list()
-        previous_day_data = [self.standardise_json_block(block)
-                             for block in self._fetch(day_to_fetch - dt.timedelta(days=1)
-                                                      )[f"U{self.zappi_serial}"]
-                             ]
-        current_day_data = [self.standardise_json_block(block)
-                            for block in self._fetch(day_to_fetch
-                                                     )[f"U{self.zappi_serial}"]
-                            ]
+        previous_day_data = [
+            self.standardise_json_block(block)
+            for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[
+                f"U{self.zappi_serial}"
+            ]
+        ]
+        current_day_data = [
+            self.standardise_json_block(block)
+            for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]
+        ]
         try:
             mf.syslog_trace(f"> {previous_day_data[0]}", False, self.DEBUG)
             mf.syslog_trace(f"> {previous_day_data[1]}", False, self.DEBUG)
@@ -242,11 +257,12 @@ class Myenergi:
                 # result = self.get_status(f"cgi-jdayhour-Z{self.zappi_serial}-"
                 # minutely data
                 # result = self.get_status(f"cgi-jday-Z{self.zappi_serial}-"
-                result = self.get_status(f"cgi-jday-Z{self.zappi_serial}-"
-                                         f"{this_day.year}-"
-                                         f"{this_day.month}-"
-                                         f"{this_day.day}"
-                                         )
+                result = self.get_status(
+                    f"cgi-jday-Z{self.zappi_serial}-"
+                    f"{this_day.year}-"
+                    f"{this_day.month}-"
+                    f"{this_day.day}"
+                )
                 done_flag = True
             except requests.exceptions.ReadTimeout:
                 timeout_retries -= 1
@@ -280,22 +296,22 @@ class Myenergi:
 
         if data:
             df = pd.DataFrame(data)
-            df = df.set_index('sample_time')
+            df = df.set_index("sample_time")
             df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
             # resample to monotonic timeline
-            df = df.resample('15min', label='right').sum()
+            df = df.resample("15min", label="right").sum()
             # recreate column 'sample_time' that was lost to the index
-            df['sample_time'] = df.index.to_frame(name='sample_time')
-            df['sample_time'] = df['sample_time'].apply(_convert_time_to_text)
+            df["sample_time"] = df.index.to_frame(name="sample_time")
+            df["sample_time"] = df["sample_time"].apply(_convert_time_to_text)
             # reset 'site_id'
-            df['site_id'] = 4.1
+            df["site_id"] = 4.1
             # fields 'v1' and 'frq' should be averaged so divide them by 15 here:
-            df['v1'] = np.array(df['v1'] / 15, dtype='int')
-            df['frq'] = np.array(df['frq'] / 15, dtype='int')
+            df["v1"] = np.array(df["v1"] / 15, dtype="int")
+            df["frq"] = np.array(df["frq"] / 15, dtype="int")
             # recalculate 'sample_epoch'
-            df['sample_epoch'] = df['sample_time'].apply(_convert_time_to_epoch)
+            df["sample_epoch"] = df["sample_time"].apply(_convert_time_to_epoch)
             mf.syslog_trace(f"{df}", False, self.DEBUG)
-            result_data = df.to_dict('records')
+            result_data = df.to_dict("records")
         return result_data
 
 

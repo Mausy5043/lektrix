@@ -21,14 +21,12 @@ import libmyenergi as zl
 
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--start",
-                          action="store_true",
-                          help="start the daemon as a service"
-                          )
-parser_group.add_argument("--debug",
-                          action="store_true",
-                          help="start the daemon in debugging mode"
-                          )
+parser_group.add_argument(
+    "--start", action="store_true", help="start the daemon as a service"
+)
+parser_group.add_argument(
+    "--debug", action="store_true", help="start the daemon in debugging mode"
+)
 OPTION = parser.parse_args()
 
 # constants
@@ -57,7 +55,7 @@ API_ZP = None
 def main():
     """Execute main loop until killed."""
     global API_ZP
-    set_led('ev', 'orange')
+    set_led("ev", "orange")
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/zappi/keys.ini
@@ -65,13 +63,15 @@ def main():
     iniconf.read(api_keys_file)
     API_ZP = zl.Myenergi(api_keys_file, DEBUG)
 
-    sql_db = m3.SqlDatabase(database=constants.ZAPPI['database'],
-                            table='charger', insert=constants.ZAPPI['sql_command'],
-                            debug=DEBUG
-                            )
+    sql_db = m3.SqlDatabase(
+        database=constants.ZAPPI["database"],
+        table="charger",
+        insert=constants.ZAPPI["sql_command"],
+        debug=DEBUG,
+    )
 
-    report_interval = int(constants.ZAPPI['report_interval'])
-    sample_interval = report_interval / int(constants.ZAPPI['samplespercycle'])
+    report_interval = int(constants.ZAPPI["report_interval"])
+    sample_interval = report_interval / int(constants.ZAPPI["samplespercycle"])
     pause_interval = 0
     next_time = pause_interval + time.time()
     start_dt = sql_db.latest_datapoint()  # type: str
@@ -80,16 +80,26 @@ def main():
         if time.time() > next_time:
             start_time = time.time()
             try:
-                data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
-                set_led('ev', 'green')
+                data = do_work(
+                    API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT)
+                )  # noqa
+                set_led("ev", "green")
             except ConnectionError:
-                set_led('ev', 'orange')
+                set_led("ev", "orange")
                 data = None
-                mf.syslog_trace("ConnectionError occured. Will try again later.", syslog.LOG_WARNING, DEBUG)
+                mf.syslog_trace(
+                    "ConnectionError occured. Will try again later.",
+                    syslog.LOG_WARNING,
+                    DEBUG,
+                )
                 pass
             except Exception:  # noqa
-                set_led('ev', 'red')
-                mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
+                set_led("ev", "red")
+                mf.syslog_trace(
+                    "Unexpected error while trying to do some work!",
+                    syslog.LOG_CRIT,
+                    DEBUG,
+                )
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
             if data:
@@ -99,25 +109,41 @@ def main():
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
-                    set_led('ev', 'red')
-                    mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
+                    set_led("ev", "red")
+                    mf.syslog_trace(
+                        "Unexpected error while trying to queue the data",
+                        syslog.LOG_ALERT,
+                        DEBUG,
+                    )
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
-                    sql_db.insert(method='replace')
+                    sql_db.insert(method="replace")
                 except Exception:  # noqa
-                    set_led('ev', 'red')
-                    mf.syslog_trace("Unexpected error while trying to commit the queued data to the database",
-                                    syslog.LOG_ALERT, DEBUG)
+                    set_led("ev", "red")
+                    mf.syslog_trace(
+                        "Unexpected error while trying to commit the queued data to the database",
+                        syslog.LOG_ALERT,
+                        DEBUG,
+                    )
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
 
-            pause_interval = (sample_interval
-                              - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-                              - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
-                              )
-            pause_interval += constants.ZAPPI['delay']  # allow the charger to update the data on the server.
-            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
+            pause_interval = (
+                sample_interval
+                - (
+                    time.time() - start_time
+                )  # time spent in this loop           eg. (40-3) = 37s
+                - (
+                    start_time % sample_interval
+                )  # number of seconds to next loop    eg. 3 % 60 = 3s
+            )
+            pause_interval += constants.ZAPPI[
+                "delay"
+            ]  # allow the charger to update the data on the server.
+            next_time = (
+                pause_interval + time.time()
+            )  # gives the actual time when the next loop should start
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -137,18 +163,25 @@ def main():
             new_start_dt = sql_db.latest_datapoint()  # type: str
             if new_start_dt < start_dt:
                 # there is a hole in the data
-                mf.syslog_trace(f"Found a hole in the data between {start_dt} and {new_start_dt}.",
-                                syslog.LOG_WARNING,
-                                DEBUG)
-                dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(days=add_days)
+                mf.syslog_trace(
+                    f"Found a hole in the data between {start_dt} and {new_start_dt}.",
+                    syslog.LOG_WARNING,
+                    DEBUG,
+                )
+                dati = dt.datetime.strptime(
+                    new_start_dt, constants.DT_FORMAT
+                ) + dt.timedelta(days=add_days)
                 if dati > dt.datetime.today():
-                    mf.syslog_trace(f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
-                                    syslog.LOG_WARNING,
-                                    DEBUG
-                                    )
+                    mf.syslog_trace(
+                        f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
+                        syslog.LOG_WARNING,
+                        DEBUG,
+                    )
                     dati = dt.datetime.today()
-                start_dt = dati.strftime('%Y-%m-%d %H:%M:%S')
-                mf.syslog_trace(f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG)
+                start_dt = dati.strftime("%Y-%m-%d %H:%M:%S")
+                mf.syslog_trace(
+                    f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG
+                )
                 # if we don't cross the gap then next time check more days ahead
                 add_days += 1
                 if DEBUG:
@@ -158,10 +191,18 @@ def main():
                 add_days = 1
 
             if pause_interval > 0:
-                mf.syslog_trace(f"Waiting  : {pause_interval:.1f}s", False, DEBUG, )
+                mf.syslog_trace(
+                    f"Waiting  : {pause_interval:.1f}s",
+                    False,
+                    DEBUG,
+                )
                 mf.syslog_trace("................................", False, DEBUG)
             else:
-                mf.syslog_trace(f"Behind   : {pause_interval:.1f}s", False, DEBUG, )
+                mf.syslog_trace(
+                    f"Behind   : {pause_interval:.1f}s",
+                    False,
+                    DEBUG,
+                )
                 mf.syslog_trace("................................", False, DEBUG)
         else:
             time.sleep(1.0)  # 1s resolution is enough
@@ -191,9 +232,9 @@ def do_work(zappi, start_dt=dt.datetime.today()):
 def set_led(dev, colour):
     mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
 
-    in_dirfile = f'{APPROOT}/www/{colour}.png'
+    in_dirfile = f"{APPROOT}/www/{colour}.png"
     out_dirfile = f'{constants.TREND["website"]}/img/{dev}.png'
-    shutil.copy(f'{in_dirfile}', out_dirfile)
+    shutil.copy(f"{in_dirfile}", out_dirfile)
 
 
 if __name__ == "__main__":

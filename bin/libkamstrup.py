@@ -17,8 +17,7 @@ import constants
 
 
 class Kamstrup:
-    """Class to interact with the P1-port
-    """
+    """Class to interact with the P1-port"""
 
     def __init__(self, debug=False):
         self.PORT = serial.Serial()
@@ -78,13 +77,17 @@ class Kamstrup:
                     # remember meaningful content
                     telegram.append(line)
             except serial.SerialException:
-                mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, self.debug)
+                mf.syslog_trace(
+                    "*** Serialport read error:", syslog.LOG_CRIT, self.debug
+                )
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
                 valid_telegram = False
                 receiving = False
                 pass
             except UnicodeDecodeError:
-                mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, self.debug)
+                mf.syslog_trace(
+                    "*** Unicode Decode error:", syslog.LOG_CRIT, self.debug
+                )
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
                 valid_telegram = False
                 receiving = False
@@ -118,7 +121,7 @@ class Kamstrup:
         """
         for element in telegram:
             try:
-                line = re.split(r'[\(\*\)]', element)
+                line = re.split(r"[\(\*\)]", element)
                 # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
                 if line[0] == "1-0:1.8.1":
                     self.electra1in = int(float(line[1]) * 1000)
@@ -154,25 +157,32 @@ class Kamstrup:
                 # not recorded
             except ValueError:
                 if self.debug:
-                    mf.syslog_trace("*** Conversion not possible for element:", syslog.LOG_INFO, self.debug)
+                    mf.syslog_trace(
+                        "*** Conversion not possible for element:",
+                        syslog.LOG_INFO,
+                        self.debug,
+                    )
                     mf.syslog_trace(f"    {element}", syslog.LOG_INFO, self.debug)
-                    mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_INFO, self.debug)
+                    mf.syslog_trace(
+                        "*** Extracted from telegram:", syslog.LOG_INFO, self.debug
+                    )
                     mf.syslog_trace(f"    {telegram}", syslog.LOG_INFO, self.debug)
                 pass
         idx_dt = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
 
-        return {'sample_time': idx_dt.strftime(self.dt_format),
-                'sample_epoch': epoch,
-                'T1in': self.electra1in,
-                'T2in': self.electra2in,
-                'powerin': self.powerin,
-                'T1out': self.electra1out,
-                'T2out': self.electra2out,
-                'powerout': self.powerout,
-                'tarif': self.tarif,
-                'swits': self.swits
-                }
+        return {
+            "sample_time": idx_dt.strftime(self.dt_format),
+            "sample_epoch": epoch,
+            "T1in": self.electra1in,
+            "T2in": self.electra2in,
+            "powerin": self.powerin,
+            "T1out": self.electra1out,
+            "T2out": self.electra2out,
+            "powerout": self.powerout,
+            "tarif": self.tarif,
+            "swits": self.swits,
+        }
 
     def compact_data(self, data):
         """
@@ -192,25 +202,25 @@ class Kamstrup:
             return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
 
         df = pd.DataFrame(data)
-        df = df.set_index('sample_time')
+        df = df.set_index("sample_time")
         df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
         # resample to monotonic timeline
-        df_out = df.resample('15min', label='right').max()
-        df_mean = df.resample('15min', label='right').mean()
+        df_out = df.resample("15min", label="right").max()
+        df_mean = df.resample("15min", label="right").mean()
 
-        df_out['powerin'] = df_mean['powerin'].astype(int)
-        df_out['powerout'] = df_mean['powerout'].astype(int)
+        df_out["powerin"] = df_mean["powerin"].astype(int)
+        df_out["powerout"] = df_mean["powerout"].astype(int)
         # recreate column 'sample_time' that was lost to the index
-        df_out['sample_time'] = df_out.index.to_frame(name='sample_time')
-        df_out['sample_time'] = df_out['sample_time'].apply(_convert_time_to_text)
+        df_out["sample_time"] = df_out.index.to_frame(name="sample_time")
+        df_out["sample_time"] = df_out["sample_time"].apply(_convert_time_to_text)
 
         # recalculate 'sample_epoch'
-        df_out['sample_epoch'] = df_out['sample_time'].apply(_convert_time_to_epoch)
+        df_out["sample_epoch"] = df_out["sample_time"].apply(_convert_time_to_epoch)
         mf.syslog_trace(f"{df_out}", False, self.debug)
-        result_data = df_out.to_dict('records')  # list of dicts
+        result_data = df_out.to_dict("records")  # list of dicts
 
-        df = df[df['sample_epoch'] > np.max(df_out['sample_epoch'])]
-        remain_data = df.to_dict('records')
+        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]
+        remain_data = df.to_dict("records")
         return result_data, remain_data
 
 
@@ -226,9 +236,9 @@ def add_time_line(config):
     final_epoch = int(dt.datetime.now().timestamp())
     if "year" in config:
         ytf = int(config["year"]) + 1
-        final_epoch = int(dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M"
-                                               ).timestamp()
-                          )
+        final_epoch = int(
+            dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp()
+        )
     step_epoch = 15 * 60
     multi = 3600
     if config["timeframe"] == "hour":
@@ -239,20 +249,16 @@ def add_time_line(config):
         multi = 3600 * 24 * 31
     if config["timeframe"] == "year":
         multi = 3600 * 24 * 366
-    start_epoch = (int((final_epoch
-                        - (multi * config["period"])
-                        ) / step_epoch
-                       ) * step_epoch
-                   )
-    config["timeline"] = np.arange(start_epoch,
-                                   final_epoch,
-                                   step_epoch,
-                                   dtype="int"
-                                   )
+    start_epoch = (
+        int((final_epoch - (multi * config["period"])) / step_epoch) * step_epoch
+    )
+    config["timeline"] = np.arange(start_epoch, final_epoch, step_epoch, dtype="int")
     return config
 
 
-def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True):
+def get_historic_data(
+    dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True
+):
     """Fetch historic data from SQLITE3 database.
 
     Args:
@@ -281,35 +287,36 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
     db_con = s3.connect(dicti["database"])
     with db_con:
         db_cur = db_con.cursor()
-        db_cur.execute(f"SELECT sample_epoch, "
-                       f"{telwerk} "
-                       f"FROM {dicti['table']} "
-                       f"WHERE (sample_time >= {interval}) "
-                       f"{and_where_not_today} "
-                       f"ORDER BY sample_epoch ASC "
-                       f";"
-                       )
+        db_cur.execute(
+            f"SELECT sample_epoch, "
+            f"{telwerk} "
+            f"FROM {dicti['table']} "
+            f"WHERE (sample_time >= {interval}) "
+            f"{and_where_not_today} "
+            f"ORDER BY sample_epoch ASC "
+            f";"
+        )
         db_data = db_cur.fetchall()
     if not db_data:
         # fake some data
-        db_data = [(int(dt.datetime(ytf, 1, 1).timestamp()), 0),
-                   (int(dt.datetime(ytf + 1, 1, 1).timestamp()), 0),
-                   ]
+        db_data = [
+            (int(dt.datetime(ytf, 1, 1).timestamp()), 0),
+            (int(dt.datetime(ytf + 1, 1, 1).timestamp()), 0),
+        ]
 
     data = np.array(db_data)
 
     # interpolate the data to monotonic 10minute intervals provided by dicti['timeline']
-    ret_epoch, ret_intdata = interplate(dicti["timeline"],
-                                        np.array(data[:, 0], dtype=int),
-                                        np.array(data[:, 1], dtype=int),
-                                        )
+    ret_epoch, ret_intdata = interplate(
+        dicti["timeline"],
+        np.array(data[:, 0], dtype=int),
+        np.array(data[:, 1], dtype=int),
+    )
 
     # group the data by dicti['grouping']
-    ret_lbls, ret_grpdata = fast_group_data(ret_epoch,
-                                            ret_intdata,
-                                            dicti["grouping"],
-                                            dif=dif
-                                            )
+    ret_lbls, ret_grpdata = fast_group_data(
+        ret_epoch, ret_intdata, dicti["grouping"], dif=dif
+    )
 
     ret_data = ret_grpdata / 1000
     return ret_data[-period:], ret_lbls[-period:]
@@ -361,8 +368,7 @@ def distract(arr1, arr2, allow_negatives=False):
 
 
 def balance(ilo, ihi, xlo, xhi, own, balans=2):
-    """Calculate the balance
-    """
+    """Calculate the balance"""
     import_lo = np.zeros(len(ilo), dtype=float)
     import_hi = np.zeros(len(ihi), dtype=float)
     export_lo = np.zeros(len(xlo), dtype=float)
@@ -407,9 +413,10 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     # convert y-values to numpy array
     y_data = np.array(y_data)
     # convert epochs to text
-    x_texts = np.array([dt.datetime.fromtimestamp(i).strftime(grouping) for i in x_epochs],
-                       dtype="str",
-                       )
+    x_texts = np.array(
+        [dt.datetime.fromtimestamp(i).strftime(grouping) for i in x_epochs],
+        dtype="str",
+    )
     """
     x_texts =
     ['12-31 20h' '12-31 21h' '12-31 21h' '12-31 21h' '12-31 21h' '12-31 21h'
@@ -425,9 +432,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     _, loc1 = np.unique(x_texts, return_index=True)
     loc_from = np.sort(loc1)
     unique_x_texts = x_texts[loc1]
-    loc2 = (len(x_texts) - 1 - np.unique(np.flip(x_texts),
-                                         return_index=True)[1]
-            )
+    loc2 = len(x_texts) - 1 - np.unique(np.flip(x_texts), return_index=True)[1]
     loc_to = np.sort(loc2)
 
     if not dif:
@@ -437,7 +442,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
         for i, v in enumerate(loc1):
             # f1 = y_data[v:loc2[i]]
             # print(i, v, loc2[i], f1, f1.sum())
-            y.append(y_data[v:loc2[i]].sum())
+            y.append(y_data[v : loc2[i]].sum())
         y = np.array(y)
     if dif:
         y = y_data[loc_to] - y_data[loc_from]

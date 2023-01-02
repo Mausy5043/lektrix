@@ -19,14 +19,12 @@ import libkamstrup as kl
 
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--start",
-                          action="store_true",
-                          help="start the daemon as a service"
-                          )
-parser_group.add_argument("--debug",
-                          action="store_true",
-                          help="start the daemon in debugging mode"
-                          )
+parser_group.add_argument(
+    "--start", action="store_true", help="start the daemon as a service"
+)
+parser_group.add_argument(
+    "--debug", action="store_true", help="start the daemon in debugging mode"
+)
 OPTION = parser.parse_args()
 
 # constants
@@ -55,17 +53,19 @@ API_KL = None
 def main():
     """Execute main loop until killed."""
     global API_KL
-    set_led('mains', 'orange')
+    set_led("mains", "orange")
     killer = ml.GracefulKiller()
     API_KL = kl.Kamstrup(DEBUG)
 
-    sql_db = m3.SqlDatabase(database=constants.KAMSTRUP['database'],
-                            table='mains', insert=constants.KAMSTRUP['sql_command'],
-                            debug=DEBUG
-                            )
+    sql_db = m3.SqlDatabase(
+        database=constants.KAMSTRUP["database"],
+        table="mains",
+        insert=constants.KAMSTRUP["sql_command"],
+        debug=DEBUG,
+    )
 
-    report_interval = int(constants.KAMSTRUP['report_interval'])
-    sample_interval = report_interval / int(constants.KAMSTRUP['samplespercycle'])
+    report_interval = int(constants.KAMSTRUP["report_interval"])
+    sample_interval = report_interval / int(constants.KAMSTRUP["samplespercycle"])
 
     next_time = time.time() + (sample_interval - (time.time() % sample_interval))
     rprt_time = time.time() + (report_interval - (time.time() % report_interval))
@@ -74,14 +74,18 @@ def main():
             start_time = time.time()
             try:
                 succes = API_KL.get_telegram()
-                set_led('mains', 'green')
+                set_led("mains", "green")
             except Exception:  # noqa
-                set_led('mains', 'red')
-                mf.syslog_trace("Unexpected error while trying to do some work!", syslog.LOG_CRIT, DEBUG)
+                set_led("mains", "red")
+                mf.syslog_trace(
+                    "Unexpected error while trying to do some work!",
+                    syslog.LOG_CRIT,
+                    DEBUG,
+                )
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                 raise
             if not succes:
-                set_led('mains', 'orange')
+                set_led("mains", "orange")
                 mf.syslog_trace("Getting telegram failed", syslog.LOG_WARNING, DEBUG)
             # check if we already need to report the result data
             if time.time() > rprt_time:
@@ -96,26 +100,39 @@ def main():
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
-                    set_led('mains', 'red')
-                    mf.syslog_trace("Unexpected error while trying to queue the data", syslog.LOG_ALERT, DEBUG)
+                    set_led("mains", "red")
+                    mf.syslog_trace(
+                        "Unexpected error while trying to queue the data",
+                        syslog.LOG_ALERT,
+                        DEBUG,
+                    )
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
                 try:
-                    sql_db.insert(method='replace')
+                    sql_db.insert(method="replace")
                 except Exception:  # noqa
-                    set_led('mains', 'red')
-                    mf.syslog_trace("Unexpected error while trying to commit the data to the database",
-                                    syslog.LOG_ALERT, DEBUG)
+                    set_led("mains", "red")
+                    mf.syslog_trace(
+                        "Unexpected error while trying to commit the data to the database",
+                        syslog.LOG_ALERT,
+                        DEBUG,
+                    )
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                     raise  # may be changed to pass if errors can be corrected.
 
             # electricity meter determines the tempo, so no need to wait.
-            pause_interval = 0.  # faux variable
+            pause_interval = 0.0  # faux variable
 
-            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
+            next_time = (
+                pause_interval + time.time()
+            )  # gives the actual time when the next loop should start
             # determine moment of next report
-            rprt_time = time.time() + (report_interval - (time.time() % report_interval))
-            mf.syslog_trace(f"Spent {time.time() - start_time:.1f}s getting data", False, DEBUG)
+            rprt_time = time.time() + (
+                report_interval - (time.time() % report_interval)
+            )
+            mf.syslog_trace(
+                f"Spent {time.time() - start_time:.1f}s getting data", False, DEBUG
+            )
             mf.syslog_trace(f"Report in {rprt_time - time.time():.0f}s", False, DEBUG)
             mf.syslog_trace("................................", False, DEBUG)
         else:
@@ -125,9 +142,9 @@ def main():
 def set_led(dev, colour):
     mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
 
-    in_dirfile = f'{APPROOT}/www/{colour}.png'
+    in_dirfile = f"{APPROOT}/www/{colour}.png"
     out_dirfile = f'{constants.TREND["website"]}/img/{dev}.png'
-    shutil.copy(f'{in_dirfile}', out_dirfile)
+    shutil.copy(f"{in_dirfile}", out_dirfile)
 
 
 if __name__ == "__main__":
