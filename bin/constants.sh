@@ -172,8 +172,8 @@ install_lektrix() {
     echo
 
     # install account keys from local fileserver
-    getfilefromserver "solaredge" "0740"
-    getfilefromserver "zappi" "0740"
+    # getfilefromserver "solaredge" "0740"
+    # getfilefromserver "zappi" "0740"
 
     echo "Fetching existing database from cloud."
     # sync the database from the cloud
