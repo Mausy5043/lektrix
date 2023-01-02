@@ -265,15 +265,6 @@ action_apt_install() {
     echo
 }
 
-# copy files from the network to the local .config folder
-getfilefromserver() {
-    file="${1}"
-    mode="${2}"
-
-    cp -rvf "/srv/config/${file}" "${APPROOT}/.config/"
-    chmod -R "${mode}" "${APPROOT}/.config/${file}"
-}
-
 # create a placeholder graphic for Fles if it doesn't exist already
 create_graphic() {
     IMAGE="$1"
