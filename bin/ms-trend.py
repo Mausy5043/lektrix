@@ -5,12 +5,10 @@ Using kamstrup data
 """
 
 # FIXME: still needs work
-import warnings
-
-warnings.simplefilter(action="ignore", category=FutureWarning)
 
 import argparse
 import sqlite3 as s3
+import warnings
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
@@ -19,6 +17,12 @@ import numpy as np
 import pandas as pd
 
 import constants
+
+# FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
+# In a future version, numeric_only will default to False. Either specify numeric_only or
+# select only columns which should be valid for the function.
+#   df = df.resample(f"{aggregation}", label=lbl).sum()
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
