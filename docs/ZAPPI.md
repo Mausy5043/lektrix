@@ -50,7 +50,7 @@
             'sbh': 17,                  // SmartBoost start time [hr]
             'sbm': 10,                  // SmartBoost start time [min]
             'sbk': 5,                   // SmartBoost energy to add [kWh]
-            'sno': 16079238,            // Serial Number of zappi
+            'sno': #######,            // Serial Number of zappi
             'sta': 3,                   // Status
                                         //      1 = Paused
                                         //      3 = Charging
@@ -73,12 +73,12 @@
 }
 ```
 
-## Payload cgi-jdayhour-Z16079238-2021-07-25
+## Payload cgi-jdayhour-Z#######-2021-07-25
 
 Note: Energy is in Joules; divide by 60 get average Watts; divide by 3 600 000 to get kWh
 ```
 {
-    'U16079238': [
+    'U#######': [
         {
             'dom': 25,                  // Day of Month
             'dow': 'Sun',               // Day 0f Week
