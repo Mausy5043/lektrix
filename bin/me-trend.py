@@ -44,6 +44,13 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
     # rename rows and perform calculations
+    """
+    EVnet := h1b(+)
+    EVsol := h1d(+)
+    import := imp(+) - EVnet
+    export := exp(-)
+    EB := gep(+) + export - EVsol
+    """
     df_chrg["EVnet"] = df_chrg["h1b"]  # imported and used for EV
     df_chrg["EVsol"] = df_chrg["h1d"]  # solar used for EV
     df_chrg["import"] = (
