@@ -175,10 +175,18 @@ function-naming-style=snake_case
 #function-rgx=
 
 # Good variable names which should always be accepted, separated by a comma.
-good-names=i,
+good-names=c,
+           d,
+           df,
+           dt,
+           e,
+           ex,
+           i,
            j,
            k,
-           ex,
+           l,
+           t0,
+           ts,
            OPTION,
            Run,
            _
@@ -417,7 +425,8 @@ disable=raw-checker-failed,
         deprecated-pragma,
         use-symbolic-message-instead,
         too-many-arguments,
-        logging-fstring-interpolation
+        logging-fstring-interpolation,
+        import-error
 #        useless-suppression,
 
 # Enable the message, report, category or checker with the given id(s). You can
