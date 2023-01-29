@@ -296,7 +296,7 @@ if __name__ == "__main__":
         help="number of months of data to use for the graph or 0 for " "default.",
     )
     parser.add_argument("-p", "--print", action="store_true", help="Output data to stdout.")
-    OPTION = parser.parse_args()
+    OPTION = parser.parse_args()  # type: ignore
     if OPTION.months == 0:
         OPTION.months = 61
     if (OPTION.gauge is not None) and (OPTION.gauge == 0 or OPTION.gauge > year_to_graph):

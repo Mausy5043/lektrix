@@ -289,7 +289,7 @@ if __name__ == "__main__":
     )
     parser_group = parser.add_mutually_exclusive_group(required=False)
     parser_group.add_argument("--debug", action="store_true", help="start in debugging mode")
-    OPTION = parser.parse_args()
+    OPTION = parser.parse_args()  # type: ignore
     if OPTION.hours == 0:
         OPTION.hours = 80
     if OPTION.days == 0:
