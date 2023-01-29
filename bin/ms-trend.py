@@ -96,7 +96,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     )
     group_condition = ""
     if aggregation == "H":
-        group_condition = "GROUP BY strftime('%d %H', sample_time)"
+        group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
     s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition} {group_condition};"
     if DEBUG:
         print(s3_query)
