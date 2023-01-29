@@ -219,7 +219,7 @@ class Kamstrup:
         mf.syslog_trace(f"{df_out}", False, self.debug)
         result_data = df_out.to_dict("records")  # list of dicts
 
-        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]
+        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]    # noqa
         remain_data = df.to_dict("records")
         return result_data, remain_data
 
