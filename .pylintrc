@@ -426,6 +426,7 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         too-many-arguments,
         logging-fstring-interpolation,
+        unsubscriptable-object,
         import-error
 #        useless-suppression,
 
