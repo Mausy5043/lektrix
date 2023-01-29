@@ -48,9 +48,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     if DEBUG:
         print("\nRequest data from production")
-    df_prod = fetch_data_production(
-        hours_to_fetch=hours_to_fetch, aggregation=aggregation
-    )
+    df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     data_dict = dict()
 
     # Add production data then calculate self-use by extracting exported amount
@@ -58,14 +56,10 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
         df_mains.insert(2, "EB", df_prod["energy"])
     except KeyError:
         df_mains.insert(2, "EB", np.nan)
-    df_mains["EB"] += (
-        df_mains["T1out"] + df_mains["T2out"]
-    )  # T1out and T2out are (-)-ve values !
+    df_mains["EB"] += df_mains["T1out"] + df_mains["T2out"]  # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
     categories = ["T1out", "T2out", "EB", "T1in", "T2in"]
-    df_mains.columns = pd.CategoricalIndex(
-        df_mains.columns.values, ordered=True, categories=categories
-    )
+    df_mains.columns = pd.CategoricalIndex(df_mains.columns.values, ordered=True, categories=categories)
     df_mains = df_mains.sort_index(axis=1)
     if DEBUG:
         print(f"\n\n  ** MAINS data for plotting ** ")
@@ -91,9 +85,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     """
     if DEBUG:
         print("\n*** fetching MAINS data ***")
-    where_condition = (
-        f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
-    )
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
     group_condition = ""
     if aggregation == "H":
         group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
@@ -101,9 +93,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print(s3_query)
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
-        )
+        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database mains data")
         print(df)
@@ -116,13 +106,9 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
 
     # drop sample_time separately!
     df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-    df.drop(
-        ["powerin", "powerout", "tarif", "swits"], axis=1, inplace=True, errors="ignore"
-    )
+    df.drop(["powerin", "powerout", "tarif", "swits"], axis=1, inplace=True, errors="ignore")
 
-    df = (
-        df.diff()
-    )  # KAMSTRUP data contains totalisers, we need the differential per timeframe
+    df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
     df["T1in"] *= 0.001  # -> kWh import
     df["T2in"] *= 0.001  # -> kWh import
     df["T1out"] *= -0.001  # -> kWh export
@@ -146,16 +132,12 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     """
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
-    where_condition = (
-        f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
-    )
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
     s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
     if DEBUG:
         print(s3_query)
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
-        )
+        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database production data")
         print(df)
@@ -208,9 +190,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         if mjr_ticks <= 0:
             mjr_ticks = 1
         ticklabels = [""] * len(data_frame.index)
-        ticklabels[::mjr_ticks] = [
-            item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]
-        ]
+        ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]]
         if DEBUG:
             print(ticklabels)
         if len(data_frame.index) == 0:
@@ -313,9 +293,7 @@ if __name__ == "__main__":
         type=int,
         help="create hour-trend for last <HOURS> hours",
     )
-    parser.add_argument(
-        "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
-    )
+    parser.add_argument("-d", "--days", type=int, help="create day-trend for last <DAYS> days")
     parser.add_argument(
         "-m",
         "--months",
@@ -329,9 +307,7 @@ if __name__ == "__main__":
         help="number of months of data to use for the graph",
     )
     parser_group = parser.add_mutually_exclusive_group(required=False)
-    parser_group.add_argument(
-        "--debug", action="store_true", help="start in debugging mode"
-    )
+    parser_group.add_argument("--debug", action="store_true", help="start in debugging mode")
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
         OPTION.hours = 80

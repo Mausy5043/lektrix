@@ -101,7 +101,6 @@ def fetch_last_month(days_to_fetch):
 
 def fetch_last_year(months_to_fetch):
     """..."""
-    global DATABASE
     config = kl.add_time_line(
         {
             "grouping": "%Y-%m",
@@ -111,23 +110,13 @@ def fetch_last_year(months_to_fetch):
             "table": TABLE_MAINS,
         }
     )
-    import_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1in", from_start_of_year=True
-    )
-    import_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2in", from_start_of_year=True
-    )
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
+    import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
 
     config["table"] = TABLE_PRDCT
-    opwekking, prod_lbls = kl.get_historic_data(
-        config, telwerk="energy", from_start_of_year=True, dif=False
-    )
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", from_start_of_year=True, dif=False)
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -137,7 +126,6 @@ def fetch_last_year(months_to_fetch):
 
 def fetch_last_years(years_to_fetch):
     """..."""
-    global DATABASE
     config = kl.add_time_line(
         {
             "grouping": "%Y",
@@ -147,23 +135,13 @@ def fetch_last_years(years_to_fetch):
             "table": TABLE_MAINS,
         }
     )
-    import_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1in", from_start_of_year=True
-    )
-    import_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2in", from_start_of_year=True
-    )
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
+    import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
 
     config["table"] = TABLE_PRDCT
-    opwekking, prod_lbls = kl.get_historic_data(
-        config, telwerk="energy", from_start_of_year=True, dif=False
-    )
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", from_start_of_year=True, dif=False)
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -188,9 +166,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     export_lo = data_tuple[4]  # light-blue bar in trends
     export_hi = data_tuple[5]  # blue bar in trends
 
-    own_usage = kl.distract(
-        opwekking, kl.contract(export_lo, export_hi)
-    )  # green bar in all trends
+    own_usage = kl.distract(opwekking, kl.contract(export_lo, export_hi))  # green bar in all trends
 
     if balancing:
         # balance import and export with own_usage
@@ -396,9 +372,7 @@ if __name__ == "__main__":
         type=int,
         help="create hour-trend for last <HOURS> hours",
     )
-    parser.add_argument(
-        "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
-    )
+    parser.add_argument("-d", "--days", type=int, help="create day-trend for last <DAYS> days")
     parser.add_argument(
         "-m",
         "--months",
@@ -411,17 +385,11 @@ if __name__ == "__main__":
         type=int,
         help="number of months of data to use for the graph",
     )
-    parser.add_argument(
-        "--balance", action="store_true", help="calculate balance (double)"
-    )
-    parser.add_argument(
-        "--balances", action="store_true", help="calculate balance (single)"
-    )
+    parser.add_argument("--balance", action="store_true", help="calculate balance (double)")
+    parser.add_argument("--balances", action="store_true", help="calculate balance (single)")
     parser_group = parser.add_mutually_exclusive_group(required=False)
-    parser_group.add_argument(
-        "--debug", action="store_true", help="start in debugging mode"
-    )
-    OPTION = parser.parse_args()
+    parser_group.add_argument("--debug", action="store_true", help="start in debugging mode")
+    OPTION = parser.parse_args()  # type: ignore
     if OPTION.hours == 0:
         OPTION.hours = 6 * 12
     if OPTION.days == 0:

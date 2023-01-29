@@ -32,10 +32,7 @@ BATTERY = {
     "database": _DATABASE,
     "sql_table": "storage",
     "graph_file": ".local/graph.png",
-    "sql_command": "INSERT INTO storage ("
-    "sample_time, sample_epoch, battery_id, soc"
-    ") "
-    "VALUES (?, ?, ?, ?)",
+    "sql_command": "INSERT INTO storage (" "sample_time, sample_epoch, battery_id, soc" ") " "VALUES (?, ?, ?, ?)",
     "report_time": 299,
     "samplespercycle": 1,
     "template": {
@@ -94,10 +91,7 @@ KAMSTRUP = {
 SOLAREDGE = {
     "database": _DATABASE,
     "sql_table": "production",
-    "sql_command": "INSERT INTO production ("
-    "sample_time, sample_epoch, site_id, energy"
-    ");"
-    "VALUES (?, ?, ?, ?)",
+    "sql_command": "INSERT INTO production (" "sample_time, sample_epoch, site_id, energy" ");" "VALUES (?, ?, ?, ?)",
     "report_interval": 900,  # quarter of an hour resolution
     "samplespercycle": 1,
     "delay": 360,

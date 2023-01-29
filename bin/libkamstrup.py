@@ -77,17 +77,13 @@ class Kamstrup:
                     # remember meaningful content
                     telegram.append(line)
             except serial.SerialException:
-                mf.syslog_trace(
-                    "*** Serialport read error:", syslog.LOG_CRIT, self.debug
-                )
+                mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, self.debug)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
                 valid_telegram = False
                 receiving = False
                 pass
             except UnicodeDecodeError:
-                mf.syslog_trace(
-                    "*** Unicode Decode error:", syslog.LOG_CRIT, self.debug
-                )
+                mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, self.debug)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
                 valid_telegram = False
                 receiving = False
@@ -163,9 +159,7 @@ class Kamstrup:
                         self.debug,
                     )
                     mf.syslog_trace(f"    {element}", syslog.LOG_INFO, self.debug)
-                    mf.syslog_trace(
-                        "*** Extracted from telegram:", syslog.LOG_INFO, self.debug
-                    )
+                    mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_INFO, self.debug)
                     mf.syslog_trace(f"    {telegram}", syslog.LOG_INFO, self.debug)
                 pass
         idx_dt = dt.datetime.now()
@@ -219,7 +213,7 @@ class Kamstrup:
         mf.syslog_trace(f"{df_out}", False, self.debug)
         result_data = df_out.to_dict("records")  # list of dicts
 
-        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]    # noqa
+        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # noqa  # pylint disable=E1136
         remain_data = df.to_dict("records")
         return result_data, remain_data
 
@@ -236,9 +230,7 @@ def add_time_line(config):
     final_epoch = int(dt.datetime.now().timestamp())
     if "year" in config:
         ytf = int(config["year"]) + 1
-        final_epoch = int(
-            dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp()
-        )
+        final_epoch = int(dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp())
     step_epoch = 15 * 60
     multi = 3600
     if config["timeframe"] == "hour":
@@ -249,16 +241,12 @@ def add_time_line(config):
         multi = 3600 * 24 * 31
     if config["timeframe"] == "year":
         multi = 3600 * 24 * 366
-    start_epoch = (
-        int((final_epoch - (multi * config["period"])) / step_epoch) * step_epoch
-    )
+    start_epoch = int((final_epoch - (multi * config["period"])) / step_epoch) * step_epoch
     config["timeline"] = np.arange(start_epoch, final_epoch, step_epoch, dtype="int")
     return config
 
 
-def get_historic_data(
-    dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True
-):
+def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True):
     """Fetch historic data from SQLITE3 database.
 
     Args:
@@ -314,9 +302,7 @@ def get_historic_data(
     )
 
     # group the data by dicti['grouping']
-    ret_lbls, ret_grpdata = fast_group_data(
-        ret_epoch, ret_intdata, dicti["grouping"], dif=dif
-    )
+    ret_lbls, ret_grpdata = fast_group_data(ret_epoch, ret_intdata, dicti["grouping"], dif=dif)
 
     ret_data = ret_grpdata / 1000
     return ret_data[-period:], ret_lbls[-period:]

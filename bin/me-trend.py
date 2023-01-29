@@ -53,13 +53,9 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     """
     df_chrg["EVnet"] = df_chrg["h1b"]  # imported and used for EV
     df_chrg["EVsol"] = df_chrg["h1d"]  # solar used for EV
-    df_chrg["import"] = (
-        df_chrg["imp"] - df_chrg["EVnet"]
-    )  # compensate for import diverted to EV
+    df_chrg["import"] = df_chrg["imp"] - df_chrg["EVnet"]  # compensate for import diverted to EV
     df_chrg["export"] = df_chrg["exp"]
-    df_chrg["EB"] = (
-        df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
-    )  # compensate for solar diverted to EV
+    df_chrg["EB"] = df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]  # compensate for solar diverted to EV
     # and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
 
@@ -74,9 +70,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
 
     # put columns in the right order for plotting
     categories = ["export", "import", "EB", "EVsol", "EVnet"]
-    df_chrg.columns = pd.CategoricalIndex(
-        df_chrg.columns.values, ordered=True, categories=categories
-    )
+    df_chrg.columns = pd.CategoricalIndex(df_chrg.columns.values, ordered=True, categories=categories)
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
         print(f"\n\n ** CHARGER data for plotting  **")
@@ -100,9 +94,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     """
     if DEBUG:
         print("\n*** fetching CHARGER data ***")
-    where_condition = (
-        f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
-    )
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
     group_condition = ""
     # if aggregation == 'H':
     #     group_condition = "GROUP BY strftime('%d %H', sample_time)"
@@ -110,9 +102,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print(s3_query)
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
-        )
+        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database charger data")
         print(df)
@@ -180,9 +170,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         if mjr_ticks <= 0:
             mjr_ticks = 1
         ticklabels = [""] * len(data_frame.index)
-        ticklabels[::mjr_ticks] = [
-            item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]
-        ]
+        ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]]
         if DEBUG:
             print(ticklabels)
         if len(data_frame.index) == 0:
@@ -286,9 +274,7 @@ if __name__ == "__main__":
         type=int,
         help="create hour-trend for last <HOURS> hours",
     )
-    parser.add_argument(
-        "-d", "--days", type=int, help="create day-trend for last <DAYS> days"
-    )
+    parser.add_argument("-d", "--days", type=int, help="create day-trend for last <DAYS> days")
     parser.add_argument(
         "-m",
         "--months",
@@ -302,9 +288,7 @@ if __name__ == "__main__":
         help="number of months of data to use for the graph",
     )
     parser_group = parser.add_mutually_exclusive_group(required=False)
-    parser_group.add_argument(
-        "--debug", action="store_true", help="start in debugging mode"
-    )
+    parser_group.add_argument("--debug", action="store_true", help="start in debugging mode")
     OPTION = parser.parse_args()
     if OPTION.hours == 0:
         OPTION.hours = 80

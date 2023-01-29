@@ -21,12 +21,8 @@ import libsolaredge as sl
 
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument(
-    "--start", action="store_true", help="start the daemon as a service"
-)
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
+parser_group.add_argument("--debug", action="store_true", help="start the daemon in debugging mode")
 OPTION = parser.parse_args()
 
 # constants
@@ -86,9 +82,7 @@ def main():
                     site_list = API_SE.get_list()["sites"]["site"]
                 except Exception:  # noqa
                     set_led("solar", "orange")
-                    mf.syslog_trace(
-                        "Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG
-                    )
+                    mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
                     pass
@@ -120,12 +114,8 @@ def main():
                     raise
                 if data:
                     try:
-                        mf.syslog_trace(
-                            f"Data to add (first) : {data[0]}", False, DEBUG
-                        )
-                        mf.syslog_trace(
-                            f"            (last)  : {data[-1]}", False, DEBUG
-                        )
+                        mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
+                        mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
                         for element in data:
                             # also add data for the running quarter
                             if element["sample_epoch"] < (local_now() + 15 * 60):
@@ -153,19 +143,11 @@ def main():
 
             pause_interval = (
                 sample_interval
-                - (
-                    local_now() - start_time
-                )  # time spent in this loop           eg. (40-3) = 37s
-                - (
-                    start_time % sample_interval
-                )  # number of seconds to next loop    eg. 3 % 60 = 3s
+                - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+                - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
             )
-            pause_interval += constants.SOLAREDGE[
-                "delay"
-            ]  # allow the inverter to update the data on the server.
-            next_time = (
-                pause_interval + local_now()
-            )  # gives the actual time when the next loop should start
+            pause_interval += constants.SOLAREDGE["delay"]  # allow the inverter to update the data on the server.
+            next_time = pause_interval + local_now()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -182,9 +164,7 @@ def main():
              = 3 seconds behind (no waiting)
             """
 
-            new_start_dt = dt.datetime.strptime(
-                sql_db.latest_datapoint(), constants.DT_FORMAT
-            )
+            new_start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
             if new_start_dt <= start_dt:
                 # there is a hole in the data
                 mf.syslog_trace(
@@ -278,9 +258,7 @@ def do_work(site_list, start_dt=dt.datetime.today()):
 
                 result_dict["sample_time"] = date_time
                 result_dict["sample_epoch"] = int(
-                    dt.datetime.strptime(date_time, constants.DT_FORMAT)
-                    .replace(tzinfo=dt.timezone.utc)
-                    .timestamp()
+                    dt.datetime.strptime(date_time, constants.DT_FORMAT).replace(tzinfo=dt.timezone.utc).timestamp()
                 )
                 result_dict["site_id"] = site_id
                 result_dict["energy"] = int(energy)

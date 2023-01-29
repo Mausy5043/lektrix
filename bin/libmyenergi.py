@@ -36,7 +36,7 @@ class Myenergi:
     """Class to interact with the myenergi servers"""
 
     def __init__(self, keys_file, debug=False):
-        """Initialise the Myenergi object
+        r"""Initialise the Myenergi object.
 
         The keys-file must be a configparser compatible file containing:\n
         [HUB]\n
@@ -75,9 +75,7 @@ class Myenergi:
         self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
 
         # First call to the API to get the ASN
-        _response = requests.get(
-            self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
-        )
+        _response = requests.get(self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.hub_password))
         # if self.DEBUG:
         #     mf.syslog_trace("Response :", False, self.DEBUG)
         #     for key in self.response.headers:
@@ -89,9 +87,7 @@ class Myenergi:
             _asn = _response.headers["X_MYENERGI-asn"]
             self.base_url = "https://" + _asn
             mf.syslog_trace(f"ASN             : {_asn}", syslog.LOG_INFO, self.DEBUG)
-            mf.syslog_trace(
-                f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG
-            )
+            mf.syslog_trace(f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG)
         else:
             raise RuntimeError("myenergi ASN not found in myenergi header")
 
@@ -195,9 +191,7 @@ class Myenergi:
         lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
         date_time = lcl_date_time.strftime(constants.DT_FORMAT)
         result_dict["sample_time"] = date_time
-        result_dict["sample_epoch"] = int(
-            dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp()
-        )
+        result_dict["sample_epoch"] = int(dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp())
 
         # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
@@ -220,13 +214,10 @@ class Myenergi:
         result = list()
         previous_day_data = [
             self.standardise_json_block(block)
-            for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[
-                f"U{self.zappi_serial}"
-            ]
+            for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[f"U{self.zappi_serial}"]
         ]
         current_day_data = [
-            self.standardise_json_block(block)
-            for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]
+            self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]
         ]
         try:
             mf.syslog_trace(f"> {previous_day_data[0]}", False, self.DEBUG)
@@ -258,10 +249,7 @@ class Myenergi:
                 # minutely data
                 # result = self.get_status(f"cgi-jday-Z{self.zappi_serial}-"
                 result = self.get_status(
-                    f"cgi-jday-Z{self.zappi_serial}-"
-                    f"{this_day.year}-"
-                    f"{this_day.month}-"
-                    f"{this_day.day}"
+                    f"cgi-jday-Z{self.zappi_serial}-" f"{this_day.year}-" f"{this_day.month}-" f"{this_day.day}"
                 )
                 done_flag = True
             except requests.exceptions.ReadTimeout:

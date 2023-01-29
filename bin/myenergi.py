@@ -21,12 +21,8 @@ import libmyenergi as zl
 
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument(
-    "--start", action="store_true", help="start the daemon as a service"
-)
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
+parser_group.add_argument("--debug", action="store_true", help="start the daemon in debugging mode")
 OPTION = parser.parse_args()
 
 # constants
@@ -80,9 +76,7 @@ def main():
         if time.time() > next_time:
             start_time = time.time()
             try:
-                data = do_work(
-                    API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT)
-                )  # noqa
+                data = do_work(API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT))  # noqa
                 set_led("ev", "green")
             except ConnectionError:
                 set_led("ev", "orange")
@@ -131,19 +125,11 @@ def main():
 
             pause_interval = (
                 sample_interval
-                - (
-                    time.time() - start_time
-                )  # time spent in this loop           eg. (40-3) = 37s
-                - (
-                    start_time % sample_interval
-                )  # number of seconds to next loop    eg. 3 % 60 = 3s
+                - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+                - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
             )
-            pause_interval += constants.ZAPPI[
-                "delay"
-            ]  # allow the charger to update the data on the server.
-            next_time = (
-                pause_interval + time.time()
-            )  # gives the actual time when the next loop should start
+            pause_interval += constants.ZAPPI["delay"]  # allow the charger to update the data on the server.
+            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -168,9 +154,7 @@ def main():
                     syslog.LOG_WARNING,
                     DEBUG,
                 )
-                dati = dt.datetime.strptime(
-                    new_start_dt, constants.DT_FORMAT
-                ) + dt.timedelta(days=add_days)
+                dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(days=add_days)
                 if dati > dt.datetime.today():
                     mf.syslog_trace(
                         f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
@@ -179,9 +163,7 @@ def main():
                     )
                     dati = dt.datetime.today()
                 start_dt = dati.strftime("%Y-%m-%d %H:%M:%S")
-                mf.syslog_trace(
-                    f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG
-                )
+                mf.syslog_trace(f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG)
                 # if we don't cross the gap then next time check more days ahead
                 add_days += 1
                 if DEBUG:

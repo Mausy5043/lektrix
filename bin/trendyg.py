@@ -34,22 +34,12 @@ def fetch_last_months(months_to_fetch):
             "table": TABLE_PRDCT,
         }
     )
-    opwekking, prod_lbls = kl.get_historic_data(
-        config, telwerk="energy", from_start_of_year=True
-    )
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", from_start_of_year=True)
     config["table"] = TABLE_MAINS
-    import_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1in", from_start_of_year=True
-    )
-    import_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2in", from_start_of_year=True
-    )
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
+    import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -70,22 +60,12 @@ def fetch_last_year(year_to_fetch):
             "year": year_to_fetch,
         }
     )
-    opwekking, prod_lbls = kl.get_historic_data(
-        config, telwerk="energy", from_start_of_year=True
-    )
+    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", from_start_of_year=True)
     config["table"] = TABLE_MAINS
-    import_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1in", from_start_of_year=True
-    )
-    import_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2in", from_start_of_year=True
-    )
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
+    import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -315,14 +295,10 @@ if __name__ == "__main__":
         type=int,
         help="number of months of data to use for the graph or 0 for " "default.",
     )
-    parser.add_argument(
-        "-p", "--print", action="store_true", help="Output data to stdout."
-    )
+    parser.add_argument("-p", "--print", action="store_true", help="Output data to stdout.")
     OPTION = parser.parse_args()
     if OPTION.months == 0:
         OPTION.months = 61
-    if (OPTION.gauge is not None) and (
-        OPTION.gauge == 0 or OPTION.gauge > year_to_graph
-    ):
+    if (OPTION.gauge is not None) and (OPTION.gauge == 0 or OPTION.gauge > year_to_graph):
         OPTION.gauge = year_to_graph
     main()

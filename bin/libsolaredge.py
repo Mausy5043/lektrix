@@ -130,9 +130,7 @@ class Solaredge:
 
         j = self.get_data_period(site_id=site_id)
         tz = self.get_timezone(site_id=site_id)
-        start, end = [
-            pd.Timestamp(j["dataPeriod"][param]) for param in ["startDate", "endDate"]
-        ]
+        start, end = [pd.Timestamp(j["dataPeriod"][param]) for param in ["startDate", "endDate"]]
         start, end = start.tz_localize(tz), end.tz_localize(tz)
         return start, end
 
@@ -179,9 +177,7 @@ class Solaredge:
         retries = 3
         while True:
             try:
-                r = requests.get(
-                    url, params, headers={"content-type": "application/json"}
-                )
+                r = requests.get(url, params, headers={"content-type": "application/json"})
                 r.raise_for_status()
             except requests.exceptions.HTTPError:
                 retries -= 1
@@ -208,9 +204,7 @@ class Solaredge:
         r.raise_for_status()
         return r.json()
 
-    def get_energy_details(
-        self, site_id, start_time, end_time, meters=None, time_unit="DAY"
-    ):
+    def get_energy_details(self, site_id, start_time, end_time, meters=None, time_unit="DAY"):
         """
         Request Energy Details for a specific site and timeframe
 
@@ -403,9 +397,7 @@ class Solaredge:
         elif time_unit in {"QUARTER_OF_AN_HOUR", "HOUR"}:
             rule = dtrule.MONTHLY
         else:
-            raise ValueError(
-                "Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR"
-            )
+            raise ValueError("Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR")
 
         res = []
         for day in dtrule.rrule(rule, dtstart=start, until=end):
