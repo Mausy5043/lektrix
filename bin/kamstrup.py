@@ -57,7 +57,7 @@ def main():
 
     sql_db = m3.SqlDatabase(
         database=constants.KAMSTRUP["database"],
-        table=constants.KAMSTRUP["table"],
+        table=constants.KAMSTRUP["sql_table"],
         insert=constants.KAMSTRUP["sql_command"],
         debug=DEBUG,
     )
@@ -80,7 +80,7 @@ def main():
                     syslog.LOG_CRIT,
                     DEBUG,
                 )
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                mf.syslog_trace(traceback.format_exc(), syslog.LOG_DEBUGx, DEBUG)
                 raise
             if not succes:
                 set_led("mains", "orange")
