@@ -130,7 +130,9 @@ class Solaredge:
 
         j = self.get_data_period(site_id=site_id)
         tz = self.get_timezone(site_id=site_id)
-        start, end = [pd.Timestamp(j["dataPeriod"][param]) for param in ["startDate", "endDate"]]
+        start, end = [
+            pd.Timestamp(j["dataPeriod"][param]) for param in ["startDate", "endDate"]
+        ]
         start, end = start.tz_localize(tz), end.tz_localize(tz)
         return start, end
 
@@ -397,7 +399,9 @@ class Solaredge:
         elif time_unit in {"QUARTER_OF_AN_HOUR", "HOUR"}:
             rule = dtrule.MONTHLY
         else:
-            raise ValueError("Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR")
+            raise ValueError(
+                "Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR"
+            )
 
         res = []
         for day in dtrule.rrule(rule, dtstart=start, until=end):

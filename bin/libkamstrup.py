@@ -213,7 +213,9 @@ class Kamstrup:
         mf.syslog_trace(f"{df_out}", False, self.debug)
         result_data = df_out.to_dict("records")  # list of dicts
 
-        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # noqa  # pylint disable=E1136
+        df = df[
+            df["sample_epoch"] > np.max(df_out["sample_epoch"])
+        ]  # noqa  # pylint disable=E1136
         remain_data = df.to_dict("records")
         return result_data, remain_data
 
@@ -230,7 +232,9 @@ def add_time_line(config):
     final_epoch = int(dt.datetime.now().timestamp())
     if "year" in config:
         ytf = int(config["year"]) + 1
-        final_epoch = int(dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp())
+        final_epoch = int(
+            dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp()
+        )
     step_epoch = 15 * 60
     multi = 3600
     if config["timeframe"] == "hour":
@@ -246,7 +250,9 @@ def add_time_line(config):
     return config
 
 
-def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True):
+def get_historic_data(
+    dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True
+):
     """Fetch historic data from SQLITE3 database.
 
     Args:
@@ -264,7 +270,9 @@ def get_historic_data(dicti, telwerk=None, from_start_of_year=False, include_tod
     interval = f"datetime('now', '-{period + 1} {dicti['timeframe']}')"
     and_where_not_today = ""
     if from_start_of_year:
-        interval = f"datetime(datetime('now', '-{period + 1} {dicti['timeframe']}'), 'start of year')"
+        interval = (
+            f"datetime(datetime('now', '-{period + 1} {dicti['timeframe']}'), 'start of year')"
+        )
     if not include_today:
         and_where_not_today = "AND (sample_time <= datetime('now', '-1 day'))"
     if "year" in dicti:

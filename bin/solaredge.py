@@ -22,7 +22,9 @@ import libsolaredge as sl
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
 parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
-parser_group.add_argument("--debug", action="store_true", help="start the daemon in debugging mode")
+parser_group.add_argument(
+    "--debug", action="store_true", help="start the daemon in debugging mode"
+)
 OPTION = parser.parse_args()
 
 # constants
@@ -143,11 +145,19 @@ def main():
 
             pause_interval = (
                 sample_interval
-                - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-                - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
+                - (
+                    local_now() - start_time
+                )  # time spent in this loop           eg. (40-3) = 37s
+                - (
+                    start_time % sample_interval
+                )  # number of seconds to next loop    eg. 3 % 60 = 3s
             )
-            pause_interval += constants.SOLAREDGE["delay"]  # allow the inverter to update the data on the server.
-            next_time = pause_interval + local_now()  # gives the actual time when the next loop should start
+            pause_interval += constants.SOLAREDGE[
+                "delay"
+            ]  # allow the inverter to update the data on the server.
+            next_time = (
+                pause_interval + local_now()
+            )  # gives the actual time when the next loop should start
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -258,7 +268,9 @@ def do_work(site_list, start_dt=dt.datetime.today()):
 
                 result_dict["sample_time"] = date_time
                 result_dict["sample_epoch"] = int(
-                    dt.datetime.strptime(date_time, constants.DT_FORMAT).replace(tzinfo=dt.timezone.utc).timestamp()
+                    dt.datetime.strptime(date_time, constants.DT_FORMAT)
+                    .replace(tzinfo=dt.timezone.utc)
+                    .timestamp()
                 )
                 result_dict["site_id"] = site_id
                 result_dict["energy"] = int(energy)

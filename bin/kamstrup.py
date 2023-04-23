@@ -20,7 +20,9 @@ import libkamstrup as kl
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
 parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
-parser_group.add_argument("--debug", action="store_true", help="start the daemon in debugging mode")
+parser_group.add_argument(
+    "--debug", action="store_true", help="start the daemon in debugging mode"
+)
 OPTION = parser.parse_args()
 
 # constants
@@ -119,7 +121,9 @@ def main():
             # electricity meter determines the tempo, so no need to wait.
             pause_interval = 0.0  # faux variable
 
-            next_time = pause_interval + time.time()  # gives the actual time when the next loop should start
+            next_time = (
+                pause_interval + time.time()
+            )  # gives the actual time when the next loop should start
             # determine moment of next report
             rprt_time = time.time() + (report_interval - (time.time() % report_interval))
             mf.syslog_trace(f"Spent {time.time() - start_time:.1f}s getting data", False, DEBUG)

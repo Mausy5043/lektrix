@@ -112,11 +112,17 @@ def fetch_last_year(months_to_fetch):
     )
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
     import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
-    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
-    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(
+        config, telwerk="T1out", from_start_of_year=True
+    )
+    export_hi, data_lbls = kl.get_historic_data(
+        config, telwerk="T2out", from_start_of_year=True
+    )
 
     config["table"] = TABLE_PRDCT
-    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", from_start_of_year=True, dif=False)
+    opwekking, prod_lbls = kl.get_historic_data(
+        config, telwerk="energy", from_start_of_year=True, dif=False
+    )
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -137,11 +143,17 @@ def fetch_last_years(years_to_fetch):
     )
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
     import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
-    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
-    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
+    export_lo, data_lbls = kl.get_historic_data(
+        config, telwerk="T1out", from_start_of_year=True
+    )
+    export_hi, data_lbls = kl.get_historic_data(
+        config, telwerk="T2out", from_start_of_year=True
+    )
 
     config["table"] = TABLE_PRDCT
-    opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", from_start_of_year=True, dif=False)
+    opwekking, prod_lbls = kl.get_historic_data(
+        config, telwerk="energy", from_start_of_year=True, dif=False
+    )
     # production data may not yet have caught up to the current hour
     if not (prod_lbls[-1] == data_lbls[-1]):
         opwekking = opwekking[:-1]
@@ -166,7 +178,9 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     export_lo = data_tuple[4]  # light-blue bar in trends
     export_hi = data_tuple[5]  # blue bar in trends
 
-    own_usage = kl.distract(opwekking, kl.contract(export_lo, export_hi))  # green bar in all trends
+    own_usage = kl.distract(
+        opwekking, kl.contract(export_lo, export_hi)
+    )  # green bar in all trends
 
     if balancing:
         # balance import and export with own_usage

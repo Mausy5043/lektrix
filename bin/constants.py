@@ -28,11 +28,15 @@ if not os.path.isfile(_DATABASE):
 DT_FORMAT = "%Y-%m-%d %H:%M:%S"
 TIMEZONE = pytz.timezone("Europe/Amsterdam")
 
+# fmt: off
 BATTERY = {
     "database": _DATABASE,
     "sql_table": "storage",
     "graph_file": ".local/graph.png",
-    "sql_command": "INSERT INTO storage (" "sample_time, sample_epoch, battery_id, soc" ") " "VALUES (?, ?, ?, ?)",
+    "sql_command": "INSERT INTO storage ("
+                   "sample_time, sample_epoch, battery_id, soc"
+                   ") "
+                   "VALUES (?, ?, ?, ?)",
     "report_time": 299,
     "samplespercycle": 1,
     "template": {
@@ -65,12 +69,12 @@ KAMSTRUP = {
     "database": _DATABASE,
     "sql_table": "mains",
     "sql_command": "INSERT INTO mains ("
-    "sample_time, sample_epoch, "
-    "T1in, T2in, powerin, "
-    "T1out, T2out, powerout, "
-    "tarif, swits"
-    ");"
-    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                   "sample_time, sample_epoch, "
+                   "T1in, T2in, powerin, "
+                   "T1out, T2out, powerout, "
+                   "tarif, swits"
+                   ");"
+                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     "report_interval": 900,
     "samplespercycle": 88,  # meter runs at 1 telegram every ~10s
     "delay": 0,
@@ -91,7 +95,10 @@ KAMSTRUP = {
 SOLAREDGE = {
     "database": _DATABASE,
     "sql_table": "production",
-    "sql_command": "INSERT INTO production (" "sample_time, sample_epoch, site_id, energy" ");" "VALUES (?, ?, ?, ?)",
+    "sql_command": "INSERT INTO production ("
+                   "sample_time, sample_epoch, site_id, energy"
+                   ");"
+                   "VALUES (?, ?, ?, ?)",
     "report_interval": 900,  # quarter of an hour resolution
     "samplespercycle": 1,
     "delay": 360,
@@ -108,14 +115,14 @@ ZAPPI = {
     "database": _DATABASE,
     "sql_table": "charger",
     "sql_command": "INSERT INTO charger ("
-    "sample_time, sample_epoch, site_id,"
-    "exp, gen, gep, imp, h1b, h1d,"
-    "v1, frq"
-    ");"
-    "VALUES (?, ?, ?,"
-    "?, ?, ?, ?, ?, ?,"
-    "?, ?"
-    ")",
+                   "sample_time, sample_epoch, site_id,"
+                   "exp, gen, gep, imp, h1b, h1d,"
+                   "v1, frq"
+                   ");"
+                   "VALUES (?, ?, ?,"
+                   "?, ?, ?, ?, ?, ?,"
+                   "?, ?"
+                   ")",
     "report_interval": 3599,
     "samplespercycle": 1,
     "delay": 180,
@@ -147,7 +154,7 @@ ZAPPI = {
     },
     "template_keys_to_drop": ["yr", "mon", "dom", "hr", "min"],
 }
-
+# fmt: on
 
 if __name__ == "__main__":
     print(f"home              = {_MYHOME}")

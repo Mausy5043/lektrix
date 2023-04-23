@@ -56,10 +56,14 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
         df_mains.insert(2, "EB", df_prod["energy"])
     except KeyError:
         df_mains.insert(2, "EB", np.nan)
-    df_mains["EB"] += df_mains["T1out"] + df_mains["T2out"]  # T1out and T2out are (-)-ve values !
+    df_mains["EB"] += (
+        df_mains["T1out"] + df_mains["T2out"]
+    )  # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
     categories = ["T1out", "T2out", "EB", "T1in", "T2in"]
-    df_mains.columns = pd.CategoricalIndex(df_mains.columns.values, ordered=True, categories=categories)
+    df_mains.columns = pd.CategoricalIndex(
+        df_mains.columns.values, ordered=True, categories=categories
+    )
     df_mains = df_mains.sort_index(axis=1)
     if DEBUG:
         print(f"\n\n  ** MAINS data for plotting ** ")
@@ -93,7 +97,9 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print(s3_query)
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
+        df = pd.read_sql_query(
+            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
+        )
     if DEBUG:
         print("o  database mains data")
         print(df)
@@ -137,7 +143,9 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print(s3_query)
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
+        df = pd.read_sql_query(
+            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
+        )
     if DEBUG:
         print("o  database production data")
         print(df)
@@ -190,7 +198,9 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         if mjr_ticks <= 0:
             mjr_ticks = 1
         ticklabels = [""] * len(data_frame.index)
-        ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]]
+        ticklabels[::mjr_ticks] = [
+            item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]
+        ]
         if DEBUG:
             print(ticklabels)
         if len(data_frame.index) == 0:
