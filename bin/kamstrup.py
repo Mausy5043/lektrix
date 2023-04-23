@@ -55,7 +55,7 @@ def main():
 
     sql_db = m3.SqlDatabase(
         database=constants.KAMSTRUP["database"],
-        table="mains",
+        table=constants.KAMSTRUP["table"],
         insert=constants.KAMSTRUP["sql_command"],
         debug=DEBUG,
     )
