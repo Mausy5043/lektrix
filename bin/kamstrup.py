@@ -80,7 +80,7 @@ def main():
                     syslog.LOG_CRIT,
                     DEBUG,
                 )
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_DEBUGx, DEBUG)
+                mf.syslog_trace(traceback.format_exc(), syslog.LOG_DEBUG, DEBUG)
                 raise
             if not succes:
                 set_led("mains", "orange")
