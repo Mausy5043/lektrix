@@ -8,7 +8,7 @@ PARENT_COMMAND=$(ps $PPID | tail -n 1 | awk "{print \$5}")
 echo "*** lektrix caller: ${PARENT_COMMAND}"
 
 # shellcheck disable=SC1091
-source ./bin/constants.sh
+source ./bin/include.sh
 
 # check commandline parameters
 for i in "$@"; do
