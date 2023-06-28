@@ -79,7 +79,7 @@ class Myenergi:
             self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
         )
         if self.DEBUG:
-            mf.syslog_trace("Response :", False, self.DEBUG)
+            mf.syslog_trace(f"Response Status Code : {_response.status_code}", False, self.DEBUG)
             for key in _response.headers:
                 mf.syslog_trace(f"   {key}\t::\t{_response.headers[key]}", False, self.DEBUG)
             mf.syslog_trace("", False, self.DEBUG)
