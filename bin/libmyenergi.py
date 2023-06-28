@@ -147,13 +147,17 @@ class Myenergi:
             # We raise the time-out here. If desired, retries should be handled by caller
             mf.syslog_trace(f"{call_url} timed out!", syslog.LOG_WARNING, self.DEBUG)
             raise
-        result = json.loads(response.content)
-
         if self.DEBUG:
             mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
             for key in response.headers:
                 mf.syslog_trace(f"   {key} :: {response.headers[key]}", False, self.DEBUG)
             mf.syslog_trace("***** ***** *****", False, self.DEBUG)
+
+        try:
+            result = json.loads(response.content)
+        except json.decoder.JSONDecodeError:
+            mf.syslog_trace(f"Could not load JSON data.", syslog.LOG_ERROR, self.DEBUG)
+            return None
 
         return result
 
