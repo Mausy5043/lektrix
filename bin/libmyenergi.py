@@ -80,8 +80,8 @@ class Myenergi:
         )
         if self.DEBUG:
             mf.syslog_trace("Response :", False, self.DEBUG)
-            for key in self._response.headers:
-                mf.syslog_trace(f"   {key}\t::\t{self._response.headers[key]}", False, self.DEBUG)
+            for key in _response.headers:
+                mf.syslog_trace(f"   {key}\t::\t{_response.headers[key]}", False, self.DEBUG)
             mf.syslog_trace("", False, self.DEBUG)
 
         # construct the URL for the ASN
