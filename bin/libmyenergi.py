@@ -78,11 +78,11 @@ class Myenergi:
         _response = requests.get(
             self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
         )
-        # if self.DEBUG:
-        #     mf.syslog_trace("Response :", False, self.DEBUG)
-        #     for key in self.response.headers:
-        #         mf.syslog_trace(f"{key}\t::\t{self.response.headers[key]}", False, self.DEBUG)
-        #     mf.syslog_trace("", False, self.DEBUG)
+        if self.DEBUG:
+            mf.syslog_trace("Response :", False, self.DEBUG)
+            for key in self._response.headers:
+                mf.syslog_trace(f"   {key}\t::\t{self._response.headers[key]}", False, self.DEBUG)
+            mf.syslog_trace("", False, self.DEBUG)
 
         # construct the URL for the ASN
         if "X_MYENERGI-asn" in _response.headers:
@@ -149,11 +149,11 @@ class Myenergi:
             raise
         result = json.loads(response.content)
 
-        # if self.DEBUG:
-        #     mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
-        #     for key in response.headers:
-        #         mf.syslog_trace(f"{key} :: {response.headers[key]}", False, self.DEBUG)
-        #     mf.syslog_trace("***** ***** *****", False, self.DEBUG)
+        if self.DEBUG:
+            mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
+            for key in response.headers:
+                mf.syslog_trace(f"   {key} :: {response.headers[key]}", False, self.DEBUG)
+            mf.syslog_trace("***** ***** *****", False, self.DEBUG)
 
         return result
 
