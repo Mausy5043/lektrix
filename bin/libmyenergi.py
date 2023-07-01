@@ -41,7 +41,7 @@ class Myenergi:
         The keys-file must be a configparser compatible file containing:\n
         [HUB]\n
         serial: 12345678\n
-        password: secret_hub_password\n
+        api_key: secret_api_key\n
         [ZAPPI]\n
         serial: 12345678\n
         [HARVI]\n
@@ -51,7 +51,8 @@ class Myenergi:
         <EOF>
 
         Args:
-            keys_file (str): full path and filename to a file containing the API-keys (see below).
+            keys_file (str): full path and filename to a file containing
+                             the serialnumbers and API-key (see below).
             debug (bool, optional): [description]. Defaults to False.
 
 
@@ -69,14 +70,14 @@ class Myenergi:
         iniconf.read(keys_file)
         self.harvi_serial = self.get_key(iniconf, "HARVI", "serial")
         self.hub_serial = self.get_key(iniconf, "HUB", "serial")
-        self.hub_username = self.get_key(iniconf, "HUB", "username")
-        self.hub_password = self.get_key(iniconf, "HUB", "password")
+        self.api_key = self.get_key(iniconf, "HUB", "api_key")
         self.zappi_serial = self.get_key(iniconf, "ZAPPI", "serial")
         self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
+        self.libbi_serial = self.get_key(iniconf, "LIBBI", "serial")
 
         # First call to the API to get the ASN
         _response = requests.get(
-            self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.hub_password)
+            self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.api_key)
         )
         if self.DEBUG:
             mf.syslog_trace(f"Response Status Code : {_response.status_code}", False, self.DEBUG)
@@ -140,7 +141,7 @@ class Myenergi:
             response = requests.get(
                 call_url,
                 headers=hdrs,
-                auth=HTTPDigestAuth(self.hub_serial, self.hub_password),
+                auth=HTTPDigestAuth(self.hub_serial, self.api_key),
                 timeout=10,
             )
         except requests.exceptions.ReadTimeout:
