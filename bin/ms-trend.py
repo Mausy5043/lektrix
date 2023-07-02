@@ -49,7 +49,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     if DEBUG:
         print("\nRequest data from production")
     df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
-    data_dict = dict()
+    data_dict = {}
 
     # Add production data then calculate self-use by extracting exported amount
     try:

@@ -259,7 +259,7 @@ def do_work(site_list, start_dt=dt.datetime.today()):
         """
         if data_list:
             for element in data_list:
-                result_dict = dict()
+                result_dict = {}
                 date_time = element["date"]
                 try:
                     energy = element["value"]

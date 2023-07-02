@@ -82,7 +82,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
         print("\n\n ** CHARGER data for plotting  **")
         print(df_chrg)
 
-    data_dict = dict()
+    data_dict = {}
     data_dict["charger"] = df_chrg
     return data_dict
 
