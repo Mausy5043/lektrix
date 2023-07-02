@@ -263,7 +263,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
             ax1.text(
                 tick_pos[i],
                 10,
-                "{:7.3f}".format(v),
+                f"{v:7.3f}",
                 {"ha": "center", "va": "bottom"},
                 rotation=-90,
             )
@@ -272,7 +272,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
             ax1.text(
                 tick_pos[i],
                 500,
-                "{:4.0f}".format(v),
+                f"{v:4.0f}",
                 {"ha": "center", "va": "bottom"},
                 fontsize=12,
             )
@@ -301,7 +301,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
             ax1.text(
                 tick_pos[i],
                 -10,
-                "{:7.3f}".format(v),
+                f"{v:7.3f}",
                 {"ha": "center", "va": "top"},
                 rotation=-90,
             )
@@ -310,7 +310,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
             ax1.text(
                 tick_pos[i],
                 -500,
-                "{:4.0f}".format(v),
+                f"{v:4.0f}",
                 {"ha": "center", "va": "top"},
                 fontsize=12,
             )

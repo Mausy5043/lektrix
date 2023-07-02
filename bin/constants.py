@@ -18,7 +18,8 @@ if not os.path.isfile(_DATABASE):
 if not os.path.isfile(_DATABASE):
     _DATABASE = ".local/lektrix.sqlite3"
 if not os.path.isfile(_DATABASE):
-    _DATABASE = f"{_MYHOME}/.sqlite3/lektrix.sqlite3"
+    # ln -s ~/Dropbox/raspi/_databases/lektrix/ ~/.sqlite/lektrix
+    _DATABASE = f"{_MYHOME}/.sqlite3/lektrix/lektrix.sqlite3"
 if not os.path.isfile(_DATABASE):
     _DATABASE = "lektrix.sqlite3"
 if not os.path.isfile(_DATABASE):
@@ -34,7 +35,7 @@ BATTERY = {
     "sql_table": "storage",
     "graph_file": ".local/graph.png",
     "sql_command": "INSERT INTO storage ("
-                   "sample_time, sample_epoch, battery_id, soc"
+                   "sample_time, sample_epoch, battery_id, soc, soh"
                    ") "
                    "VALUES (?, ?, ?, ?)",
     "report_time": 299,

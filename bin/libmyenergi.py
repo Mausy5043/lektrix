@@ -159,7 +159,7 @@ class Myenergi:
         try:
             result = json.loads(response.content)
         except json.decoder.JSONDecodeError:
-            mf.syslog_trace(f"Could not load JSON data.", syslog.LOG_ERR, self.DEBUG)
+            mf.syslog_trace("Could not load JSON data.", syslog.LOG_ERR, self.DEBUG)
             return None
 
         return result
