@@ -99,14 +99,14 @@ Note: Energy is in Joules; divide by 60 get average Watts; divide by 3 600 000 t
         truncated
 ```
 
-`gep` should match hourly PV totaliser
-`imp` should match hourly P1 totaliser (T1,in + T2,in; KAMSTRUP)
-`exp` should match hourly P1 totaliser (T1,out + T2,out; KAMSTRUP)
-`h1d` should match EV
-"imp": Imported from grid
-"exp": Exported to grid from PVs
-"h1b": heater 1 boost
-"h1d": heater 1 divert
-"h2b": heater 2 boost
-"h2d": heater 2 divert
+`gep` should match hourly PV totaliser   
+`imp` should match hourly P1 totaliser (T1,in + T2,in; KAMSTRUP)   
+`exp` should match hourly P1 totaliser (T1,out + T2,out; KAMSTRUP)   
+`h1d` should match EV   
+`imp`: Imported from grid   
+`exp`: Exported to grid  
+`h1b`: heater 1 boost   
+`h1d`: heater 1 divert   
+`h2b`: heater 2 boost   
+`h2d`: heater 2 divert   
 
