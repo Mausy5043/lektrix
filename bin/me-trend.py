@@ -79,7 +79,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     )
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
-        print(f"\n\n ** CHARGER data for plotting  **")
+        print("\n\n ** CHARGER data for plotting  **")
         print(df_chrg)
 
     data_dict = dict()

@@ -66,10 +66,10 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     )
     df_mains = df_mains.sort_index(axis=1)
     if DEBUG:
-        print(f"\n\n  ** MAINS data for plotting ** ")
+        print("\n\n  ** MAINS data for plotting ** ")
         print(df_mains)
 
-        print(f"\n\n  ** PRODUCTION data for plotting ** ")
+        print("\n\n  ** PRODUCTION data for plotting ** ")
         print(df_prod)
     data_dict["mains"] = df_mains
     data_dict["production"] = df_prod
