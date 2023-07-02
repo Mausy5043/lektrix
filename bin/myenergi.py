@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
+
 """Daemon to periodically call the Myenergy API to fetch energy production data.
 
 Store the data in a SQLite3 database.
 """
+
 import argparse
 import configparser
 import datetime as dt
