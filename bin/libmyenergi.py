@@ -63,7 +63,7 @@ class Myenergi:
         """
         self.DEBUG = debug
         self.base_url = constants.ZAPPI["director"]
-        self.zappi_data = list()
+        self.zappi_data = []
         self.zappi_data_template = constants.ZAPPI["template"]
 
         iniconf = configparser.ConfigParser()
@@ -221,8 +221,8 @@ class Myenergi:
          Returns:
              None
         """
-        self.zappi_data = list()
-        result = list()
+        self.zappi_data = []
+        result = []
         previous_day_data = [
             self.standardise_json_block(block)
             for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[
@@ -297,7 +297,7 @@ class Myenergi:
         def _convert_time_to_text(date_to_convert):
             return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
 
-        result_data = list()
+        result_data = []
 
         if data:
             df = pd.DataFrame(data)

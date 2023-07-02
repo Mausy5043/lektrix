@@ -44,11 +44,11 @@ class Kamstrup:
         self.powerout = np.nan
         self.tarif = 1
         self.swits = 0
-        self.list_data = list()
+        self.list_data = []
 
         self.debug = debug
         if self.debug:
-            self.telegram = list()
+            self.telegram = []
 
     def get_telegram(self):
         """Fetch a telegram from the serialport.

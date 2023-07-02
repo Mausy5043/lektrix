@@ -228,8 +228,8 @@ def do_work(site_list, start_dt=dt.datetime.today()):
     back_dt = start_dt - dt.timedelta(hours=4)
     start_dt += dt.timedelta(days=1)
     # result_dict = constants.SOLAREDGE['template']
-    data_list = list()
-    result_list = list()
+    data_list = []
+    result_list = []
 
     for site in site_list:
         site_id = site["id"]
