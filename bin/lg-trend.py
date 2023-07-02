@@ -64,7 +64,7 @@ def fetch_last_day(hours_to_fetch):
         print(prod_lbls)
         print(opwekking)
     # production data may not yet have caught up to the current hour
-    if not (prod_lbls[-1] == data_lbls[-1]):
+    if not prod_lbls[-1] == data_lbls[-1]:
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
     if DEBUG:
@@ -93,7 +93,7 @@ def fetch_last_month(days_to_fetch):
     config["table"] = TABLE_PRDCT
     opwekking, prod_lbls = kl.get_historic_data(config, telwerk="energy", dif=False)
     # production data may not yet have caught up to the current hour
-    if not (prod_lbls[-1] == data_lbls[-1]):
+    if not prod_lbls[-1] == data_lbls[-1]:
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
@@ -124,7 +124,7 @@ def fetch_last_year(months_to_fetch):
         config, telwerk="energy", from_start_of_year=True, dif=False
     )
     # production data may not yet have caught up to the current hour
-    if not (prod_lbls[-1] == data_lbls[-1]):
+    if not prod_lbls[-1] == data_lbls[-1]:
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
@@ -155,7 +155,7 @@ def fetch_last_years(years_to_fetch):
         config, telwerk="energy", from_start_of_year=True, dif=False
     )
     # production data may not yet have caught up to the current hour
-    if not (prod_lbls[-1] == data_lbls[-1]):
+    if not prod_lbls[-1] == data_lbls[-1]:
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi

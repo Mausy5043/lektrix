@@ -47,7 +47,7 @@ def fetch_last_months(months_to_fetch):
         config, telwerk="T2out", from_start_of_year=True
     )
     # production data may not yet have caught up to the current hour
-    if not (prod_lbls[-1] == data_lbls[-1]):
+    if not prod_lbls[-1] == data_lbls[-1]:
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
@@ -79,7 +79,7 @@ def fetch_last_year(year_to_fetch):
         config, telwerk="T2out", from_start_of_year=True
     )
     # production data may not yet have caught up to the current hour
-    if not (prod_lbls[-1] == data_lbls[-1]):
+    if not prod_lbls[-1] == data_lbls[-1]:
         opwekking = opwekking[:-1]
         np.append(opwekking, 0.0)
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
