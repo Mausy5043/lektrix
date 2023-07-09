@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """Daemon to periodically interogate the smart electricity meter to fetch energy mains data.
 
 Store the data in a SQLite3 database.
@@ -38,7 +39,6 @@ APPROOT = "/".join(HERE[0:-2])
 NODE = os.uname()[1]
 
 API_KL = None
-
 
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
