@@ -38,16 +38,19 @@ class Myenergi:
     def __init__(self, keys_file, debug=False):
         r"""Initialise the Myenergi object.
 
-        The keys-file must be a configparser compatible file containing:\n
-        [HUB]\n
-        serial: 12345678\n
-        api_key: secret_api_key\n
-        [ZAPPI]\n
-        serial: 12345678\n
-        [HARVI]\n
-        serial: 12345678\n
-        [EDDI]\n
-        serial: 12345678\n
+        The keys-file must be a configparser compatible file containing:
+        [API]
+        api_key: secret_api_key
+        [HUB]
+        serial: 12345678
+        [ZAPPI]
+        serial: 12345678
+        [HARVI]
+        serial: 12345678
+        [EDDI]
+        serial: 12345678
+        [LIBBI]
+        serial: 12345678
         <EOF>
 
         Args:
@@ -55,11 +58,9 @@ class Myenergi:
                              the serialnumbers and API-key (see below).
             debug (bool, optional): [description]. Defaults to False.
 
-
         Atrtributes:
             DEBUG (bool): show debugging info
             zappi_data (list): list of dicts containing the data
-
         """
         self.DEBUG = debug
         self.base_url = constants.ZAPPI["director"]
@@ -68,9 +69,9 @@ class Myenergi:
 
         iniconf = configparser.ConfigParser()
         iniconf.read(keys_file)
+        self.api_key = self.get_key(iniconf, "API", "api_key")
         self.harvi_serial = self.get_key(iniconf, "HARVI", "serial")
         self.hub_serial = self.get_key(iniconf, "HUB", "serial")
-        self.api_key = self.get_key(iniconf, "HUB", "api_key")
         self.zappi_serial = self.get_key(iniconf, "ZAPPI", "serial")
         self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
         self.libbi_serial = self.get_key(iniconf, "LIBBI", "serial")
@@ -136,8 +137,7 @@ class Myenergi:
             (dict): If succesfull, a dict that contains the requested data.
         """
         hdrs = {"User-Agent": "Wget/1.20 (linux-gnu)"}
-
-        call_url = "/".join([self.base_url, command])
+        call_url = f"{self.base_url}/{command}"
         mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
         try:
             response = requests.get(
