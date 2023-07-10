@@ -195,7 +195,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
 
     btm_hi = kl.contract(import_lo, own_usage)
     if DEBUG:
-        plot_title = " ".join(["(DEBUG)", plot_title])
+        plot_title = f"(DEBUG) {plot_title}"
         np.set_printoptions(precision=3)
         print("data_lbls: ", np.size(data_lbls), data_lbls[-5:])
         print(" ")
