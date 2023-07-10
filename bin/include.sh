@@ -214,8 +214,6 @@ boot_lektrix() {
     done
     cp "${constants_sh_dir}/../www/index.html" "${website_dir}"
     cp "${constants_sh_dir}/../www/favicon.ico" "${website_dir}"
-    # for testing
-    cp -r "${constants_sh_dir}/../www/test" "${website_dir}"
 }
 
 # perform systemctl actions on all timers
