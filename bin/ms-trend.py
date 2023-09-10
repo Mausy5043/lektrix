@@ -156,6 +156,12 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print("o  database production data")
         print(df)
+
+    # Pre-processing
+    # drop sample_time separately!
+    df.drop("sample_time", axis=1, inplace=True, errors="ignore")
+    df.drop("site_id", axis=1, inplace=True, errors="ignore")
+
     for c in df.columns:
         if c not in ["sample_time"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
@@ -168,9 +174,6 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
         lbl = "left"
     df = df.resample(f"{aggregation}", label=lbl).sum()
 
-    # drop sample_time separately!
-    df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-    df.drop("site_id", axis=1, inplace=True, errors="ignore")
 
     df["energy"] *= 0.001  # -> kWh
     if DEBUG:
