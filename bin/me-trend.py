@@ -106,7 +106,9 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     # mods = ["hour", "day", "month", "year"]
     # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
 
-    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
+    where_condition = (
+        f" (sample_time >= datetime('now'," f" '-{hours_to_fetch + 1} hours'{mod_start}))"
+    )
     group_condition = ""
     # if aggregation == 'H':
     #     group_condition = "GROUP BY strftime('%d %H', sample_time)"
