@@ -89,7 +89,12 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     """
     if DEBUG:
         print("\n*** fetching MAINS data ***")
-    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
+
+    # aggregations = "HDMA"
+    # mods = ["hour", "day", "month", "year"]
+    # mod_start = f"start of {mods[aggregations.index(aggregation)]}"
+
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours', '{mod_start}'))"
     group_condition = ""
     if aggregation == "H":
         group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
@@ -124,6 +129,10 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     df["T2in"] *= 0.001  # -> kWh import
     df["T1out"] *= -0.001  # -> kWh export
     df["T2out"] *= -0.001  # -> kWh export
+
+    # drop first row as it will usually not contain valid data
+    df = df.iloc[1:, :]
+
     if DEBUG:
         print("o  database mains data pre-processed")
         print(df)
@@ -143,7 +152,12 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     """
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
-    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
+
+    # aggregations = "HDMA"
+    # mods = ["hour", "day", "month", "year"]
+    # mod_start = f"start of {mods[aggregations.index(aggregation)]}"
+
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours', '{mod_start}') '-1 day')"
     s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
     if DEBUG:
         print(s3_query)
@@ -176,6 +190,10 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
 
 
     df["energy"] *= 0.001  # -> kWh
+
+    # drop first row as it will usually not contain valid data
+    df = df.iloc[1:, :]
+
     if DEBUG:
         print("o  database production data pre-processed")
         print(df)
