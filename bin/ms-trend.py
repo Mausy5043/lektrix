@@ -147,6 +147,8 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
     if DEBUG:
         print(s3_query)
+
+    # Get the data
     with s3.connect(DATABASE) as con:
         df = pd.read_sql_query(
             s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
