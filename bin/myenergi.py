@@ -41,8 +41,6 @@ APPROOT = "/".join(HERE[0:-2])
 # host_name :
 NODE = os.uname()[1]
 
-API_ZP = None
-
 
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'myenergi.py']
@@ -54,7 +52,6 @@ API_ZP = None
 
 def main():
     """Execute main loop until killed."""
-    global API_ZP
     set_led("ev", "orange")
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()

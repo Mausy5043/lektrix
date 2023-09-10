@@ -38,8 +38,6 @@ APPROOT = "/".join(HERE[0:-2])
 # host_name :
 NODE = os.uname()[1]
 
-API_KL = None
-
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
 # MYID: kamstrup.py
@@ -50,7 +48,6 @@ API_KL = None
 
 def main():
     """Execute main loop until killed."""
-    global API_KL
     set_led("mains", "orange")
     killer = ml.GracefulKiller()
     API_KL = kl.Kamstrup(DEBUG)
