@@ -100,6 +100,11 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     """
     if DEBUG:
         print("\n*** fetching CHARGER data ***")
+
+    # aggregations = "HDMA"
+    # mods = ["hour", "day", "month", "year"]
+    # mod_start = f"start of {mods[aggregations.index(aggregation)]}"
+
     where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'))"
     group_condition = ""
     # if aggregation == 'H':
@@ -107,6 +112,8 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     s3_query = f"SELECT * FROM {TABLE_CHRGR} WHERE {where_condition} {group_condition};"
     if DEBUG:
         print(s3_query)
+
+    # Get the data
     with s3.connect(DATABASE) as con:
         df = pd.read_sql_query(
             s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
