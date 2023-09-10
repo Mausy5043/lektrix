@@ -394,7 +394,7 @@ class Solaredge:
         if time_unit in {"WEEK", "MONTH", "YEAR"}:
             # no restrictions, so just return start and end
             return [(start, end)]
-        elif time_unit == "DAY":
+        if time_unit == "DAY":
             rule = dtrule.YEARLY
         elif time_unit in {"QUARTER_OF_AN_HOUR", "HOUR"}:
             rule = dtrule.MONTHLY
