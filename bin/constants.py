@@ -103,6 +103,7 @@ SOLAREDGE = {
     "report_interval": 900,  # quarter of an hour resolution
     "samplespercycle": 1,
     "delay": 360,
+    "requests_timeout": 30,
     "director": "https://monitoringapi.solaredge.com",
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
@@ -128,6 +129,7 @@ ZAPPI = {
     "samplespercycle": 1,
     "delay": 180,
     "director": "https://director.myenergi.net",
+    "requests_timeout": 30,
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
         "sample_epoch": 0,

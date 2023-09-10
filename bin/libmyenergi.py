@@ -78,7 +78,9 @@ class Myenergi:
 
         # First call to the API to get the ASN
         _response = requests.get(
-            self.base_url, auth=HTTPDigestAuth(self.hub_serial, self.api_key)
+            self.base_url,
+            auth=HTTPDigestAuth(self.hub_serial, self.api_key),
+            timeout=constants.ZAPPI["requests_timeout"],
         )
         if self.DEBUG:
             mf.syslog_trace(

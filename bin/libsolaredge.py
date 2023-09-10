@@ -33,6 +33,7 @@ class Solaredge:
         api_token : str
         """
         self.token = api_token
+        self.reqto = constants.SOLAREDGE["requests_timeout"]
 
     @functools.lru_cache(maxsize=128, typed=False)
     def get_list(
@@ -67,7 +68,9 @@ class Solaredge:
         if sort_property:
             params["sortProperty"] = sort_property
 
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -84,7 +87,9 @@ class Solaredge:
         """
         url = urljoin(BASEURL, "site", site_id, "details")
         params = {"api_key": self.token}
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -107,7 +112,9 @@ class Solaredge:
         """
         url = urljoin(BASEURL, "site", site_id, "dataPeriod")
         params = {"api_key": self.token}
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         j = r.json()
         return j
@@ -144,7 +151,9 @@ class Solaredge:
             "endDate": end_date,
             "timeUnit": time_unit,
         }
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -157,7 +166,9 @@ class Solaredge:
             "endDate": end_date,
             "timeUnit": time_unit,
         }
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -168,7 +179,9 @@ class Solaredge:
             "startTime": start_time,
             "endTime": end_time,
         }
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -179,7 +192,12 @@ class Solaredge:
         retries = 3
         while True:
             try:
-                r = requests.get(url, params, headers={"content-type": "application/json"})
+                r = requests.get(
+                    url,
+                    params,
+                    headers={"content-type": "application/json"},
+                    timeout=self.reqto,
+                )
                 r.raise_for_status()
             except requests.exceptions.HTTPError:
                 retries -= 1
@@ -201,7 +219,9 @@ class Solaredge:
         if meters:
             params["meters"] = meters
 
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -243,7 +263,9 @@ class Solaredge:
         if meters:
             params["meters"] = meters
 
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
 
         j = r.json()
@@ -302,7 +324,9 @@ class Solaredge:
         url = urljoin(BASEURL, "site", site_id, "currentPowerFlow")
         params = {"api_key": self.token}
 
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
@@ -317,14 +341,18 @@ class Solaredge:
         if serials:
             params["serials"] = serials.join(",")
 
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
     def get_inventory(self, site_id):
         url = urljoin(BASEURL, "site", site_id, "inventory")
         params = {"api_key": self.token}
-        r = requests.get(url, params, headers={"content-type": "application/json"})
+        r = requests.get(
+            url, params, headers={"content-type": "application/json"}, timeout=self.reqto
+        )
         r.raise_for_status()
         return r.json()
 
