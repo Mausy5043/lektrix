@@ -276,9 +276,8 @@ class Myenergi:
                     # raise for testing
                     # done_flag = False
                     raise
-                else:
-                    # back off from the server for a while
-                    time.sleep(23)
+                # back off from the server for a while
+                time.sleep(23)
         return result
 
     def compact_data(self, data):
