@@ -24,7 +24,6 @@ DEBUG = False
 
 def fetch_last_months(months_to_fetch):
     """..."""
-    global DATABASE
     config = kl.add_time_line(
         {
             "grouping": "%Y-%m",
@@ -55,7 +54,6 @@ def fetch_last_months(months_to_fetch):
 
 def fetch_last_year(year_to_fetch):
     """..."""
-    global DATABASE
     config = kl.add_time_line(
         {
             "grouping": "%Y-%m",
@@ -89,7 +87,6 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     """
     Create the graph
     """
-    global OPTION
     data_lbls = data_tuple[0]
     import_lo = data_tuple[1]
     import_hi = data_tuple[2]
@@ -275,7 +272,6 @@ def main():
     """
     This is the main loop
     """
-    global OPTION
 
     if OPTION.months:
         plot_graph(

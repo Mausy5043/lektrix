@@ -75,7 +75,6 @@ def fetch_last_day(hours_to_fetch):
 
 def fetch_last_month(days_to_fetch):
     """..."""
-    global DATABASE
     config = kl.add_time_line(
         {
             "grouping": "%m-%d",
