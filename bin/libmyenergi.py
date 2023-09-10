@@ -136,6 +136,7 @@ class Myenergi:
         Returns:
             (dict): If succesfull, a dict that contains the requested data.
         """
+        result = {}
         hdrs = {"User-Agent": "Wget/1.20 (linux-gnu)"}
         call_url = f"{self.base_url}/{command}"
         mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
