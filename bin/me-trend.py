@@ -144,6 +144,9 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     df["h1b"] *= J_to_kWh  # -> kWh import to EV
     df["h1d"] *= J_to_kWh  # -> kWh solar production to EV
 
+    # drop first row as it will usually not contain valid or complete data
+    df = df.iloc[1:, :]
+
     if DEBUG:
         print("o  database charger data pre-processed")
         print(df)
