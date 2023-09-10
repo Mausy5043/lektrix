@@ -90,11 +90,12 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print("\n*** fetching MAINS data ***")
 
+    mod_start = ""
     # aggregations = "HDMA"
     # mods = ["hour", "day", "month", "year"]
-    # mod_start = f"start of {mods[aggregations.index(aggregation)]}"
+    # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
 
-    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours', '{mod_start}'))"
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
     group_condition = ""
     if aggregation == "H":
         group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
@@ -122,7 +123,6 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     df.index = pd.to_datetime(df.index, unit="s")  # noqa
     # resample to monotonic timeline
     df = df.resample(f"{aggregation}").max()
-
 
     df = df.diff()  # KAMSTRUP data contains totalisers, we need the differential per timeframe
     df["T1in"] *= 0.001  # -> kWh import
@@ -153,11 +153,12 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
 
+    mod_start = ""
     # aggregations = "HDMA"
     # mods = ["hour", "day", "month", "year"]
-    # mod_start = f"start of {mods[aggregations.index(aggregation)]}"
+    # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
 
-    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours', '{mod_start}') '-1 day')"
+    where_condition = f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
     s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
     if DEBUG:
         print(s3_query)
