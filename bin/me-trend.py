@@ -247,9 +247,6 @@ def main():
     This is the main loop
     """
     if OPTION.hours:
-        aggr = 60  # int(float(OPTION.hours) * 60. / 480)
-        if aggr < 1:
-            aggr = 1
         plot_graph(
             constants.TREND["hour_graph_v2"],
             fetch_data(hours_to_fetch=OPTION.hours, aggregation="H"),
@@ -257,9 +254,6 @@ def main():
             locatorformat=["hour", "%d-%m %Hh"],
         )
     if OPTION.days:
-        aggr = 60 * 24  # int(float(OPTION.days) * 24. * 60. / 5760.)
-        if aggr < 1:
-            aggr = 1
         plot_graph(
             constants.TREND["day_graph_v2"],
             fetch_data(hours_to_fetch=OPTION.days * 24, aggregation="D"),
@@ -267,9 +261,6 @@ def main():
             locatorformat=["day", "%Y-%m-%d"],
         )
     if OPTION.months:
-        aggr = 60 * 24 * 31  # int(float(OPTION.months) * 30.5 * 24. * 60.  / 9900.)
-        if aggr < 1:
-            aggr = 1
         plot_graph(
             constants.TREND["month_graph_v2"],
             fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation="M"),
@@ -278,9 +269,6 @@ def main():
             locatorformat=["month", "%Y-%m"],
         )
     if OPTION.years:
-        aggr = 24 * 60 * 366  # int(float(OPTION.years) * 366 * 24. * 60.)
-        if aggr < 1:
-            aggr = 1
         plot_graph(
             constants.TREND["year_graph_v2"],
             fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation="A"),
