@@ -318,12 +318,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     # Set Axes stuff
     ax1.set_ylabel("[kWh]")
     if show_data == 0:
-        y_lo = -1 * (max(exprt) + 1)
-        y_hi = max(usage) + 1
-        if y_lo > -1.5:
-            y_lo = -1.5
-        if y_hi < 1.5:
-            y_hi = 1.5
+        y_lo = min(-1 * (max(exprt) + 1), -1.5)
+        y_hi = max(max(usage) + 1, 1.5)
         ax1.set_ylim([y_lo, y_hi])
 
     ax1.set_xlabel("Datetime")
