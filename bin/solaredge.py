@@ -87,7 +87,6 @@ def main():
                     mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
                     site_list = []
-                    pass
 
             if site_list:
                 if start_dt > dt.datetime.today():

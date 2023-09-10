@@ -81,13 +81,11 @@ class Kamstrup:
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
                 valid_telegram = False
                 receiving = False
-                pass
             except UnicodeDecodeError:
                 mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, self.debug)
                 mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
                 valid_telegram = False
                 receiving = False
-                pass
 
             loops2go = loops2go - 1
             if loops2go < 0:
@@ -161,7 +159,6 @@ class Kamstrup:
                     mf.syslog_trace(f"    {element}", syslog.LOG_INFO, self.debug)
                     mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_INFO, self.debug)
                     mf.syslog_trace(f"    {telegram}", syslog.LOG_INFO, self.debug)
-                pass
         idx_dt = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
 

@@ -117,14 +117,12 @@ class Myenergi:
                 syslog.LOG_WARNING,
                 self.DEBUG,
             )
-            pass
         except configparser.NoOptionError:
             mf.syslog_trace(
                 f"Option [{key_section}]\n{key_option} = ...    does not exist.",
                 syslog.LOG_WARNING,
                 self.DEBUG,
             )
-            pass
         return key_value
 
     def get_status(self, command):

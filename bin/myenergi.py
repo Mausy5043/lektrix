@@ -92,7 +92,6 @@ def main():
                     syslog.LOG_WARNING,
                     DEBUG,
                 )
-                pass
             except Exception:  # noqa
                 set_led("ev", "red")
                 mf.syslog_trace(
