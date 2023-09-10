@@ -223,6 +223,9 @@ def main():
 
 def do_work(site_list, start_dt=dt.datetime.today()):
     """Extract the data from the dict(s)."""
+
+    # TODO: This function should be implemented in libsolaredge
+
     # request 4 hours back and 1 day ahead
     back_dt = start_dt - dt.timedelta(hours=4)
     start_dt += dt.timedelta(days=1)
