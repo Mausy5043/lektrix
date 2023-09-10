@@ -288,7 +288,6 @@ def main():
             show_data=True,
             locatorformat=["year", "%Y"],
         )
-    return
 
 
 if __name__ == "__main__":
