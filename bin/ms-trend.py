@@ -130,7 +130,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     df["T1out"] *= -0.001  # -> kWh export
     df["T2out"] *= -0.001  # -> kWh export
 
-    # drop first row as it will usually not contain valid data
+    # drop first row as it will usually not contain valid or complete data
     df = df.iloc[1:, :]
 
     if DEBUG:
@@ -187,7 +187,6 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     if aggregation == "D":
         lbl = "left"
     df = df.resample(f"{aggregation}", label=lbl).sum()
-
 
     df["energy"] *= 0.001  # -> kWh
 
