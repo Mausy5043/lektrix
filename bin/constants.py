@@ -28,6 +28,7 @@ if not os.path.isfile(_DATABASE):
 
 DT_FORMAT = "%Y-%m-%d %H:%M:%S"
 TIMEZONE = pytz.timezone("Europe/Amsterdam")
+FLOAT_FMT = "+.0f"
 
 # fmt: off
 BATTERY = {
