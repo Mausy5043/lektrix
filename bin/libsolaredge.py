@@ -186,8 +186,7 @@ class Solaredge:
                 if retries:
                     time.sleep(59)
                     continue
-                else:
-                    raise
+                raise
             break
         return r.json()
 
