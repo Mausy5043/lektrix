@@ -217,7 +217,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 color=["blue", "red", "seagreen", "orange", "salmon"],
             )
             # linewidth and alpha need to be set separately
-            for i, l in enumerate(ax1.lines):
+            for _, l in enumerate(ax1.lines):
                 plt.setp(l, alpha=ahpla, linewidth=1, linestyle=" ")
             if show_data:
                 x_offset = -0.1
