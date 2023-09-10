@@ -320,7 +320,7 @@ if __name__ == "__main__":
     if OPTION.months == 0:
         OPTION.months = 38
     if OPTION.years == 0:
-        OPTION.years = 8
+        OPTION.years = 12
 
     if OPTION.debug:
         print(OPTION)
