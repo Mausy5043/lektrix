@@ -29,6 +29,7 @@ constants_sh_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 declare -a lektrix_timers=("lektrix.trend.day.timer"
     "lektrix.trend.month.timer"
     "lektrix.trend.year.timer")
+  # "lektrix.update.timer" (incl. the .service) is not installed
 # list of services provided
 declare -a lektrix_services=("lektrix.kamstrup.service"
     "lektrix.myenergi.service"
