@@ -224,7 +224,7 @@ action_timers() {
         if [ "${ACTION}" != "rm" ]; then
             sudo systemctl "${ACTION}" "${TMR}"
         else
-            sudo rm "/etc/systemd/system/${TMR}"
+            sudo rm "/usr/lib/systemd/system/${TMR}"
         fi
     done
     sudo systemctl daemon-reload
@@ -239,7 +239,7 @@ action_services() {
         if [ "${ACTION}" != "rm" ]; then
             sudo systemctl "${ACTION}" "${SRVC}"
         else
-            sudo rm "/etc/systemd/system/${SRVC}"
+            sudo rm "/usr/lib/systemd/system/${SRVC}"
         fi
     done
     sudo systemctl daemon-reload
