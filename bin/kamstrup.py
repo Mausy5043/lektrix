@@ -4,6 +4,7 @@
 
 Store the data in a SQLite3 database.
 """
+
 import argparse
 import os
 import shutil
@@ -18,32 +19,22 @@ import mausy5043_common.libsqlite3 as m3
 import constants
 import libkamstrup as kl
 
+# fmt: off
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
 parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--debug", action="store_true", help="start the daemon in debugging mode")
 OPTION = parser.parse_args()
 
 # constants
 DEBUG = False
-HERE = os.path.realpath(__file__).split("/")
-# runlist id :
-MYID = HERE[-1]
-# app_name :
-MYAPP = HERE[-3]
-MYROOT = "/".join(HERE[0:-3])
-APPROOT = "/".join(HERE[0:-2])
-# host_name :
-NODE = os.uname()[1]
-
-# example values:
-# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
-# MYID: kamstrup.py
-# MYAPP: lektrix
-# MYROOT: /home/pi
-# NODE: rbelec
+HERE = os.path.realpath(__file__).split("/")  # ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
+MYID = HERE[-1]  # kamstrup.py
+MYAPP = HERE[-3]  # lektrix
+MYROOT = "/".join(HERE[0:-3])  # /home/pi
+APPROOT = "/".join(HERE[0:-2])  # /home/pi/lektrix
+NODE = os.uname()[1]  # rbelec
+# fmt: on
 
 
 def main():
@@ -144,6 +135,7 @@ if __name__ == "__main__":
 
     if OPTION.debug:
         DEBUG = True
+        print(OPTION)
         mf.syslog_trace("Debug-mode started.", syslog.LOG_DEBUG, DEBUG)
         print("Use <Ctrl>+C to stop.")
 
