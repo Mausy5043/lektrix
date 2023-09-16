@@ -28,8 +28,8 @@ constants_sh_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 # list of timers provided
 declare -a lektrix_timers=("lektrix.trend.day.timer"
     "lektrix.trend.month.timer"
-    "lektrix.trend.year.timer"
-    "lektrix.update.timer")
+    "lektrix.trend.year.timer")
+  # "lektrix.update.timer" (incl. the .service) is not installed
 # list of services provided
 declare -a lektrix_services=("lektrix.kamstrup.service"
     "lektrix.myenergi.service"
@@ -129,8 +129,8 @@ restart_lektrix() {
     fi
 
     # re-install services and timers in case they were changed
-    sudo cp "${ROOT_DIR}"/services/*.service /etc/systemd/system/
-    sudo cp "${ROOT_DIR}"/services/*.timer /etc/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.service /usr/lib/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.timer /usr/lib/systemd/system/
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
@@ -187,8 +187,8 @@ install_lektrix() {
     echo "Installing timers & services."
     # remove execute-bit from services and timers
     sudo chmod -x "${ROOT_DIR}"/services/*
-    sudo cp "${ROOT_DIR}"/services/*.service /etc/systemd/system/
-    sudo cp "${ROOT_DIR}"/services/*.timer /etc/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.service /usr/lib/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.timer /usr/lib/systemd/system/
     sudo systemctl daemon-reload
     action_timers enable
     action_services enable
@@ -224,7 +224,7 @@ action_timers() {
         if [ "${ACTION}" != "rm" ]; then
             sudo systemctl "${ACTION}" "${TMR}"
         else
-            sudo rm "/etc/systemd/system/${TMR}"
+            sudo rm "/usr/lib/systemd/system/${TMR}"
         fi
     done
     sudo systemctl daemon-reload
@@ -239,7 +239,7 @@ action_services() {
         if [ "${ACTION}" != "rm" ]; then
             sudo systemctl "${ACTION}" "${SRVC}"
         else
-            sudo rm "/etc/systemd/system/${SRVC}"
+            sudo rm "/usr/lib/systemd/system/${SRVC}"
         fi
     done
     sudo systemctl daemon-reload
