@@ -129,8 +129,8 @@ restart_lektrix() {
     fi
 
     # re-install services and timers in case they were changed
-    sudo cp "${ROOT_DIR}"/services/*.service /etc/systemd/system/
-    sudo cp "${ROOT_DIR}"/services/*.timer /etc/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.service /usr/lib/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.timer /usr/lib/systemd/system/
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
 
@@ -187,8 +187,8 @@ install_lektrix() {
     echo "Installing timers & services."
     # remove execute-bit from services and timers
     sudo chmod -x "${ROOT_DIR}"/services/*
-    sudo cp "${ROOT_DIR}"/services/*.service /etc/systemd/system/
-    sudo cp "${ROOT_DIR}"/services/*.timer /etc/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.service /usr/lib/systemd/system/
+    sudo cp "${ROOT_DIR}"/services/*.timer /usr/lib/systemd/system/
     sudo systemctl daemon-reload
     action_timers enable
     action_services enable
