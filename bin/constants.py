@@ -8,26 +8,25 @@ import pytz
 
 _MYHOME = os.environ["HOME"]
 _DATABASE_FILENAME = "lektrix.sqlite3"
-_DATABASE = f"/srv/rmt/_databases/kimnaty/{_DATABASE_FILENAME}"
-_HERE = os.path.realpath(__file__).split(
-    "/"
-)  # ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
+_DATABASE = f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}"
+_HERE = os.path.realpath(__file__).split("/")
+# ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
 _HERE = "/".join(_HERE[0:-2])
 _WEBSITE = "/run/lektrix/site/img"
 
 if not os.path.isfile(_DATABASE):
-    _DATABASE = "/srv/databases/lektrix.sqlite3"
+    _DATABASE = f"/srv/databases/{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
-    _DATABASE = "/srv/data/lektrix.sqlite3"
+    _DATABASE = f"/srv/data/{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
-    _DATABASE = "/mnt/data/lektrix.sqlite3"
+    _DATABASE = f"/mnt/data/{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
-    _DATABASE = ".local/lektrix.sqlite3"
+    _DATABASE = f".local/{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
     # ln -s ~/Dropbox/raspi/_databases/lektrix/ ~/.sqlite/lektrix
-    _DATABASE = f"{_MYHOME}/.sqlite3/lektrix/lektrix.sqlite3"
+    _DATABASE = f"{_MYHOME}/.sqlite3/lektrix/{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
-    _DATABASE = "lektrix.sqlite3"
+    _DATABASE = f"{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
     print("Database is missing.")
     sys.exit(1)
@@ -181,13 +180,17 @@ def get_app_version() -> str:
     # git --no-pager log -1 --format="%ai"
     args = ["git", "log", "-1", "--format='%h'"]
     _exit_h = (
-        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
+        subprocess.check_output(
+            args, cwd=_HERE, shell=False, encoding="utf-8"
+        )  # nosec B603
         .strip("\n")
         .strip("'")
     )
     args[3] = "--format='%ai'"
     _exit_ai = (
-        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
+        subprocess.check_output(
+            args, cwd=_HERE, shell=False, encoding="utf-8"
+        )  # nosec B603
         .strip("\n")
         .strip("'")
     )
