@@ -2,7 +2,7 @@
 
 import os
 import sys
-from asyncio import subprocess
+import subprocess
 
 import pytz
 
