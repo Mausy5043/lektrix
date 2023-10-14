@@ -125,7 +125,7 @@ def set_led(dev, colour):
     mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
 
     in_dirfile = f"{APPROOT}/www/{colour}.png"
-    out_dirfile = f'{constants.TREND["website"]}/img/{dev}.png'
+    out_dirfile = f'{constants.TREND["website"]}/{dev}.png'
     shutil.copy(f"{in_dirfile}", out_dirfile)
 
 

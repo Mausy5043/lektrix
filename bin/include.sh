@@ -20,7 +20,8 @@ database_local_root="/srv/rmt/_databases"
 database_remote_root="remote:raspi/_databases"
 database_filename="lektrix.sqlite3"
 db_full_path="${database_local_root}/${app_name}/${database_filename}"
-website_dir="/tmp/${app_name}/site"
+# website_dir="/tmp/${app_name}/site"
+website_dir="/run/${app_name}/site"
 website_image_dir="${website_dir}/img"
 
 constants_sh_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
@@ -133,8 +134,10 @@ restart_lektrix() {
     sudo cp "${ROOT_DIR}"/services/*.timer /usr/lib/systemd/system/
     sudo systemctl daemon-reload
     sudo systemctl reset-failed
+    echo "...systemd updated"; sleep 60
 
     start_lektrix "${ROOT_DIR}" "${SYSTEMD_REQUEST}"
+    echo "...lektrix started"
 }
 
 # uninstall the application
@@ -147,6 +150,7 @@ unstall_lektrix() {
     action_timers rm
     action_services rm
     rm "${APPROOT}/.${app_name}.branch"
+    sudo rm /var/www/state
 }
 
 # install the application
@@ -168,7 +172,7 @@ install_lektrix() {
     done
     # install Python3 stuff
     python3 -m pip install --upgrade pip setuptools wheel
-    python3 -m pip install -r requirements.txt
+    python3 -m pip install --upgrade -r requirements.txt
     echo
 
     # install account keys from local fileserver
@@ -205,8 +209,9 @@ boot_lektrix() {
     echo "*** $app_name running on $host_name >>>>>>: boot"
     # make sure website filetree exists
     if [ ! -d "${website_image_dir}" ]; then
-        mkdir -p "${website_image_dir}"
-        chmod -R 755 "${website_dir}/.."
+        sudo mkdir -p "${website_image_dir}"
+        sudo chown -R pi:users "${website_dir}"
+        sudo chmod -R 755 "${website_dir}/.."
     fi
     # allow website to work even if the graphics have not yet been created
     for GRPH in "${lektrix_graphs[@]}"; do

@@ -2,12 +2,18 @@
 
 import os
 import sys
+from asyncio import subprocess
 
 import pytz
 
 _MYHOME = os.environ["HOME"]
-_DATABASE = "/srv/rmt/_databases/lektrix/lektrix.sqlite3"
-_WEBSITE = "/tmp/lektrix/site"
+_DATABASE_FILENAME = "lektrix.sqlite3"
+_DATABASE = f"/srv/rmt/_databases/kimnaty/{_DATABASE_FILENAME}"
+_HERE = os.path.realpath(__file__).split(
+    "/"
+)  # ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
+_HERE = "/".join(_HERE[0:-2])
+_WEBSITE = "/run/lektrix/site/img"
 
 if not os.path.isfile(_DATABASE):
     _DATABASE = "/srv/databases/lektrix.sqlite3"
@@ -25,6 +31,10 @@ if not os.path.isfile(_DATABASE):
 if not os.path.isfile(_DATABASE):
     print("Database is missing.")
     sys.exit(1)
+
+if not os.path.isdir(_WEBSITE):
+    print("Graphics will be diverted to /tmp")
+    _WEBSITE = "/tmp"
 
 DT_FORMAT = "%Y-%m-%d %H:%M:%S"
 TIMEZONE = pytz.timezone("Europe/Amsterdam")
@@ -53,18 +63,18 @@ BATTERY = {
 TREND = {
     "database": _DATABASE,
     "website": _WEBSITE,
-    "hour_graph": "/tmp/lektrix/site/img/lex_pasthours",
-    "day_graph": "/tmp/lektrix/site/img/lex_pastdays",
-    "month_graph": "/tmp/lektrix/site/img/lex_pastmonths",
-    "year_graph": "/tmp/lektrix/site/img/lex_pastyears",
-    "yg_vs_month": "/tmp/lektrix/site/img/lex_vs_month",
-    "yg_gauge": "/tmp/lektrix/site/img/lex_gauge",
-    "hour_graph_v2": "/tmp/lektrix/site//img/lex_pasthours",
-    "day_graph_v2": "/tmp/lektrix/site//img/lex_pastdays",
-    "month_graph_v2": "/tmp/lektrix/site//img/lex_pastmonths",
-    "year_graph_v2": "/tmp/lektrix/site//img/lex_pastyears",
-    "yg_vs_month_v2": "/tmp/lektrix/site//img/lex_vs_month",
-    "yg_gauge_v2": "/tmp/lektrix/site//img/lex_gauge",
+    "hour_graph": f"{_WEBSITE}/lex_pasthours",
+    "day_graph": f"{_WEBSITE}/lex_pastdays",
+    "month_graph": f"{_WEBSITE}/lex_pastmonths",
+    "year_graph": f"{_WEBSITE}/lex_pastyears",
+    "yg_vs_month": f"{_WEBSITE}/lex_vs_month",
+    "yg_gauge": f"{_WEBSITE}/lex_gauge",
+    "hour_graph_v2": f"{_WEBSITE}/lex_pasthours",
+    "day_graph_v2": f"{_WEBSITE}/lex_pastdays",
+    "month_graph_v2": f"{_WEBSITE}/lex_pastmonths",
+    "year_graph_v2": f"{_WEBSITE}/lex_pastyears",
+    "yg_vs_month_v2": f"{_WEBSITE}/lex_vs_month",
+    "yg_gauge_v2": f"{_WEBSITE}/lex_gauge",
 }
 
 KAMSTRUP = {
@@ -160,6 +170,32 @@ ZAPPI = {
 }
 # fmt: on
 
+
+def get_app_version() -> str:
+    """Retrieve information of current version of kimnaty.
+
+    Returns:
+        versionstring
+    """
+    # git log -n1 --format="%h"
+    # git --no-pager log -1 --format="%ai"
+    args = ["git", "log", "-1", "--format='%h'"]
+    _exit_h = (
+        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
+        .strip("\n")
+        .strip("'")
+    )
+    args[3] = "--format='%ai'"
+    _exit_ai = (
+        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
+        .strip("\n")
+        .strip("'")
+    )
+    return f"{_exit_h}  -  {_exit_ai}"
+
+
 if __name__ == "__main__":
     print(f"home              = {_MYHOME}")
     print(f"database location = {_DATABASE}")
+    print("")
+    print(f"lektrix (me)      = {get_app_version()}")
