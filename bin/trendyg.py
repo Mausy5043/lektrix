@@ -139,8 +139,8 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         tick_pos = np.arange(1, len(grph_lbls[1]) + 1) - (bars_width / 2)
 
         # Create the general plot and the bar
-        plt.rc("font", size=6.5)
-        dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
+        plt.rc("font", size=13)
+        dummy, ax1 = plt.subplots(1, figsize=(20, 7))
 
         # Create a bar plot usage
         for idx in range(0, len(grph_lbls[0])):
@@ -199,8 +199,8 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         tick_pos = 0
 
         # Create the general plot and the bar
-        plt.rc("font", size=6.5)
-        dummy, ax1 = plt.subplots(1, figsize=(10, 1.5))
+        plt.rc("font", size=13)
+        dummy, ax1 = plt.subplots(1, figsize=(20, 3))
 
         ax1.barh(
             tick_pos,
@@ -216,7 +216,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
             tick_pos + (bars_width / 2),
             f"{power_out:4.0f}",
             {"ha": "center", "va": "center"},
-            fontsize=12,
+            fontsize=24,
         )
         ax1.barh(
             tick_pos,
@@ -232,7 +232,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
             tick_pos + (bars_width / 2),
             f"{power_dif:4.0f}",
             {"ha": "center", "va": "center"},
-            fontsize=12,
+            fontsize=24,
         )
         ax1.barh(
             tick_pos,
@@ -248,7 +248,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
             tick_pos + (bars_width / 2),
             f"{power_in:4.0f}",
             {"ha": "center", "va": "center"},
-            fontsize=12,
+            fontsize=24,
         )
 
         # Set  Axes stuff
@@ -257,7 +257,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         ax1.set_xlim([power_rng / -2, power_rng / 2])
         # ax1.axhline(y=0, color='k')
         ax1.axvline(x=0, color="k")
-        ax1.set_yticks([1])
+        ax1.set_yticks([])  # no y-ticks
 
     # Set general plot stuff
     plt.title(f"{plot_title}")
