@@ -221,8 +221,8 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     tick_pos = list(range(1, len(data_lbls) + 1))
 
     # Create the general plot and the bar
-    plt.rc("font", size=6.5)
-    dummy, ax1 = plt.subplots(1, figsize=(10, 3.5))
+    plt.rc("font", size=13)
+    dummy, ax1 = plt.subplots(1, figsize=(20, 7.5))
     col_import = "red"
     col_export = "blue"
     col_usage = "green"
@@ -264,7 +264,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
                 10,
                 f"{v:7.3f}",
                 {"ha": "center", "va": "bottom"},
-                rotation=-90,
+                rotation=90,
             )
     if show_data == 2:
         for i, v in enumerate(usage):
@@ -302,7 +302,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
                 -10,
                 f"{v:7.3f}",
                 {"ha": "center", "va": "top"},
-                rotation=-90,
+                rotation=90,
             )
     if show_data == 2:
         for i, v in enumerate(exprt):
@@ -326,7 +326,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
     ax1.axhline(y=0, color="k")
     ax1.axvline(x=0, color="k")
     # Set plot stuff
-    plt.xticks(tick_pos, data_lbls, rotation=-60)
+    plt.xticks(tick_pos, data_lbls, rotation=30)
     plt.title(f"{plot_title}")
     plt.legend(loc="upper left", ncol=5, framealpha=0.2)
     # Fit every nicely
