@@ -73,7 +73,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     )
 
     # put columns in the right order for plotting
-    categories = ["export", "import", "EB", "EVsol", "EVnet"]
+    categories = ["export", "EB", "EVsol", "EVimport", "import"]
     df_chrg.columns = pd.CategoricalIndex(
         df_chrg.columns.values, ordered=True, categories=categories
     )
@@ -214,7 +214,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 stacked=True,
                 width=0.9,
                 figsize=(fig_x, fig_y),
-                color=["blue", "red", "seagreen", "orange", "salmon"],
+                color=["blue", "seagreen", "orange", "salmon", "red"],
             )
             # linewidth and alpha need to be set separately
             for _, l in enumerate(ax1.lines):
