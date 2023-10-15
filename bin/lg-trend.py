@@ -77,7 +77,7 @@ def fetch_last_month(days_to_fetch):
     """..."""
     config = kl.add_time_line(
         {
-            "grouping": "%m-%d",
+            "grouping": "%Y-%m-%d",
             "period": days_to_fetch,
             "timeframe": "day",
             "database": DATABASE,
