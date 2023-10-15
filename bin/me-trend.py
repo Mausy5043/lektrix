@@ -73,7 +73,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     )
 
     # put columns in the right order for plotting
-    categories = ["export", "EB", "EVsol", "EVimport", "import"]
+    categories = ["export", "EB", "EVsol", "EVnet", "import"]
     df_chrg.columns = pd.CategoricalIndex(
         df_chrg.columns.values, ordered=True, categories=categories
     )
