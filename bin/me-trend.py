@@ -53,9 +53,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     """
     df_chrg["EVnet"] = df_chrg["h1b"]  # imported and used for EV
     df_chrg["EVsol"] = df_chrg["h1d"]  # solar used for EV
-    df_chrg["import"] = (
-        df_chrg["imp"] - df_chrg["EVnet"]
-    )  # compensate for import diverted to EV
+    df_chrg["import"] = df_chrg["imp"] - df_chrg["EVnet"]  # compensate for import diverted to EV
     df_chrg["export"] = df_chrg["exp"]
     df_chrg["EB"] = (
         df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
@@ -118,9 +116,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
 
     # Get the data
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
-        )
+        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database charger data")
         print(df)

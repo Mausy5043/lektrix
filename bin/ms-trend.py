@@ -56,9 +56,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
         df_mains.insert(2, "EB", df_prod["energy"])
     except KeyError:
         df_mains.insert(2, "EB", np.nan)
-    df_mains["EB"] += (
-        df_mains["T1out"] + df_mains["T2out"]
-    )  # T1out and T2out are (-)-ve values !
+    df_mains["EB"] += df_mains["T1out"] + df_mains["T2out"]  # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
     categories = ["T1out", "T2out", "EB", "T1in", "T2in"]
     df_mains.columns = pd.CategoricalIndex(
@@ -107,9 +105,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
 
     # Get the data
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
-        )
+        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database mains data")
         print(df)
@@ -169,9 +165,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
 
     # Get the data
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates="sample_time", index_col="sample_epoch"
-        )
+        df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database production data")
         print(df)

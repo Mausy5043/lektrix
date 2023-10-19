@@ -111,12 +111,8 @@ def fetch_last_year(months_to_fetch):
     )
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
     import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
 
     config["table"] = TABLE_PRDCT
     opwekking, prod_lbls = kl.get_historic_data(
@@ -142,12 +138,8 @@ def fetch_last_years(years_to_fetch):
     )
     import_lo, data_lbls = kl.get_historic_data(config, telwerk="T1in", from_start_of_year=True)
     import_hi, data_lbls = kl.get_historic_data(config, telwerk="T2in", from_start_of_year=True)
-    export_lo, data_lbls = kl.get_historic_data(
-        config, telwerk="T1out", from_start_of_year=True
-    )
-    export_hi, data_lbls = kl.get_historic_data(
-        config, telwerk="T2out", from_start_of_year=True
-    )
+    export_lo, data_lbls = kl.get_historic_data(config, telwerk="T1out", from_start_of_year=True)
+    export_hi, data_lbls = kl.get_historic_data(config, telwerk="T2out", from_start_of_year=True)
 
     config["table"] = TABLE_PRDCT
     opwekking, prod_lbls = kl.get_historic_data(

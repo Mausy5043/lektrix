@@ -180,17 +180,13 @@ def get_app_version() -> str:
     # git --no-pager log -1 --format="%ai"
     args = ["git", "log", "-1", "--format='%h'"]
     _exit_h = (
-        subprocess.check_output(
-            args, cwd=_HERE, shell=False, encoding="utf-8"
-        )  # nosec B603
+        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
         .strip("\n")
         .strip("'")
     )
     args[3] = "--format='%ai'"
     _exit_ai = (
-        subprocess.check_output(
-            args, cwd=_HERE, shell=False, encoding="utf-8"
-        )  # nosec B603
+        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
         .strip("\n")
         .strip("'")
     )

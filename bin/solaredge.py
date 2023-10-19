@@ -144,9 +144,7 @@ def main():
 
             pause_interval = (
                 sample_interval
-                - (
-                    local_now() - start_time
-                )  # time spent in this loop           eg. (40-3) = 37s
+                - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                 - (
                     start_time % sample_interval
                 )  # number of seconds to next loop    eg. 3 % 60 = 3s

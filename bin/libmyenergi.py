@@ -83,9 +83,7 @@ class Myenergi:
             timeout=constants.ZAPPI["requests_timeout"],
         )
         if self.DEBUG:
-            mf.syslog_trace(
-                f"Response Status Code : {_response.status_code}", False, self.DEBUG
-            )
+            mf.syslog_trace(f"Response Status Code : {_response.status_code}", False, self.DEBUG)
             for key in _response.headers:
                 mf.syslog_trace(f"   {key}\t::\t{_response.headers[key]}", False, self.DEBUG)
             mf.syslog_trace("", False, self.DEBUG)
@@ -226,9 +224,7 @@ class Myenergi:
         result = []
         previous_day_data = [
             self.standardise_json_block(block)
-            for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[
-                f"U{self.zappi_serial}"
-            ]
+            for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[f"U{self.zappi_serial}"]
         ]
         current_day_data = [
             self.standardise_json_block(block)
