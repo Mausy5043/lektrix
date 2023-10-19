@@ -298,7 +298,6 @@ def get_historic_data(
         ]
 
     data = np.array(db_data)
-
     # interpolate the data to monotonic 10minute intervals provided by dicti['timeline']
     ret_epoch, ret_intdata = interplate(
         dicti["timeline"],
