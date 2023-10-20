@@ -7,7 +7,7 @@ After=multi-user.target
 [Service]
 Type=simple
 User=pi
-# ExecStartPre=/bin/sleep 20
+ExecStartPre=/home/pi/lektrix/lektrix --boot
 ExecStart=/home/pi/lektrix/bin/kamstrup.py --start
 RestartSec=360s
 Restart=on-failure
