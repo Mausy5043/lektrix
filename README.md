@@ -1,3 +1,6 @@
+![Static Badge](https://img.shields.io/badge/release-rolling-lightgreen)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 # lektrix
  Interface with [KAMSTRUP smart electricity meter](https://www.kamstrup.com/), [SolarEdge API](https://www.solaredge.com/) and [ZAPPI v2](https://myenergi.com/) API using Raspberry Pi
 
