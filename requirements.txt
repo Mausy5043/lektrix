@@ -1,7 +1,7 @@
 matplotlib==3.6.*
 mausy5043-common
 numpy
-pandas==1.5.2
+pandas
 pyserial==3.5
 python-dateutil
 pytz
