@@ -1,0 +1,22 @@
+# When making changes to this file update requirements.txt also !!
+
+channels:
+  - conda-forge
+  - defaults
+
+dependencies:
+  - python=3.10
+  - matplotlib
+  - numpy
+  - pandas
+  - pip
+# This won't install on anything other than Linux (notably Raspberry Pi):
+# - pyserial=3.5
+  - python-dateutil
+  - pytz
+  - requests
+  - scipy
+  # Not on conda channels:
+  - pip:
+      - mausy5043-common
+
