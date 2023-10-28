@@ -265,13 +265,15 @@ def main():
         plot_graph(
             constants.TREND["yg_vs_month"],
             fetch_last_months(OPTION.months),
-            f"Stroomverbruik/levering per maand afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            f"Stroomverbruik/levering per maand afgelopen jaren "
+            f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
         )
     if OPTION.gauge:
         plot_graph(
             constants.TREND["yg_gauge"],
             fetch_last_year(OPTION.gauge),
-            f"Salderingsbalans over {OPTION.gauge} ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            f"Salderingsbalans over {OPTION.gauge} "
+            f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             gauge=True,
         )
 

@@ -19,7 +19,8 @@ BASEURL = constants.SOLAREDGE["director"]
 
 class Solaredge:
     """
-    Object containing SolarEdge's site API-methods, and some functions that return Pandas DataFrames
+    Object containing SolarEdge's site API-methods, and some functions that
+    return Pandas DataFrames
     See https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf
     """
 
@@ -230,7 +231,8 @@ class Solaredge:
             see `start_time
         meters : str
             default None
-            options: any combination of PRODUCTION, CONSUMPTION, SELFCONSUMPTION, FEEDIN, PURCHASED
+            options: any combination of
+                PRODUCTION, CONSUMPTION, SELFCONSUMPTION, FEEDIN, PURCHASED
                 separated by a comma. eg: "PRODUCTION,CONSUMPTION"
         time_unit : str
             default DAY
@@ -255,55 +257,6 @@ class Solaredge:
 
         rj = self.request_get_json(url, params)
         return rj
-
-    # def get_energy_details_dataframe(self, site_id, start_time, end_time, meters=None, time_unit="DAY"):
-    #   """
-    #   Request Energy Details for a certain site and timeframe as a Pandas DataFrame
-    #
-    #   Parameters
-    #   ----------
-    #   site_id : int
-    #   start_time : str | dt.date | dt.datetime
-    #       Can be any date or datetime object (also pandas.Timestamp)
-    #       Timezone-naive objects will be treated as local time at the site
-    #   end_time : str | dt.date | dt.datetime
-    #       See `start_time`
-    #   meters : [str]
-    #       default None
-    #       list with any combination of these terms: PRODUCTION, CONSUMPTION, SELFCONSUMPTION, FEEDIN, PURCHASED
-    #   time_unit : str
-    #       default DAY
-    #       options: QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR
-    #       Note that this method works around the usage restrictions by requesting chunks of data
-    #
-    #   Returns
-    #   -------
-    #   pandas.DataFrame
-    #   """
-    #   from .parsers import parse_energydetails
-    #   import pandas as pd
-    #
-    #   tz = self.get_timezone(site_id=site_id)
-    #   if meters:
-    #     meters = ','.join(meters)
-    #
-    #   # use a generator to do some lazy loading and to (hopefully) save some memory
-    #   # when requesting large periods of time
-    #   def generate_frames():
-    #     # work around the usage restrictions by creating intervals to request data in
-    #     for start, end in self.intervalize(time_unit=time_unit, start=start_time, end=end_time):
-    #       # format start and end in the correct string notation
-    #       start, end = [self._fmt_date(date_obj=time, fmt='%Y-%m-%d %H:%M:%S', tz=tz) for time in [start, end]]
-    #       j = self.get_energy_details(site_id=site_id, start_time=start, end_time=end, meters=meters,
-    #                                   time_unit=time_unit)
-    #       frame = parse_energydetails(j)
-    #       yield frame
-    #
-    #   frames = generate_frames()
-    #   df = pd.concat(frames)
-    #   df = df.drop_duplicates()
-    #   df = df.tz_localize(tz)
-    #   return df
 
     def get_current_power_flow(self, site_id):
         url = urljoin(BASEURL, "site", site_id, "currentPowerFlow")
@@ -381,9 +334,10 @@ class Solaredge:
     @staticmethod
     def intervalize(time_unit, start, end):
         """
-        Create pairs of start and end with regular intervals, to deal with usage restrictions on the API
-        e.g. requests with `time_unit="DAY"` are limited to 1 year, so when `start` and `end` are more
-        than 1 year apart, pairs of timestamps will be generated that respect this limit.
+        Create pairs of start and end with regular intervals, to deal with usage
+        restrictions on the API.
+        e.g. requests with `time_unit="DAY"` are limited to 1 year, so when `start` and `end`
+        are more than 1 year apart, pairs of timestamps will be generated that respect this limit.
 
         Args:
             time_unit(str): string can be QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR
@@ -404,7 +358,8 @@ class Solaredge:
             rule = dtrule.MONTHLY
         else:
             raise ValueError(
-                "Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR"
+                "Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, "
+                "DAY, WEEK, MONTH, YEAR"
             )
 
         res = []

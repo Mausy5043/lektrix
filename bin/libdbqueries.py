@@ -21,7 +21,7 @@ def add_time_line(config):
     if "year" in config:
         ytf = int(config["year"]) + 1
         final_epoch = int(
-            dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp()
+            dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp()  # noqa: E501
         )
     step_epoch = 15 * 60
     multi = 3600

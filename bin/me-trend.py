@@ -129,7 +129,9 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     for c in df.columns:
         if c not in ["sample_time"]:
             df[c] = pd.to_numeric(df[c], errors="coerce")
-    # df.index = pd.to_datetime(df.index, unit='s').tz_localize("UTC").tz_convert("Europe/Amsterdam")
+    # df.index = pd.to_datetime(df.index, unit='s')
+    #              .tz_localize("UTC")
+    #              .tz_convert("Europe/Amsterdam")
     df.index = pd.to_datetime(df.index, unit="s")  # noqa
 
     # resample to monotonic timeline
@@ -167,8 +169,9 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
     """Plot the data in a chart.
 
     Args:
-        output_file (str): path & filestub of the resulting plot. The parametername will be appended as will the
-        extension .png.
+        output_file (str): path & filestub of the resulting plot.
+                           The parametername will be appended as will the
+                           extension .png.
         data_dict (dict): dict containing the datasets to be plotted
         plot_title (str): text for the title to be placed above the plot
         show_data (bool): whether to show numerical values in the plot.

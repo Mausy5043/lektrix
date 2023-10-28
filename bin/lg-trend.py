@@ -4,7 +4,8 @@
 Legacy method.
 """
 
-# NOTE: Due to ms-trend.py not working properly, the legacy trend.py is provided to do the trending.
+# NOTE: Due to ms-trend.py not working properly, the legacy trend.py is provided
+# to do the trending.
 
 import argparse
 from datetime import datetime as dt
@@ -153,14 +154,15 @@ def fetch_last_years(years_to_fetch):
 
 
 def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
-    """...
+    """Plot the data.
 
     Args:
-        output_file (str): path and filename of the outputfile (excl. trailing extension)
+        output_file (str):  path and filename of the outputfile (excl. trailing extension)
         data_tuple (tuple): tuple containing the 6 lists of data to be graphed
-        plot_title (str): title to be put above the graph
-        show_data (int): whether or not to show some textual data
-        balancing (int): how to balance imports and exports against each other (0=not; 1=single; 2=double)
+        plot_title (str):   title to be put above the graph
+        show_data (int):    whether or not to show some textual data
+        balancing (int):    how to balance imports and exports against each other
+                            (0=not; 1=single; 2=double)
     """
     data_lbls = data_tuple[0]
     import_lo = data_tuple[1]  # light-red bar in trends
@@ -359,7 +361,8 @@ def main():
         plot_graph(
             constants.TREND["year_graph"],
             fetch_last_years(OPTION.years),
-            f"Energietrend per jaar afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            f"Energietrend per jaar afgelopen jaren "
+            f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=2,
             balancing=OPTION.balancing,
         )

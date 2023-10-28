@@ -22,13 +22,20 @@ import libkamstrup as kl
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
-parser_group.add_argument("--debug", action="store_true", help="start the daemon in debugging mode")
+parser_group.add_argument("--start",
+                          action="store_true",
+                          help="start the daemon as a service"
+                          )
+parser_group.add_argument("--debug",
+                          action="store_true",
+                          help="start the daemon in debugging mode"
+                          )
 OPTION = parser.parse_args()
 
 # constants
 DEBUG = False
-HERE = os.path.realpath(__file__).split("/")  # ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
+HERE = os.path.realpath(__file__).split("/")
+# example HERE = ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
 MYID = HERE[-1]  # kamstrup.py
 MYAPP = HERE[-3]  # lektrix
 MYROOT = "/".join(HERE[0:-3])  # /home/pi

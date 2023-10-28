@@ -118,7 +118,8 @@ def main():
                 except Exception:  # noqa
                     set_led("ev", "red")
                     mf.syslog_trace(
-                        "Unexpected error while trying to commit the queued data to the database",
+                        "Unexpected error while trying to commit the queued data "
+                        "to the database",
                         syslog.LOG_ALERT,
                         DEBUG,
                     )

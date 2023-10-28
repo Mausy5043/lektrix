@@ -186,8 +186,6 @@ class Myenergi:
             f"{result_dict['hr']:02d}:{result_dict['min']:02d}:00",
             constants.DT_FORMAT,
         )  # UTC!
-        # if result_dict['min'] == 0:
-        #     mf.syslog_trace(f"|---  {utc_date_time.strftime(constants.DT_FORMAT)}  ---", False, self.DEBUG)
         # discard fields we nolonger need
         for key in constants.ZAPPI["template_keys_to_drop"]:
             try:
@@ -207,7 +205,8 @@ class Myenergi:
         return result_dict
 
     def fetch_data(self, day_to_fetch):
-        """Fetch data from the API for <day_to_fetch> and store it as a list of dicts in `zappi_data`
+        """Fetch data from the API for <day_to_fetch> and store it as a list of dicts
+        in `zappi_data`.
 
         This will fetch at least 24 hours and including the previous day to compensate for
         any hours that might be lost due to the offset from UTC.

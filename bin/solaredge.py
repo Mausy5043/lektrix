@@ -135,7 +135,7 @@ def main():
                     except Exception:  # noqa
                         set_led("solar", "red")
                         mf.syslog_trace(
-                            "Unexpected error while trying to commit the data to the database",
+                            "Unexpected error while trying to commit the data " "to the database",
                             syslog.LOG_ALERT,
                             DEBUG,
                         )
@@ -175,7 +175,8 @@ def main():
             if new_start_dt <= start_dt:
                 # there is a hole in the data
                 mf.syslog_trace(
-                    f"Found a hole in the data starting at {new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}.",
+                    f"Found a hole in the data starting at "
+                    f"{new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}.",
                     syslog.LOG_WARNING,
                     DEBUG,
                 )
