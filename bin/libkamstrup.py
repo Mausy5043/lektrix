@@ -16,7 +16,7 @@ import constants
 
 
 class Kamstrup:
-    """Class to interact with the P1-port"""
+    """Class to interact with the P1-port."""
 
     def __init__(self, debug=False):
         self.PORT = serial.Serial()
