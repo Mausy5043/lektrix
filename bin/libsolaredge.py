@@ -9,6 +9,7 @@ from itertools import tee
 
 import dateutil.parser as dtparse
 import dateutil.rrule as dtrule
+import pandas as pd
 import pytz
 import requests
 
@@ -150,7 +151,6 @@ class Solaredge:
         -------
         (pd.Timestamp, pd.Timestamp)
         """
-        import pandas as pd  # noqa
 
         j = self.get_data_period(site_id=site_id)
         tz = self.get_timezone(site_id=site_id)
