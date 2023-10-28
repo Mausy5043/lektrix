@@ -22,11 +22,14 @@ if not os.path.isfile(_DATABASE):
     _DATABASE = f"/mnt/data/{_DATABASE_FILENAME}"
 if not os.path.isfile(_DATABASE):
     _DATABASE = f".local/{_DATABASE_FILENAME}"
+    print(f"Searching for {_DATABASE}")
 if not os.path.isfile(_DATABASE):
     # ln -s ~/Dropbox/raspi/_databases/lektrix/ ~/.sqlite/lektrix
     _DATABASE = f"{_MYHOME}/.sqlite3/lektrix/{_DATABASE_FILENAME}"
+    print(f"Searching for {_DATABASE}")
 if not os.path.isfile(_DATABASE):
     _DATABASE = f"{_DATABASE_FILENAME}"
+    print(f"Searching for {_DATABASE}")
 if not os.path.isfile(_DATABASE):
     print("Database is missing.")
     sys.exit(1)
