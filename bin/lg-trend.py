@@ -15,7 +15,7 @@ import numpy as np
 import constants
 
 # noinspection PyUnresolvedReferences
-import libkamstrup as kl
+import libdbqueries as kl
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
