@@ -31,7 +31,7 @@ class Kamstrup:
         self.PORT.port = "/dev/ttyUSB0"
 
         self.PORT.open()
-        serial.XON  # noqa
+        serial.XON  # noqa  # pylint: disable=W0104
 
         self.dt_format = constants.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
         # starting values
