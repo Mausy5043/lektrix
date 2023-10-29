@@ -10,7 +10,7 @@ and [ZAPPI v2](https://myenergi.com/) API using Raspberry Pi
 ### What is does
 
 *    Read data from a KAMSTRUP smart meter.
-*    Read data from solarpanels via SolarEdge API
+*    Read data from solarpanels via SolarEdge API.
 *    Read data from zappi v2 EV charger via ZAPPI API.
 *    Store all that data in an SQLite3 database.
 *    Regularly create trendgraphs.
@@ -18,8 +18,8 @@ and [ZAPPI v2](https://myenergi.com/) API using Raspberry Pi
 
 ### Installing
 
-Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.   
-To install run `lektrix --install`.   
+Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.  
+To install run `lektrix --install`.  
 Use `lektrix --uninstall` to uninstall.
 
 ### Usage
@@ -32,4 +32,3 @@ Create a bar graph of the given number of HOURS/DAYS/MONTHS/YEARS
 `--balance`, `--balances`
 
 See [docs/trends.md](./docs/trends.md) for more info.
-
