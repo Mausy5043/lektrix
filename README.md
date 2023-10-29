@@ -9,12 +9,12 @@ and [ZAPPI v2](https://myenergi.com/) API using Raspberry Pi
 
 ### What is does
 
-*    Read data from a KAMSTRUP smart meter.
-*    Read data from solarpanels via SolarEdge API.
-*    Read data from zappi v2 EV charger via ZAPPI API.
-*    Store all that data in an SQLite3 database.
-*    Regularly create trendgraphs.
-*    Show trendgraphs on a local website.
+- Read data from a KAMSTRUP smart meter.
+- Read data from solarpanels via SolarEdge API.
+- Read data from zappi v2 EV charger via ZAPPI API.
+- Store all that data in an SQLite3 database.
+- Regularly create trendgraphs.
+- Show trendgraphs on a local website.
 
 ### Installing
 
