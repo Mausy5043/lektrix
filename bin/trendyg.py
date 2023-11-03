@@ -250,7 +250,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     # Set general plot stuff
     plt.title(f"{plot_title}")
     if not gauge:
-        plt.legend(loc="upper left", ncol=6, framealpha=0.2)
+        plt.legend(loc="upper left", ncol=12, framealpha=0.2)
     # Fit every nicely
     plt.tight_layout()
     plt.savefig(fname=f"{output_file}.png", format="png")
