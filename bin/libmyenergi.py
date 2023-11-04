@@ -175,11 +175,11 @@ class Myenergi:
                     a datetime-string and epoch-value in the local timezone.
         """
         result_dict = {}
-        for key in self.zappi_data_template:
+        for _key, _value in self.zappi_data_template.items():
             try:
-                result_dict[key] = blk[key]
+                result_dict[_key] = blk[_key]
             except KeyError:
-                result_dict[key] = self.zappi_data_template[key]
+                result_dict[_key] = _value
 
         utc_date_time = dt.datetime.strptime(
             f"{result_dict['yr']}-{result_dict['mon']:02d}-{result_dict['dom']:02d} "
@@ -187,9 +187,9 @@ class Myenergi:
             constants.DT_FORMAT,
         )  # UTC!
         # discard fields we nolonger need
-        for key in constants.ZAPPI["template_keys_to_drop"]:
+        for _key in constants.ZAPPI["template_keys_to_drop"]:
             try:
-                del result_dict[key]
+                del result_dict[_key]
             except KeyError:
                 pass
         # convert the UTC time from MyEnergi to local time
