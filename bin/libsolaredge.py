@@ -346,7 +346,6 @@ class Solaredge:
         Returns:
             ((pd.Timestamp, pd.Timestamp))
         """
-        import pandas as pd  # noqa
 
         if time_unit in {"WEEK", "MONTH", "YEAR"}:
             # no restrictions, so just return start and end
