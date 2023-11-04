@@ -51,7 +51,7 @@ API_SE = sl.Solaredge("000000")
 
 def main():
     """Execute main loop until killed."""
-    global API_SE
+    global API_SE  # pylint: disable=W0603
     set_led("solar", "orange")
     killer = ml.GracefulKiller()
     iniconf = configparser.ConfigParser()
