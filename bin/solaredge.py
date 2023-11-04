@@ -135,7 +135,7 @@ def main():
                     except Exception:  # noqa  # pylint: disable=W0718
                         set_led("solar", "red")
                         mf.syslog_trace(
-                            "Unexpected error while trying to commit the data " "to the database",
+                            "Unexpected error while trying to commit the data to the database",
                             syslog.LOG_ALERT,
                             DEBUG,
                         )
