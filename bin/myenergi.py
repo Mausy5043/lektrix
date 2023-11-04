@@ -139,6 +139,7 @@ def main():
             next_time = (
                 pause_interval + time.time()
             )  # gives the actual time when the next loop should start
+            # pylint: disable-next=W0105
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -215,12 +216,12 @@ def do_work(zappi, start_dt=dt.datetime.today()):
     """
     zappi.fetch_data(start_dt)
 
-    """
-     {'sample_time': '2022-04-30 08:37:00', 'sample_epoch': 1651300620, 'site_id': 4.1,
-      'exp': 300, 'gen': 0.0, 'gep': 24180, 'imp': 1860, 'h1b': 0.0, 'h1d': 0.0,
-      'v1': 2245, 'frq': 5001
-     }
-    """
+    #
+    # {'sample_time': '2022-04-30 08:37:00', 'sample_epoch': 1651300620, 'site_id': 4.1,
+    # 'exp': 300, 'gen': 0.0, 'gep': 24180, 'imp': 1860, 'h1b': 0.0, 'h1d': 0.0,
+    # 'v1': 2245, 'frq': 5001
+    # }
+    #
     return zappi.zappi_data
 
 

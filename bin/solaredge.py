@@ -155,6 +155,7 @@ def main():
             next_time = (
                 pause_interval + local_now()
             )  # gives the actual time when the next loop should start
+            # pylint: disable-next=W0105
             """Example calculation:
             sample_interval = 60s   # target duration one loop
             time.time() = 40    # actual current time
@@ -246,18 +247,18 @@ def do_work(site_list, start_dt=dt.datetime.today()):
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
 
-        """
-        data_list looks like this:
-        [{'date': '2022-04-30 05:15:00'},
-         {'date': '2022-04-30 05:30:00'},
-         {'date': '2022-04-30 05:45:00'},
-         {'date': '2022-04-30 06:00:00'},
-         {'date': '2022-04-30 06:15:00', 'value': 0.0},
-         {'date': '2022-04-30 06:30:00', 'value': 2.0},
-         {'date': '2022-04-30 06:45:00', 'value': 10.0}
-         ...
-        ]
-        """
+
+        # data_list looks like this:
+        # [{'date': '2022-04-30 05:15:00'},
+        #  {'date': '2022-04-30 05:30:00'},
+        #  {'date': '2022-04-30 05:45:00'},
+        #  {'date': '2022-04-30 06:00:00'},
+        #  {'date': '2022-04-30 06:15:00', 'value': 0.0},
+        #  {'date': '2022-04-30 06:30:00', 'value': 2.0},
+        #  {'date': '2022-04-30 06:45:00', 'value': 10.0}
+        #  ...
+        # ]
+
         if data_list:
             for element in data_list:
                 result_dict = {}
