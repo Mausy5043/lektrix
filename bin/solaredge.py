@@ -247,7 +247,6 @@ def do_work(site_list, start_dt=dt.datetime.today()):
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
 
-
         # data_list looks like this:
         # [{'date': '2022-04-30 05:15:00'},
         #  {'date': '2022-04-30 05:30:00'},
