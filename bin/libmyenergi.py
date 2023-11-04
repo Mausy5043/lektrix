@@ -36,7 +36,7 @@ class Myenergi:
     """Class to interact with the myenergi servers"""
 
     def __init__(self, keys_file, debug=False):
-        r"""Initialise the Myenergi object.
+        """Initialise the Myenergi object.
 
         The keys-file must be a configparser compatible file containing:
         [API]
