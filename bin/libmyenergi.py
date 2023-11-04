@@ -77,7 +77,7 @@ class Myenergi:
         self.libbi_serial = self.get_key(iniconf, "LIBBI", "serial")
 
         # First call to the API to get the ASN
-        _response = requests.get(
+        _response = requests.get(  # nosec B113
             self.base_url,
             auth=HTTPDigestAuth(self.hub_serial, self.api_key),
             timeout=constants.ZAPPI["requests_timeout"],
@@ -139,7 +139,7 @@ class Myenergi:
         call_url = f"{self.base_url}/{command}"
         mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
         try:
-            response = requests.get(
+            response = requests.get(  # nosec B113
                 call_url,
                 headers=hdrs,
                 auth=HTTPDigestAuth(self.hub_serial, self.api_key),

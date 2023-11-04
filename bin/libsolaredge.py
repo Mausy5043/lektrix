@@ -43,7 +43,7 @@ class Solaredge:
         retries = 3
         while True:
             try:
-                rq_response = requests.get(
+                rq_response = requests.get(  # nosec B113
                     url,
                     params,
                     headers={"content-type": "application/json"},
