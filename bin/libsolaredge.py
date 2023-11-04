@@ -195,7 +195,6 @@ class Solaredge:
         return rj
 
     def get_overview(self, site_id):
-        r = None
         url = urljoin(BASEURL, "site", site_id, "overview")
         params = {"api_key": self.token}
 
