@@ -82,7 +82,7 @@ def main():
             if not site_list:
                 try:
                     site_list = API_SE.get_list()["sites"]["site"]
-                except Exception:  # noqa
+                except Exception:  # noqa  # pylint: disable=W0718
                     set_led("solar", "orange")
                     mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
                     mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
@@ -104,7 +104,7 @@ def main():
                 try:
                     data = do_work(site_list, start_dt=start_dt)
                     set_led("solar", "green")
-                except Exception:  # noqa
+                except Exception:  # noqa  # pylint: disable=W0718
                     set_led("solar", "red")
                     mf.syslog_trace(
                         "Unexpected error while trying to do some work!",
@@ -121,7 +121,7 @@ def main():
                             # also add data for the running quarter
                             if element["sample_epoch"] < (local_now() + 15 * 60):
                                 sql_db.queue(element)
-                    except Exception:  # noqa
+                    except Exception:  # noqa  # pylint: disable=W0718
                         set_led("solar", "red")
                         mf.syslog_trace(
                             "Unexpected error while trying to queue the data",
@@ -132,7 +132,7 @@ def main():
                         raise  # may be changed to pass if errors can be corrected.
                     try:
                         sql_db.insert(method="replace")
-                    except Exception:  # noqa
+                    except Exception:  # noqa  # pylint: disable=W0718
                         set_led("solar", "red")
                         mf.syslog_trace(
                             "Unexpected error while trying to commit the data " "to the database",
@@ -242,7 +242,7 @@ def do_work(site_list, start_dt=dt.datetime.today()):
                 dt.datetime.strftime(start_dt, constants.DT_FORMAT),
                 time_unit="QUARTER_OF_AN_HOUR",
             )["energyDetails"]["meters"][0]["values"]
-        except Exception:  # noqa
+        except Exception:  # noqa  # pylint: disable=W0718
             mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
             mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
