@@ -205,7 +205,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     #  '01-01 08h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h'
     #  '01-01 09h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h'
     #  '01-01 10h']
-    y = None
+    y = np.array([0])
     # compress x_texts to a unique list
     # order must be preserved
     _, loc1 = np.unique(x_texts, return_index=True)
