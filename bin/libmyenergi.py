@@ -32,7 +32,7 @@ NODE = os.uname()[1]
 # CONFIG_FILE = os.environ["HOME"] + "/.config/kamstrup/key.ini"
 
 
-class Myenergi:
+class Myenergi:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the myenergi servers"""
 
     def __init__(self, keys_file, debug=False):

@@ -15,10 +15,10 @@ import serial  # noqa  (pycharm in dev environment)
 import constants
 
 
-class Kamstrup:
+class Kamstrup:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the P1-port."""
 
-    def __init__(self, debug=False):
+    def __init__(self, debug=False):  # pylint: disable=too-many-instance-attributes
         self.PORT = serial.Serial()
         self.PORT.baudrate = 9600
         self.PORT.bytesize = serial.SEVENBITS
