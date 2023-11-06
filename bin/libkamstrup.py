@@ -10,7 +10,7 @@ import traceback
 import mausy5043_common.funfile as mf
 import numpy as np
 import pandas as pd
-import serial  # noqa  (pycharm in dev environment)
+import serial  # noqa # type: ignore  # (cannot be imported in dev environment)
 
 import constants
 
