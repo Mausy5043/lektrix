@@ -75,7 +75,7 @@ def main():
     next_time = pause_interval + local_now()
     start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
     add_days = 1
-    while not killer.kill_now:
+    while not killer.kill_now:  # pylint: disable=too-many-nested-blocks
         if local_now() > next_time:
             start_time = local_now()
 
