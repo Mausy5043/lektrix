@@ -159,7 +159,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             result = json.loads(response.content)
         except json.decoder.JSONDecodeError:
             mf.syslog_trace("Could not load JSON data.", syslog.LOG_ERR, self.DEBUG)
-            return None
+            return result
 
         return result
 
@@ -204,7 +204,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
 
-    def fetch_data(self, day_to_fetch):
+    def fetch_data(self, day_to_fetch: dt.date):
         """Fetch data from the API for <day_to_fetch> and store it as a list of dicts
         in `zappi_data`.
 
@@ -223,7 +223,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         result = []
         previous_day_data = [
             self.standardise_json_block(block)
-            for block in self._fetch(day_to_fetch - dt.timedelta(days=1))[f"U{self.zappi_serial}"]
+            for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]
         ]
         current_day_data = [
             self.standardise_json_block(block)
@@ -240,7 +240,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         result = previous_day_data + current_day_data
         self.zappi_data = self.compact_data(result)
 
-    def _fetch(self, this_day):
+    def _fetch(self, this_day: dt.date):
         """Try to get the data off the server for the date <this_date>.
 
         Args:
