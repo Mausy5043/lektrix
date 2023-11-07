@@ -221,14 +221,10 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         """
         self.zappi_data = []
         result = []
-        previous_day_data = [
-            self.standardise_json_block(block)
-            for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]
-        ]
-        current_day_data = [
-            self.standardise_json_block(block)
-            for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]
-        ]
+        # fmt: off
+        previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
+        current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
+        # fmt: on
         try:
             mf.syslog_trace(f"> {previous_day_data[0]}", False, self.DEBUG)
             mf.syslog_trace(f"> {previous_day_data[1]}", False, self.DEBUG)
