@@ -79,7 +79,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
         print("\n\n ** CHARGER data for plotting  **")
-        print(df_chrg)
+        print(df_chrg.to_markdown())
 
     data_dict = {}
     data_dict["charger"] = df_chrg
@@ -119,7 +119,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
         df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
     if DEBUG:
         print("o  database charger data")
-        print(df)
+        print(df.to_markdown())
 
     # Pre-processing
     # drop sample_time separately!
@@ -150,7 +150,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
 
     if DEBUG:
         print("o  database charger data pre-processed")
-        print(df)
+        print(df.to_markdown())
     return df
 
 
