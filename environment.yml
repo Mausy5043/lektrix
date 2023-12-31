@@ -18,6 +18,7 @@ dependencies:
   - pytz
   - requests
   - scipy
+  - sh
   - tabulate
   # Not on conda channels:
   - pip:

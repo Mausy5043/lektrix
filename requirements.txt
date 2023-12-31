@@ -8,4 +8,5 @@ pyserial==3.5
 python-dateutil
 pytz
 requests
+sh
 tabulate

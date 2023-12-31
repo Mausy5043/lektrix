@@ -2,9 +2,10 @@
 
 import os
 import sys
-import subprocess
 
 import pytz
+from sh import CommandNotFound
+from sh import git
 
 _MYHOME = os.environ["HOME"]
 _DATABASE_FILENAME = "lektrix.sqlite3"
@@ -181,18 +182,19 @@ def get_app_version() -> str:
     """
     # git log -n1 --format="%h"
     # git --no-pager log -1 --format="%ai"
-    args = ["git", "log", "-1", "--format='%h'"]
-    _exit_h = (
-        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
-        .strip("\n")
-        .strip("'")
-    )
-    args[3] = "--format='%ai'"
-    _exit_ai = (
-        subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")  # nosec B603
-        .strip("\n")
-        .strip("'")
-    )
+    git_args = ["--no-pager", "log", "-1", "--format='%h'"]
+    # _exit_h = (
+    #     subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")
+    #     .strip("\n")
+    #     .strip("'")
+    # )
+    try:
+        _exit_h = git(git_args).strip("\n").strip("'")
+    except CommandNotFound as e:
+        print(f"Error executing git command: {e}")
+        _exit_h = None
+    git_args[3] = "--format='%ai'"
+    _exit_ai = git(git_args).strip("\n").strip("'")
     return f"{_exit_h}  -  {_exit_ai}"
 
 
