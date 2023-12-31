@@ -136,7 +136,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                 # ['1-0:2.7.0', '0000.00', 'kW', ''] power out
                 if line[0] == "1-0:2.7.0":
                     self.powerout = int(float(line[1]) * 1000)
-                # ['0-0:17.0.0', '999', 'A', ''] unknown;
+                # ['0-0:17.0.0', '999', 'A', ''] threshold electricity;
                 # not recorded
                 # ['0-0:96.3.10', '1', '']  powerusage (1)
                 #                           or powermanufacturing ()
@@ -144,9 +144,9 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                     self.swits = int(line[1])
                     # swits is not always present. The value will
                     # change *if* present in the telegram.
-                # ['0-0:96.13.1', '', '']
+                # ['0-0:96.13.1', '', ''] text message code
                 # not recorded
-                # ['0-0:96.13.0', '', '']
+                # ['0-0:96.13.0', '', ''] text message
                 # not recorded
             except ValueError:
                 if self.debug:
