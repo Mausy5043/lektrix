@@ -29,8 +29,7 @@ DEBUG = False
 
 
 def fetch_data(hours_to_fetch=48, aggregation="W"):
-    """
-    Query the database to fetch the requested data
+    """Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int): hours of data to retrieve
@@ -49,14 +48,18 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     # import := imp(+) - EVnet
     # export := exp(-)
     # EB := gep(+) + export - EVsol
-    df_chrg["EVnet"] = df_chrg["h1b"]  # imported and used for EV
-    df_chrg["EVsol"] = df_chrg["h1d"]  # solar used for EV
-    df_chrg["import"] = df_chrg["imp"] - df_chrg["EVnet"]  # compensate for import diverted to EV
+
+    # imported and used for EV
+    df_chrg["EVnet"] = df_chrg["h1b"]
+    # solar used for EV
+    df_chrg["EVsol"] = df_chrg["h1d"]
+    # compensate for import diverted to EV ...
+    df_chrg["import"] = df_chrg["imp"] - df_chrg["EVnet"]
+    # ... and/or import
     df_chrg["export"] = df_chrg["exp"]
-    df_chrg["EB"] = (
-        df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
-    )  # compensate for solar diverted to EV
-    # and/or export ('export' is negative!)
+    # compensate for solar diverted to EV ...
+    df_chrg["EB"] = (df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"])
+    # ... and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
 
     # 'gen' is energy consumed by solar (operational power to converter) mainly at night.
@@ -84,8 +87,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
 
 
 def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
-    """
-    Query the database to fetch the requested data
+    """Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int):      number of hours of data to fetch
@@ -183,9 +185,9 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
-        if DEBUG:
-            print(parameter)
-            print(data_frame)
+        # if DEBUG:
+        #     print(parameter)
+        #     print(data_frame)
         mjr_ticks = int(len(data_frame.index) / 30)
         if mjr_ticks <= 0:
             mjr_ticks = 1
