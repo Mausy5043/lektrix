@@ -297,7 +297,7 @@ if __name__ == "__main__":
     parser.add_argument("-p", "--print", action="store_true", help="Output data to stdout.")
     OPTION = parser.parse_args()  # type: ignore
     if OPTION.months == 0:
-        OPTION.months = 61
+        OPTION.months = 73
     if (OPTION.gauge is not None) and (OPTION.gauge == 0 or OPTION.gauge > year_to_graph):
         OPTION.gauge = year_to_graph
     main()
