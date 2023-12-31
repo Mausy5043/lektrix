@@ -128,7 +128,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     df["h1d"] *= J_to_kWh  # -> kWh solar production to EV
 
     # Sometimes (especially at the end of an early morning charge) `h1d` will be > 0
-    # even when `gep` == 0. It seems power is leaking from `h1b` to `h1d`.
+    # even when `gep` == 0. It loks as-if power is leaking from `h1b` to `h1d`.
     # Let's correct for that anomaly here:
     leak = pd.DataFrame(index=df.index)
     leak["h1d-gep"] = df["h1d"] - df["gep"]
