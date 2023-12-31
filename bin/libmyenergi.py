@@ -222,10 +222,13 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         self.zappi_data = []
         result = []
         # fmt: off
+        extra_day1_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
         previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
         current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
         # fmt: on
         try:
+            mf.syslog_trace(f"> {extra_day1_data[0]}", False, self.DEBUG)
+            mf.syslog_trace(f"> {extra_day1_data[1]}", False, self.DEBUG)
             mf.syslog_trace(f"> {previous_day_data[0]}", False, self.DEBUG)
             mf.syslog_trace(f"> {previous_day_data[1]}", False, self.DEBUG)
             mf.syslog_trace(f"> {current_day_data[-2]}", False, self.DEBUG)
@@ -233,11 +236,11 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         except IndexError:
             pass
 
-        result = previous_day_data + current_day_data
+        result = extra_day1_data + previous_day_data + current_day_data
         self.zappi_data = self.compact_data(result)
 
     def _fetch(self, this_day: dt.date):
-        """Try to get the data off the server for the date <this_date>.
+        """Try to get the data off the server for the date <this_day>.
 
         Args:
             this_day (datetime.date): datetime to get data for
