@@ -58,7 +58,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     # ... and/or import
     df_chrg["export"] = df_chrg["exp"]
     # compensate for solar diverted to EV ...
-    df_chrg["EB"] = (df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"])
+    df_chrg["EB"] = df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
     # ... and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
 
@@ -126,8 +126,8 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     df["gep"] *= J_to_kWh  # -> kWh solar production or storage discharge
     df["h1b"] *= J_to_kWh  # -> kWh import to EV
     df["h1d"] *= J_to_kWh  # -> kWh solar production to EV
-    
-    # sometimes (especially at the end of an early morning charge) `h1d` will be > 0
+
+    # Sometimes (especially at the end of an early morning charge) `h1d` will be > 0
     # even when `gep` == 0. It seems power is leaking from `h1b` to `h1d`.
     # Let's correct for that anomaly here:
     df["leak"] = df["h1d"] - df["gep"]
