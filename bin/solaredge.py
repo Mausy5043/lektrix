@@ -74,7 +74,7 @@ def main():
     pause_interval = 0
     next_time = pause_interval + local_now()
     start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
-    add_days = 1
+    lookahead_days = 1
     while not killer.kill_now:  # pylint: disable=too-many-nested-blocks
         if local_now() > next_time:
             start_time = local_now()
@@ -181,7 +181,7 @@ def main():
                     syslog.LOG_WARNING,
                     DEBUG,
                 )
-                dati = new_start_dt + dt.timedelta(days=add_days)
+                dati = new_start_dt + dt.timedelta(days=lookahead_days)
                 if dati > dt.datetime.today():
                     mf.syslog_trace(
                         f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
@@ -196,12 +196,12 @@ def main():
                     DEBUG,
                 )
                 # if we don't cross the gap then next time check more days ahead
-                add_days += 1
+                lookahead_days += 1
                 if DEBUG:
                     pause_interval = 10
             else:
                 start_dt = new_start_dt
-                add_days = 1
+                lookahead_days = 1
 
             if pause_interval > 0:
                 mf.syslog_trace(

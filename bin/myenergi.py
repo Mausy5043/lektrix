@@ -72,7 +72,7 @@ def main():
     pause_interval = 0
     next_time = pause_interval + time.time()
     start_dt = sql_db.latest_datapoint()  # type: str
-    add_days = 1
+    lookahead_days = 1
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
@@ -165,7 +165,7 @@ def main():
                     DEBUG,
                 )
                 dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(
-                    days=add_days
+                    days=lookahead_days
                 )
                 if dati > dt.datetime.today():
                     mf.syslog_trace(
@@ -179,12 +179,12 @@ def main():
                     f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG
                 )
                 # if we don't cross the gap then next time check more days ahead
-                add_days += 1
+                lookahead_days += 1
                 if DEBUG:
                     pause_interval = 10
             else:
                 start_dt = new_start_dt
-                add_days = 1
+                lookahead_days = 1
 
             if pause_interval > 0:
                 mf.syslog_trace(
