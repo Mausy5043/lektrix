@@ -295,21 +295,22 @@ if __name__ == "__main__":
                         "--hours",
                         type=int,
                         help="create hour-trend for last <HOURS> hours",
-    )
+                        )
     parser.add_argument("-d",
                         "--days",
                         type=int,
-                        help="create day-trend for last <DAYS> days")
+                        help="create day-trend for last <DAYS> days"
+                        )
     parser.add_argument("-m",
                         "--months",
                         type=int,
                         help="number of months of data to use for the graph",
-    )
+                        )
     parser.add_argument("-y",
                         "--years",
                         type=int,
                         help="number of months of data to use for the graph",
-    )
+                        )
     parser_group = parser.add_mutually_exclusive_group(required=False)
     parser_group.add_argument("--debug",
                               action="store_true",
