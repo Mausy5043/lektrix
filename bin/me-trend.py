@@ -79,7 +79,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     df_chrg = df_chrg.sort_index(axis=1)
     if DEBUG:
         print("\n\n ** CHARGER data for plotting  **")
-        print(df_chrg.to_markdown())
+        print(df_chrg.to_markdown(floatfmt=".3f"))
 
     data_dict = {}
     data_dict["charger"] = df_chrg
@@ -117,14 +117,32 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     # Get the data
     with s3.connect(DATABASE) as con:
         df = pd.read_sql_query(s3_query, con, parse_dates="sample_time", index_col="sample_epoch")
+
+    # convert Joules to kWh
+    J_to_kWh = 1 / (60 * 60 * 1000)
+    df["exp"] *= -1 * J_to_kWh  # -> kWh export
+    df["imp"] *= J_to_kWh  # -> kWh import
+    df["gen"] *= -1 * J_to_kWh  # -> kWh storage charge
+    df["gep"] *= J_to_kWh  # -> kWh solar production or storage discharge
+    df["h1b"] *= J_to_kWh  # -> kWh import to EV
+    df["h1d"] *= J_to_kWh  # -> kWh solar production to EV
+    
+    # sometimes (especially at the end of an early morning charge) `h1d` will be > 0
+    # even when `gep` == 0. It seems power is leaking from `h1b` to `h1d`.
+    # Let's correct for that anomaly here:
+    df["leak"] = df["h1d"] - df["gep"]
+    df["leak"][df["leak"] < 0] = 0
+    df["h1d"] -= df["leak"]
+    df["h1b"] += df["leak"]
+
     if DEBUG:
         print("o  database charger data")
-        print(df.to_markdown())
+        print(df.to_markdown(floatfmt=".3f"))
 
     # Pre-processing
     # drop sample_time separately!
     df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-    df.drop(["site_id", "v1", "frq"], axis=1, inplace=True, errors="ignore")
+    df.drop(["site_id", "v1", "frq", "leak"], axis=1, inplace=True, errors="ignore")
 
     for c in df.columns:
         if c not in ["sample_time"]:
@@ -137,20 +155,12 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     # resample to monotonic timeline
     df = df.resample(f"{aggregation}").sum()
 
-    J_to_kWh = 1 / (60 * 60 * 1000)
-    df["exp"] *= -1 * J_to_kWh  # -> kWh export
-    df["imp"] *= J_to_kWh  # -> kWh import
-    df["gen"] *= -1 * J_to_kWh  # -> kWh storage
-    df["gep"] *= J_to_kWh  # -> kWh solar production
-    df["h1b"] *= J_to_kWh  # -> kWh import to EV
-    df["h1d"] *= J_to_kWh  # -> kWh solar production to EV
-
     # drop first row as it will usually not contain valid or complete data
     df = df.iloc[1:, :]
 
     if DEBUG:
         print("o  database charger data pre-processed")
-        print(df.to_markdown())
+        print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
