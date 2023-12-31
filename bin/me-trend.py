@@ -130,10 +130,11 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     # Sometimes (especially at the end of an early morning charge) `h1d` will be > 0
     # even when `gep` == 0. It seems power is leaking from `h1b` to `h1d`.
     # Let's correct for that anomaly here:
-    df["leak"] = df["h1d"] - df["gep"]
-    df["leak"][df["leak"] < 0] = 0
-    df["h1d"] -= df["leak"]
-    df["h1b"] += df["leak"]
+    leak = pd.DataFrame(index=df.index)
+    leak["h1d-gep"] = df["h1d"] - df["gep"]
+    leak["h1d-gep"][leak["h1d-gep"] < 0] = 0
+    df["h1d"] -= leak["h1d-gep"]
+    df["h1b"] += leak["h1d-gep"]
 
     if DEBUG:
         print("o  database charger data")
@@ -142,7 +143,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     # Pre-processing
     # drop sample_time separately!
     df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-    df.drop(["site_id", "v1", "frq", "leak"], axis=1, inplace=True, errors="ignore")
+    df.drop(["site_id", "v1", "frq"], axis=1, inplace=True, errors="ignore")
 
     for c in df.columns:
         if c not in ["sample_time"]:
