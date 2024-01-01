@@ -282,20 +282,24 @@ def main():
 if __name__ == "__main__":
     year_to_graph = int(time.strftime("%Y", time.localtime()))
     parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
-    parser.add_argument(
-        "-g",
-        "--gauge",
-        type=int,
-        help="generate a gauge. Specify year to aggregate or 0 for current " "year.",
-    )
-    parser.add_argument(
-        "-m",
-        "--months",
-        type=int,
-        help="number of months of data to use for the graph or 0 for " "default.",
-    )
-    parser.add_argument("-p", "--print", action="store_true", help="Output data to stdout.")
+    # fmt: off
+    parser.add_argument("-g",
+                        "--gauge",
+                        type=int,
+                        help="generate a gauge. Specify year to aggregate or 0 for current " "year.",
+                        )
+    parser.add_argument("-m",
+                        "--months",
+                        type=int,
+                        help="number of months of data to use for the graph or 0 for " "default.",
+                        )
+    parser.add_argument("-p",
+                        "--print",
+                        action="store_true",
+                        help="Output data to stdout."
+                        )
     OPTION = parser.parse_args()  # type: ignore
+    # fmt: on
     if OPTION.months == 0:
         OPTION.months = 73
     if (OPTION.gauge is not None) and (OPTION.gauge == 0 or OPTION.gauge > year_to_graph):

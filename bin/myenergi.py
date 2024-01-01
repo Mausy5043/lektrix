@@ -21,13 +21,19 @@ import mausy5043_common.libsqlite3 as m3
 import constants
 import libmyenergi as zl
 
+# fmt: off
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--start", action="store_true", help="start the daemon as a service")
-parser_group.add_argument(
-    "--debug", action="store_true", help="start the daemon in debugging mode"
-)
+parser_group.add_argument("--start",
+                          action="store_true",
+                          help="start the daemon as a service"
+                          )
+parser_group.add_argument("--debug",
+                          action="store_true",
+                          help="start the daemon in debugging mode"
+                          )
 OPTION = parser.parse_args()
+# fmt: on
 
 # constants
 DEBUG = False
