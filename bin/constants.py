@@ -182,12 +182,7 @@ def get_app_version() -> str:
     """
     # git log -n1 --format="%h"
     # git --no-pager log -1 --format="%ai"
-    git_args = [ "-C", f"{_HERE}", "--no-pager", "log", "-1", "--format='%h'"]
-    # _exit_h = (
-    #     subprocess.check_output(args, cwd=_HERE, shell=False, encoding="utf-8")
-    #     .strip("\n")
-    #     .strip("'")
-    # )
+    git_args = ["-C", f"{_HERE}", "--no-pager", "log", "-1", "--format='%h'"]
     try:
         _exit_h = git(git_args).strip("\n").strip("'")
     except CommandNotFound as e:
