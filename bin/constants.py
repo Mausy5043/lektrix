@@ -175,7 +175,7 @@ ZAPPI = {
 
 
 def get_app_version() -> str:
-    """Retrieve information of current version of kimnaty.
+    """Retrieve information of current version of lektrix.
 
     Returns:
         versionstring
