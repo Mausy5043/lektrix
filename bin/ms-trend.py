@@ -299,7 +299,7 @@ def main():
             constants.TREND["month_graph"],
             fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation="M"),
             f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=True,
+            show_data=False,
             locatorformat=["month", "%Y-%m"],
         )
     if OPTION.years:
@@ -347,9 +347,9 @@ if __name__ == "__main__":
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
-        OPTION.months = 38
+        OPTION.months = 6 * 12 + dt.now().month
     if OPTION.years == 0:
-        OPTION.years = 12
+        OPTION.years = 10
 
     if OPTION.debug:
         print(OPTION)

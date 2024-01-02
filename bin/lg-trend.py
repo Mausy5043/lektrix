@@ -354,7 +354,7 @@ def main():
             constants.TREND["month_graph"],
             fetch_last_year(OPTION.months),
             f"trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=1,
+            show_data=0,
             balancing=OPTION.balancing,
         )
     if OPTION.years:
@@ -401,9 +401,9 @@ if __name__ == "__main__":
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
-        OPTION.months = 38
+        OPTION.months = 6 * 12 + dt.now().month
     if OPTION.years == 0:
-        OPTION.years = 8
+        OPTION.years = 10
 
     OPTION.balancing = 0
     if OPTION.balance:

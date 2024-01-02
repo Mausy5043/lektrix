@@ -301,7 +301,7 @@ if __name__ == "__main__":
     OPTION = parser.parse_args()  # type: ignore
     # fmt: on
     if OPTION.months == 0:
-        OPTION.months = 73
+        OPTION.months = 8 * 12 + dt.now().month
     if (OPTION.gauge is not None) and (OPTION.gauge == 0 or OPTION.gauge > year_to_graph):
         OPTION.gauge = year_to_graph
     main()
