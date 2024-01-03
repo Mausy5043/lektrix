@@ -55,7 +55,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     try:
         df_mains.insert(2, "EB", df_prod["energy"])
     except KeyError:
-        df_mains.insert(2, "EB", np.nan)
+        df_mains.insert(2, "EB", 0)
     df_mains["EB"] += df_mains["T1out"] + df_mains["T2out"]  # T1out and T2out are (-)-ve values !
     # put columns in the right order for plotting
     categories = ["T1out", "T2out", "EB", "T1in", "T2in"]
@@ -192,7 +192,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     df["energy"] *= 0.001  # -> kWh
 
     # drop first row as it will usually not contain valid data
-    df = df.iloc[1:, :]
+    # df = df.iloc[1:, :]
 
     if DEBUG:
         print("o  database production data pre-processed")
