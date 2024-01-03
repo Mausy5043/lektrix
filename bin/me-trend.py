@@ -157,7 +157,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
     df = df.resample(f"{aggregation}").sum()
 
     # drop first row as it will usually not contain valid or complete data
-    df = df.iloc[1:, :]
+    # df = df.iloc[1:, :]
 
     if DEBUG:
         print("o  database charger data pre-processed")
