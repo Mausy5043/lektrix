@@ -6,9 +6,13 @@ Using myenergi data
 
 # FIXME: still needs work
 
+import warnings
+warnings.simplefilter(action="ignore", category=FutureWarning)
+# DeprecationWarning: Pyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0)
+warnings.simplefilter(action="ignore", category=DeprecationWarning)
+
 import argparse
 import sqlite3 as s3
-import warnings
 from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
@@ -17,8 +21,6 @@ import numpy as np
 import pandas as pd
 
 import constants
-
-warnings.simplefilter(action="ignore", category=FutureWarning)
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
