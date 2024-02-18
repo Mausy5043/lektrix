@@ -121,7 +121,9 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
 
     # Get the data
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch")
+        df = pd.read_sql_query(
+            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
+        )
 
     # convert Joules to kWh
     J_to_kWh = 1 / (60 * 60 * 1000)
