@@ -277,36 +277,36 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 print(f" --> {output_file}_{parameter}.png\n")
 
 
-def main():
+def main(opt):
     """
     This is the main loop
     """
-    if OPTION.hours:
+    if opt.hours:
         plot_graph(
             constants.TREND["hour_graph"],
-            fetch_data(hours_to_fetch=OPTION.hours, aggregation="H"),
+            fetch_data(hours_to_fetch=opt.hours, aggregation="H"),
             f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["hour", "%d-%m %Hh"],
         )
-    if OPTION.days:
+    if opt.days:
         plot_graph(
             constants.TREND["day_graph"],
-            fetch_data(hours_to_fetch=OPTION.days * 24, aggregation="D"),
+            fetch_data(hours_to_fetch=opt.days * 24, aggregation="D"),
             f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["day", "%Y-%m-%d"],
         )
-    if OPTION.months:
+    if opt.months:
         plot_graph(
             constants.TREND["month_graph"],
-            fetch_data(hours_to_fetch=OPTION.months * 31 * 24, aggregation="M"),
+            fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="M"),
             f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=False,
             locatorformat=["month", "%Y-%m"],
         )
-    if OPTION.years:
+    if opt.years:
         plot_graph(
             constants.TREND["year_graph"],
-            fetch_data(hours_to_fetch=OPTION.years * 366 * 24, aggregation="A"),
+            fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="A"),
             f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=True,
             locatorformat=["year", "%Y"],
@@ -356,4 +356,4 @@ if __name__ == "__main__":
         print(OPTION)
         DEBUG = True
         print("DEBUG-mode started")
-    main()
+    main(OPTION)
