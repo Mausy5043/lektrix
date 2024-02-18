@@ -5,6 +5,7 @@ Using kamstrup data
 """
 
 import warnings
+
 # FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
 # In a future version, numeric_only will default to False. Either specify numeric_only or
 # select only columns which should be valid for the function.
@@ -19,7 +20,6 @@ from datetime import datetime as dt
 
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import numpy as np
 import pandas as pd
 
 import constants
