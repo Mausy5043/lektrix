@@ -14,6 +14,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 # DeprecationWarning: Pyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0)
 warnings.simplefilter(action="ignore", category=DeprecationWarning)
 
+# pylint: disable=C0413
 import argparse
 import sqlite3 as s3
 from datetime import datetime as dt
