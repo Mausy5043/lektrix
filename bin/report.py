@@ -69,7 +69,9 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     df_mains["Balance"] += df_mains["TotalExport"] + df_mains["TotalImport"]
 
     # put columns in the right order for plotting
+    # fmt: off
     categories = ["T1out", "T2out", "TotalExport", "T1in", "T2in", "TotalImport", "Usage", "EB", "Solar", "Balance"]
+    # fmt: on
     df_mains.columns = pd.CategoricalIndex(
         df_mains.columns.values, ordered=True, categories=categories
     )
@@ -226,13 +228,14 @@ def report(output_file, data_dict, locatorformat=["hour", "%d-%m %Hh"]):
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
         print(parameter)
-        sums = data_frame.sum().rename('total')
-        print(data_frame)
-        print("\nTotals last 12-months")
-        print(sums)
+        sums = data_frame.sum().rename("total")
+        print(
+            data_frame.to_string()
+        )  # we use to_string() here to prevent pandas compressing the output when redirecting to pipe
+        print("\nTotals for reported period")
+        print(sums.to_string())
         print("\nBalance this period:")
-        print(int(sums["TotalImport"]+sums["TotalExport"]))
-
+        print(int(sums["TotalImport"] + sums["TotalExport"]))
 
 
 def main(opt) -> None:
