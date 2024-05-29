@@ -4,6 +4,7 @@ matplotlib
 mausy5043-common
 numpy
 pandas
+pyarrow
 pyserial==3.5
 python-dateutil
 pytz
