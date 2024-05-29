@@ -9,10 +9,7 @@ import argparse
 import sqlite3 as s3
 from datetime import datetime as dt
 
-import matplotlib.pyplot as plt
-import matplotlib.ticker as mticker
 import pandas as pd
-import numpy as np
 
 import constants
 
@@ -108,7 +105,9 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
 
     # Get the data
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch")
+        df = pd.read_sql_query(
+            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
+        )
     if DEBUG:
         print("o  database mains data")
         print(df)
