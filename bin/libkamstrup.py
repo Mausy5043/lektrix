@@ -24,9 +24,9 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         self.PORT.bytesize = serial.SEVENBITS
         self.PORT.parity = serial.PARITY_EVEN
         self.PORT.stopbits = serial.STOPBITS_ONE
-        self.PORT.xonxoff = 1
-        self.PORT.rtscts = 0
-        self.PORT.dsrdtr = 0
+        self.PORT.xonxoff = True
+        self.PORT.rtscts = False
+        self.PORT.dsrdtr = False
         self.PORT.timeout = 15
         self.PORT.port = "/dev/ttyUSB0"
 
