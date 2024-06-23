@@ -204,13 +204,11 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     return df
 
 
-def report(output_file, data_dict, locatorformat=["hour", "%d-%m %Hh"]):
+def report(data_dict):
     """Report the data in a textfile.
 
     Args:
-        output_file (str): path & filestub of the resulting textfile.
         data_dict (dict): dict containing the datasets to be plotted
-        locatorformat (list): formatting information for xticks
 
     Returns: nothing
     """
@@ -235,27 +233,19 @@ def main(opt) -> None:
     """
     if opt.hours:
         report(
-            "/tmp/energy-report",
             fetch_data(hours_to_fetch=opt.hours, aggregation="h"),
-            locatorformat=["hour", "%d-%m %Hh"],
         )
     if opt.days:
         report(
-            "/tmp/energy-report",
             fetch_data(hours_to_fetch=opt.days * 24, aggregation="D"),
-            locatorformat=["day", "%Y-%m-%d"],
         )
     if opt.months:
         report(
-            "/tmp/energy-report",
             fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="ME"),
-            locatorformat=["month", "%Y-%m"],
         )
     if opt.years:
         report(
-            "/tmp/energy-report",
             fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="YE"),
-            locatorformat=["year", "%Y"],
         )
 
 
