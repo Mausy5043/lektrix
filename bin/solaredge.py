@@ -13,11 +13,12 @@ import time
 import traceback
 
 import mausy5043_common.funfile as mf
-import mausy5043_common.libsignals as ml
+# import mausy5043_common.libsignals as ml
 import mausy5043_common.libsqlite3 as m3
 
 import constants
 import libsolaredge as sl
+import GracefulKiller as gk
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")
@@ -59,7 +60,7 @@ def main():
     """Execute main loop until killed."""
     global API_SE  # pylint: disable=W0603
     set_led("solar", "orange")
-    killer = ml.GracefulKiller()
+    killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")

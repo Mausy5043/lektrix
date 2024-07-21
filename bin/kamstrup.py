@@ -13,11 +13,11 @@ import time
 import traceback
 
 import mausy5043_common.funfile as mf
-import mausy5043_common.libsignals as ml
 import mausy5043_common.libsqlite3 as m3
 
 import constants
 import libkamstrup as kl
+import GracefulKiller as gk
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
@@ -47,7 +47,7 @@ NODE = os.uname()[1]  # rbelec
 def main():
     """Execute main loop until killed."""
     set_led("mains", "orange")
-    killer = ml.GracefulKiller()
+    killer = gk.GracefulKiller()
     API_KL = kl.Kamstrup(DEBUG)
 
     sql_db = m3.SqlDatabase(

@@ -15,11 +15,11 @@ import time
 import traceback
 
 import mausy5043_common.funfile as mf
-import mausy5043_common.libsignals as ml
 import mausy5043_common.libsqlite3 as m3
 
 import constants
 import libmyenergi as zl
+import GracefulKiller as gk
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
@@ -59,7 +59,7 @@ NODE = os.uname()[1]
 def main():
     """Execute main loop until killed."""
     set_led("ev", "orange")
-    killer = ml.GracefulKiller()
+    killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/zappi/keys.ini
     api_keys_file = f"{os.environ['HOME']}/.config/zappi/keys.ini"

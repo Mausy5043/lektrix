@@ -1,5 +1,6 @@
 # When making changes to this file update environment.yml also !!
 
+gracefulkiller
 matplotlib
 mausy5043-common
 numpy
