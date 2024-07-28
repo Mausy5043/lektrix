@@ -212,9 +212,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         df_out["sample_epoch"] = df_out["sample_time"].apply(_convert_time_to_epoch)
         result_data = df_out.to_dict("records")  # list of dicts
 
-        df = df[
-            df["sample_epoch"] > np.max(df_out["sample_epoch"])
-        ]  # pylint: disable=E1136
+        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # pylint: disable=E1136
         remain_data = df.to_dict("records")
         LOGGER.debug(f"Result: {result_data}")
         LOGGER.debug(f"Remain: {remain_data}\n")

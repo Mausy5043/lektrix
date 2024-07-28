@@ -74,16 +74,10 @@ def main():
     )
 
     report_interval = int(constants.KAMSTRUP["report_interval"])
-    sample_interval = report_interval / int(
-        constants.KAMSTRUP["samplespercycle"]
-    )
+    sample_interval = report_interval / int(constants.KAMSTRUP["samplespercycle"])
 
-    next_time = time.time() + (
-        sample_interval - (time.time() % sample_interval)
-    )
-    rprt_time = time.time() + (
-        report_interval - (time.time() % report_interval)
-    )
+    next_time = time.time() + (sample_interval - (time.time() % sample_interval))
+    rprt_time = time.time() + (report_interval - (time.time() % report_interval))
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
@@ -92,9 +86,7 @@ def main():
                 set_led("mains", "green")
             except Exception:  # noqa
                 set_led("mains", "red")
-                LOGGER.critical(
-                    "Unexpected error while trying to do some work!"
-                )
+                LOGGER.critical("Unexpected error while trying to do some work!")
                 LOGGER.error(traceback.format_exc())
                 raise
             if not succes:
@@ -105,18 +97,14 @@ def main():
                 LOGGER.debug("Reporting")
                 LOGGER.debug(f"Result   : {API_KL.list_data}")
                 # resample to 15m entries
-                data, API_KL.list_data = API_KL.compact_data(
-                    API_KL.list_data
-                )
+                data, API_KL.list_data = API_KL.compact_data(API_KL.list_data)
                 try:
                     for element in data:
                         # LOGGER.debug(f"{element}") # is already logged by sql_db.queue()
                         sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("mains", "red")
-                    LOGGER.critical(
-                        "Unexpected error while trying to queue the data"
-                    )
+                    LOGGER.critical("Unexpected error while trying to queue the data")
                     LOGGER.error(traceback.format_exc())
                     raise  # may be changed to pass if errors can be corrected.
                 try:
@@ -136,12 +124,8 @@ def main():
                 pause_interval + time.time()
             )  # gives the actual time when the next loop should start
             # determine moment of next report
-            rprt_time = time.time() + (
-                report_interval - (time.time() % report_interval)
-            )
-            LOGGER.debug(
-                f"Spent {time.time() - start_time:.1f}s getting data"
-            )
+            rprt_time = time.time() + (report_interval - (time.time() % report_interval))
+            LOGGER.debug(f"Spent {time.time() - start_time:.1f}s getting data")
             LOGGER.debug(f"Report in {rprt_time - time.time():.0f}s")
             LOGGER.debug("................................")
         else:
