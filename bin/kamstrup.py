@@ -28,7 +28,8 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
         logging.handlers.SysLogHandler(
-            address="/dev/log", facility=logging.handlers.SysLogHandler.LOG_DAEMON
+            address="/dev/log",
+            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
         )
     ],
 )
@@ -73,10 +74,16 @@ def main():
     )
 
     report_interval = int(constants.KAMSTRUP["report_interval"])
-    sample_interval = report_interval / int(constants.KAMSTRUP["samplespercycle"])
+    sample_interval = report_interval / int(
+        constants.KAMSTRUP["samplespercycle"]
+    )
 
-    next_time = time.time() + (sample_interval - (time.time() % sample_interval))
-    rprt_time = time.time() + (report_interval - (time.time() % report_interval))
+    next_time = time.time() + (
+        sample_interval - (time.time() % sample_interval)
+    )
+    rprt_time = time.time() + (
+        report_interval - (time.time() % report_interval)
+    )
     while not killer.kill_now:
         if time.time() > next_time:
             start_time = time.time()
@@ -85,7 +92,9 @@ def main():
                 set_led("mains", "green")
             except Exception:  # noqa
                 set_led("mains", "red")
-                LOGGER.critical("Unexpected error while trying to do some work!")
+                LOGGER.critical(
+                    "Unexpected error while trying to do some work!"
+                )
                 LOGGER.error(traceback.format_exc())
                 raise
             if not succes:
@@ -96,14 +105,18 @@ def main():
                 LOGGER.debug("Reporting")
                 LOGGER.debug(f"Result   : {API_KL.list_data}")
                 # resample to 15m entries
-                data, API_KL.list_data = API_KL.compact_data(API_KL.list_data)
+                data, API_KL.list_data = API_KL.compact_data(
+                    API_KL.list_data
+                )
                 try:
                     for element in data:
                         # LOGGER.debug(f"{element}") # is already logged by sql_db.queue()
                         sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("mains", "red")
-                    LOGGER.critical("Unexpected error while trying to queue the data")
+                    LOGGER.critical(
+                        "Unexpected error while trying to queue the data"
+                    )
                     LOGGER.error(traceback.format_exc())
                     raise  # may be changed to pass if errors can be corrected.
                 try:
@@ -126,7 +139,9 @@ def main():
             rprt_time = time.time() + (
                 report_interval - (time.time() % report_interval)
             )
-            LOGGER.debug(f"Spent {time.time() - start_time:.1f}s getting data")
+            LOGGER.debug(
+                f"Spent {time.time() - start_time:.1f}s getting data"
+            )
             LOGGER.debug(f"Report in {rprt_time - time.time():.0f}s")
             LOGGER.debug("................................")
         else:
@@ -143,7 +158,10 @@ def set_led(dev, colour):
 
 if __name__ == "__main__":
     # initialise logging
-    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
+    syslog.openlog(
+        ident=f'{MYAPP}.{MYID.split(".")[0]}',
+        facility=syslog.LOG_LOCAL0,
+    )
 
     if OPTION.debug:
         DEBUG = True
