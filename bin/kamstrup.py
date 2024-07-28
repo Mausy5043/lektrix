@@ -15,7 +15,6 @@ import syslog
 import time
 import traceback
 
-import mausy5043_common.funfile as mf
 import mausy5043_common.libsqlite3 as m3
 
 import constants
