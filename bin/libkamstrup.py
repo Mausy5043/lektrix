@@ -83,13 +83,13 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                     # remember meaningful content
                     telegram.append(line)
             except serial.SerialException:
-                mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, self.debug)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
+                LOGGER.critical("*** Serialport read error:")
+                LOGGER.error(traceback.format_exc())
                 valid_telegram = False
                 receiving = False
             except UnicodeDecodeError:
-                mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, self.debug)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
+                LOGGER.critical("*** Unicode Decode error:")
+                LOGGER.error(traceback.format_exc())
                 valid_telegram = False
                 receiving = False
 
@@ -156,16 +156,12 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                 # ['0-0:96.13.0', '', ''] text message
                 # not recorded
             except ValueError:
-                if self.debug:
-                    mf.syslog_trace(
-                        "*** Conversion not possible for element:",
-                        syslog.LOG_INFO,
-                        self.debug,
-                    )
-                    mf.syslog_trace(f"    {element}", syslog.LOG_INFO, self.debug)
-                    mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_INFO, self.debug)
-                    mf.syslog_trace(f"    {telegram}", syslog.LOG_INFO, self.debug)
-        LOGGER.debug(f"    {telegram}")
+                LOGGER.critical(
+                    "*** Conversion not possible for element:"
+                )
+                LOGGER.error(f"    {element}")
+                LOGGER.error("*** Extracted from telegram:")
+                LOGGER.error(f"    {telegram}")
         idx_dt = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
 
