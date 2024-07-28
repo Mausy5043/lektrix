@@ -6,8 +6,11 @@ Store the data in a SQLite3 database.
 """
 
 import argparse
+import logging
+import logging.handlers
 import os
 import shutil
+import sys
 import syslog
 import time
 import traceback
@@ -18,6 +21,18 @@ import mausy5043_common.libsqlite3 as m3
 import constants
 import libkamstrup as kl
 import GracefulKiller as gk
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.handlers.SysLogHandler(
+            address="/dev/log", facility=logging.handlers.SysLogHandler.LOG_DAEMON
+        )
+    ],
+)
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the kamstrup daemon.")
@@ -143,6 +158,10 @@ if __name__ == "__main__":
     if OPTION.debug:
         DEBUG = True
         print(OPTION)
+        if len(LOGGER.handlers) == 0:
+            LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+        LOGGER.level = logging.DEBUG
+        LOGGER.debug("Debugging on.")
         mf.syslog_trace("Debug-mode started.", syslog.LOG_DEBUG, DEBUG)
         print("Use <Ctrl>+C to stop.")
 

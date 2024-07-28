@@ -3,7 +3,9 @@
 """Common functions for use with the KAMSTRUP electricity meter"""
 
 import datetime as dt
+import logging
 import re
+import sys
 import syslog
 import traceback
 
@@ -14,6 +16,7 @@ import serial  # noqa # type: ignore  # (cannot be imported in dev environment)
 
 import constants
 
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 class Kamstrup:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the P1-port."""
@@ -46,7 +49,11 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         self.list_data = []
 
         self.debug = debug
-        if self.debug:
+        if debug:
+            if len(LOGGER.handlers) == 0:
+                LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+            LOGGER.level = logging.DEBUG
+            LOGGER.debug("Debugging on.")
             self.telegram = []
 
     def get_telegram(self):
