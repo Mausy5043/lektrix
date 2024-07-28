@@ -119,6 +119,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         Returns:
             (dict): data converted to a dict.
         """
+        LOGGER.debug(f"    {telegram}")
         for element in telegram:
             try:
                 line = re.split(r"[\(\*\)]", element)
@@ -215,4 +216,6 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
 
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # pylint: disable=E1136
         remain_data = df.to_dict("records")
+        LOGGER.debug(f"Result: {result_data}")
+        LOGGER.debug(f"Remain: {remain_data}\n")
         return result_data, remain_data
