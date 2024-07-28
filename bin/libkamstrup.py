@@ -165,6 +165,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                     mf.syslog_trace(f"    {element}", syslog.LOG_INFO, self.debug)
                     mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_INFO, self.debug)
                     mf.syslog_trace(f"    {telegram}", syslog.LOG_INFO, self.debug)
+        LOGGER.debug(f"    {telegram}")
         idx_dt = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
 
@@ -213,7 +214,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
 
         # recalculate 'sample_epoch'
         df_out["sample_epoch"] = df_out["sample_time"].apply(_convert_time_to_epoch)
-        mf.syslog_trace(f"{df_out}", False, self.debug)
+        LOGGER.info(f"{df_out}", False, self.debug)
         result_data = df_out.to_dict("records")  # list of dicts
 
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # pylint: disable=E1136
