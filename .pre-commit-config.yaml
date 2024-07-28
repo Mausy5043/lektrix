@@ -1,4 +1,4 @@
-
+# These checks must pass before you may commit changes
 repos:
 -   repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.3.0
@@ -10,4 +10,3 @@ repos:
     rev: 24.4.2
     hooks:
     -   id: black
-        language-version: python3.11
