@@ -161,4 +161,4 @@ if __name__ == "__main__":
     # OPTION.start only executes this next line, we don't need to test for it.
     main()
 
-    print("And it's goodnight from him")
+    LOGGER.debug("And it's goodnight from him")
