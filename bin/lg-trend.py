@@ -352,7 +352,10 @@ def main():
     if OPTION.months:
         plot_graph(
             constants.TREND["month_graph"],
-            fetch_last_year(OPTION.months),             f"trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",            show_data=0,            balancing=OPTION.balancing,
+            fetch_last_year(OPTION.months),
+            f"trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            show_data=0,
+            balancing=OPTION.balancing,
         )
     if OPTION.years:
         plot_graph(
