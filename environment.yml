@@ -1,5 +1,5 @@
 # When making changes to this file update requirements.txt also !!
-# Usage: conda -v env update -n lektrix --file environment.yml
+# Usage: conda -v env update -n lektrix --file environment.yml; pre-commit run --all-files
 
 channels:
   - conda-forge
@@ -14,6 +14,7 @@ dependencies:
   - pandas
 #  - pandas-stubs
   - pip
+  - pre-commit
   - pyarrow
 # This won't install on anything other than Linux (notably Raspberry Pi):
 # - pyserial=3.5

@@ -3,7 +3,9 @@
 """Common functions for use with the KAMSTRUP electricity meter"""
 
 import datetime as dt
+import logging
 import re
+import sys
 import syslog
 import traceback
 
@@ -13,6 +15,8 @@ import pandas as pd
 import serial  # noqa # type: ignore  # (cannot be imported in dev environment)
 
 import constants
+
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
 class Kamstrup:  # pylint: disable=too-many-instance-attributes
@@ -46,7 +50,11 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         self.list_data = []
 
         self.debug = debug
-        if self.debug:
+        if debug:
+            if len(LOGGER.handlers) == 0:
+                LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+            LOGGER.level = logging.DEBUG
+            LOGGER.debug("Debugging on.")
             self.telegram = []
 
     def get_telegram(self):
@@ -76,13 +84,13 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                     # remember meaningful content
                     telegram.append(line)
             except serial.SerialException:
-                mf.syslog_trace("*** Serialport read error:", syslog.LOG_CRIT, self.debug)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
+                LOGGER.critical("*** Serialport read error:")
+                LOGGER.error(traceback.format_exc())
                 valid_telegram = False
                 receiving = False
             except UnicodeDecodeError:
-                mf.syslog_trace("*** Unicode Decode error:", syslog.LOG_CRIT, self.debug)
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, self.debug)
+                LOGGER.critical("*** Unicode Decode error:")
+                LOGGER.error(traceback.format_exc())
                 valid_telegram = False
                 receiving = False
 
@@ -112,6 +120,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         Returns:
             (dict): data converted to a dict.
         """
+        LOGGER.debug(f"    {telegram}")
         for element in telegram:
             try:
                 line = re.split(r"[\(\*\)]", element)
@@ -149,15 +158,10 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                 # ['0-0:96.13.0', '', ''] text message
                 # not recorded
             except ValueError:
-                if self.debug:
-                    mf.syslog_trace(
-                        "*** Conversion not possible for element:",
-                        syslog.LOG_INFO,
-                        self.debug,
-                    )
-                    mf.syslog_trace(f"    {element}", syslog.LOG_INFO, self.debug)
-                    mf.syslog_trace("*** Extracted from telegram:", syslog.LOG_INFO, self.debug)
-                    mf.syslog_trace(f"    {telegram}", syslog.LOG_INFO, self.debug)
+                LOGGER.critical("*** Conversion not possible for element:")
+                LOGGER.error(f"    {element}")
+                LOGGER.error("*** Extracted from telegram:")
+                LOGGER.error(f"    {telegram}")
         idx_dt = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
 
@@ -206,9 +210,10 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
 
         # recalculate 'sample_epoch'
         df_out["sample_epoch"] = df_out["sample_time"].apply(_convert_time_to_epoch)
-        mf.syslog_trace(f"{df_out}", False, self.debug)
         result_data = df_out.to_dict("records")  # list of dicts
 
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # pylint: disable=E1136
         remain_data = df.to_dict("records")
+        LOGGER.debug(f"Result: {result_data}")
+        LOGGER.debug(f"Remain: {remain_data}\n")
         return result_data, remain_data

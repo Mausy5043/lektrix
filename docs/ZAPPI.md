@@ -49,7 +49,7 @@
                                                 //      C1 = EV ready to receive charge
                                                 //      C2 = Charging
                                                 //      F  = Fault
-            'pwm': 4100,                        // Pulse Width Modulation [% * 100] 
+            'pwm': 4100,                        // Pulse Width Modulation [% * 100]
                                                 // percentage of 60A that can be delivered
                                                 // 4100 = 24.6 A
             'rac': 4,                           // Residual AC
@@ -93,7 +93,7 @@ Note: Energy is in Joules; divide by 60 get average Watts; divide by 3 600 000 t
             'exp': 16560,               // Exported period total [J]
             'frq': 5006,                // Line frequency [centiHertz]
             'gen': 480                  // Energy consumed by inverter (usually at night) [J]
-            'gep': 2409600,             // Energy production (solar panels) period total [J] 
+            'gep': 2409600,             // Energy production (solar panels) period total [J]
             'h1b': 123,                 // Imported energy used for EV period total [J]
             'h1d': 14706420,            // Produced energy diverted to EV (?) period total [J]
             'hr': 6,                    // Hour of the Day (UTC!) (if applicable and non-zero)
@@ -107,11 +107,11 @@ Note: Energy is in Joules; divide by 60 get average Watts; divide by 3 600 000 t
         truncated
 ```
 
-`gep` should match hourly PV totaliser   
-`imp` imported from grid; should match hourly P1 totaliser (T1,in + T2,in; KAMSTRUP)   
-`exp` exported to grid; should match hourly P1 totaliser (T1,out + T2,out; KAMSTRUP)   
+`gep` should match hourly PV totaliser
+`imp` imported from grid; should match hourly P1 totaliser (T1,in + T2,in; KAMSTRUP)
+`exp` exported to grid; should match hourly P1 totaliser (T1,out + T2,out; KAMSTRUP)
 `h1d` should match EV consumption
-`h1b`: device 1 boost   
-`h1d`: device 1 divert   
-`h2b`: device 2 boost   
-`h2d`: device 2 divert   
+`h1b`: device 1 boost
+`h1d`: device 1 divert
+`h2b`: device 2 boost
+`h2d`: device 2 divert
