@@ -198,8 +198,8 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         df_out = df.resample("15min", label="right").max()
         df_mean = df.resample("15min", label="right").mean()
 
-        df_out["powerin"] = df_mean["powerin"].astype(int)
-        df_out["powerout"] = df_mean["powerout"].astype(int)
+        df_out["powerin"] = df_out["powerin"].astype(int)
+        df_out["powerout"] = df_out["powerout"].astype(int)
         # recreate column 'sample_time' that was lost to the index
         df_out["sample_time"] = df_out.index.to_frame(name="sample_time")
         df_out["sample_time"] = df_out["sample_time"].apply(_convert_time_to_text)
