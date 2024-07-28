@@ -85,9 +85,7 @@ def main():
                 set_led("mains", "green")
             except Exception:  # noqa
                 set_led("mains", "red")
-                LOGGER.critical(
-                    "Unexpected error while trying to do some work!"
-                )
+                LOGGER.critical("Unexpected error while trying to do some work!")
                 LOGGER.error(traceback.format_exc())
                 raise
             if not succes:
@@ -105,9 +103,7 @@ def main():
                         sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("mains", "red")
-                    LOGGER.critical(
-                        "Unexpected error while trying to queue the data"
-                    )
+                    LOGGER.critical("Unexpected error while trying to queue the data")
                     LOGGER.error(traceback.format_exc())
                     raise  # may be changed to pass if errors can be corrected.
                 try:
@@ -123,9 +119,13 @@ def main():
             # electricity meter determines the tempo, so no need to wait.
             pause_interval = 0.0  # faux variable
 
-            next_time = (pause_interval + time.time())  # gives the actual time when the next loop should start
+            next_time = (
+                pause_interval + time.time()
+            )  # gives the actual time when the next loop should start
             # determine moment of next report
-            rprt_time = time.time() + (report_interval - (time.time() % report_interval))
+            rprt_time = time.time() + (
+                report_interval - (time.time() % report_interval)
+            )
             LOGGER.debug(f"Spent {time.time() - start_time:.1f}s getting data")
             LOGGER.debug(f"Report in {rprt_time - time.time():.0f}s")
             LOGGER.debug("................................")

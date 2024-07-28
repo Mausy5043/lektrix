@@ -1,7 +1,7 @@
 # HARVI
 
 ## Payload cgi-jstatus-H...
-Call: `https://s__.myenergi.net/cgi-jstatus-H########`   
+Call: `https://s__.myenergi.net/cgi-jstatus-H########`
 
 Where:
 * `s__` is the server-id

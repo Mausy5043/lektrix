@@ -18,6 +18,7 @@ import constants
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
+
 class Kamstrup:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the P1-port."""
 
@@ -157,9 +158,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                 # ['0-0:96.13.0', '', ''] text message
                 # not recorded
             except ValueError:
-                LOGGER.critical(
-                    "*** Conversion not possible for element:"
-                )
+                LOGGER.critical("*** Conversion not possible for element:")
                 LOGGER.error(f"    {element}")
                 LOGGER.error("*** Extracted from telegram:")
                 LOGGER.error(f"    {telegram}")
@@ -213,7 +212,9 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         df_out["sample_epoch"] = df_out["sample_time"].apply(_convert_time_to_epoch)
         result_data = df_out.to_dict("records")  # list of dicts
 
-        df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]  # pylint: disable=E1136
+        df = df[
+            df["sample_epoch"] > np.max(df_out["sample_epoch"])
+        ]  # pylint: disable=E1136
         remain_data = df.to_dict("records")
         LOGGER.debug(f"Result: {result_data}")
         LOGGER.debug(f"Remain: {remain_data}\n")

@@ -18,15 +18,15 @@ and [ZAPPI v2](https://myenergi.com/) API using Raspberry Pi
 
 ### Installing
 
-Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.  
-To install run `lektrix --install`.  
+Clone the repository somewhere handy. Adding the `lektrix` directory to your `$PATH` may help.
+To install run `lektrix --install`.
 Use `lektrix --uninstall` to uninstall.
 
 ### Usage
 
 `lektrix <options>`
 
-`--hours HOURS`, `--days DAYS`, `--months MONTHS`, `--years YEARS`  
+`--hours HOURS`, `--days DAYS`, `--months MONTHS`, `--years YEARS`
 Create a bar graph of the given number of HOURS/DAYS/MONTHS/YEARS
 
 `--balance`, `--balances`
