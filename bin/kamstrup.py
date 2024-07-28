@@ -99,10 +99,9 @@ def main():
                 LOGGER.debug(f"Result   : {API_KL.list_data}")
                 # resample to 15m entries
                 data, API_KL.list_data = API_KL.compact_data(API_KL.list_data)
-                LOGGER.debug(f"Remainder: {API_KL.list_data}")
                 try:
                     for element in data:
-                        LOGGER.debug(f"  : {element}")
+                        # LOGGER.debug(f"{element}") # is already logged by sql_db.queue()
                         sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("mains", "red")
