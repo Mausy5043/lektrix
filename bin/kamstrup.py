@@ -101,9 +101,8 @@ def main():
                 data, API_KL.list_data = API_KL.compact_data(API_KL.list_data)
                 LOGGER.debug(f"Remainder: {API_KL.list_data}")
                 try:
-                    LOGGER.debug(f"Data to add (first) : {data[0]}")
-                    LOGGER.debug(f"            (last)  : {data[-1]}")
                     for element in data:
+                        LOGGER.debug(f"  : {element}")
                         sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("mains", "red")
