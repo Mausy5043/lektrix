@@ -77,8 +77,7 @@ def main():
 
     site_list = []
     pause_interval = 0
-    next_time = pause_interval + local_now()
-    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
+    lookback_hours = 24
     lookahead_days = 1
     while not killer.kill_now:  # pylint: disable=too-many-nested-blocks
         if local_now() > next_time:
@@ -109,6 +108,9 @@ def main():
                 try:
                     data = do_work(site_list, start_dt=start_dt)
                     set_led("solar", "green")
+                    lookback_hours = (
+                        4  # only during the first loop do we need to lookback further
+                    )
                 except Exception:  # noqa  # pylint: disable=W0718
                     set_led("solar", "red")
                     mf.syslog_trace(
@@ -226,13 +228,13 @@ def main():
             time.sleep(1.0)  # 1s resolution is enough
 
 
-def do_work(site_list, start_dt=dt.datetime.today()):
+def do_work(site_list, start_dt=dt.datetime.today(), lookback=4):
     """Extract the data from the dict(s)."""
 
     # TODO: This function should be implemented in libsolaredge
 
     # request 4 hours back and 1 day ahead
-    back_dt = start_dt - dt.timedelta(hours=4)
+    back_dt: dt.datetime = start_dt - dt.timedelta(hours=lookback)
     start_dt += dt.timedelta(days=1)
     # result_dict = constants.SOLAREDGE['template']
     data_list = []
