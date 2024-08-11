@@ -34,15 +34,15 @@ OPTION = parser.parse_args()
 
 # constants
 DEBUG = False
-HERE = os.path.realpath(__file__).split("/")
+HERE: list[str] = os.path.realpath(__file__).split("/")
 # runlist id :
-MYID = HERE[-1]
+MYID: str = HERE[-1]
 # app_name :
-MYAPP = HERE[-3]
-MYROOT = "/".join(HERE[0:-3])
-APPROOT = "/".join(HERE[0:-2])
+MYAPP: str = HERE[-3]
+MYROOT: str = "/".join(HERE[0:-3])
+APPROOT: str = "/".join(HERE[0:-2])
 # host_name :
-NODE = os.uname()[1]
+NODE: str = os.uname()[1]
 
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge.py']
@@ -54,7 +54,7 @@ NODE = os.uname()[1]
 API_SE = sl.Solaredge("000000")
 
 
-def main():
+def main() -> None:
     """Execute main loop until killed."""
     global API_SE  # pylint: disable=W0603
     set_led("solar", "orange")
@@ -62,7 +62,7 @@ def main():
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
-    api_key = iniconf.get("account", "api_key")
+    api_key: str = iniconf.get("account", "api_key")
     API_SE = sl.Solaredge(api_key)
 
     sql_db = m3.SqlDatabase(
@@ -73,15 +73,17 @@ def main():
     )
 
     report_interval = int(constants.SOLAREDGE["report_interval"])
-    sample_interval = report_interval / int(constants.SOLAREDGE["samplespercycle"])
+    sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
 
-    site_list = []
+    site_list: list[str] = []
     pause_interval = 0
+    next_time: float = pause_interval + local_now()
+    start_dt: dt.datetime = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
     lookback_hours = 24
     lookahead_days = 1
     while not killer.kill_now:  # pylint: disable=too-many-nested-blocks
         if local_now() > next_time:
-            start_time = local_now()
+            start_time: float = local_now()
 
             if not site_list:
                 try:
@@ -106,7 +108,9 @@ def main():
                         DEBUG,
                     )
                 try:
-                    data = do_work(site_list, start_dt=start_dt)
+                    data: list[dict] = do_work(
+                        site_list, start_dt=start_dt, lookback=lookback_hours
+                    )
                     set_led("solar", "green")
                     lookback_hours = (
                         4  # only during the first loop do we need to lookback further
@@ -149,7 +153,7 @@ def main():
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                         raise  # may be changed to pass if errors can be corrected.
 
-            pause_interval = (
+            pause_interval: float = (
                 sample_interval
                 - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                 - (
@@ -179,7 +183,9 @@ def main():
              = 3 seconds behind (no waiting)
             """
 
-            new_start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
+            new_start_dt: dt.datetime = dt.datetime.strptime(
+                sql_db.latest_datapoint(), constants.DT_FORMAT
+            )
             if new_start_dt <= start_dt:
                 # there is a hole in the data
                 mf.syslog_trace(
@@ -188,7 +194,7 @@ def main():
                     syslog.LOG_WARNING,
                     DEBUG,
                 )
-                dati = new_start_dt + dt.timedelta(days=lookahead_days)
+                dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
                 if dati > dt.datetime.today():
                     mf.syslog_trace(
                         f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
@@ -237,11 +243,11 @@ def do_work(site_list, start_dt=dt.datetime.today(), lookback=4):
     back_dt: dt.datetime = start_dt - dt.timedelta(hours=lookback)
     start_dt += dt.timedelta(days=1)
     # result_dict = constants.SOLAREDGE['template']
-    data_list = []
-    result_list = []
+    data_list: list[dict] = []
+    result_list: list[dict] = []
 
     for site in site_list:
-        site_id = site["id"]
+        site_id: str = site["id"]
         try:
             data_list = API_SE.get_energy_details(
                 site_id,
@@ -267,12 +273,12 @@ def do_work(site_list, start_dt=dt.datetime.today(), lookback=4):
 
         if data_list:
             for element in data_list:
-                result_dict = {}
-                date_time = element["date"]
+                result_dict: dict = {}
+                date_time: str = element["date"]
                 try:
-                    energy = element["value"]
+                    energy: float = element["value"]
                 except KeyError:
-                    energy = 0
+                    energy = 0.0
 
                 result_dict["sample_time"] = date_time
                 result_dict["sample_epoch"] = int(
@@ -287,15 +293,15 @@ def do_work(site_list, start_dt=dt.datetime.today(), lookback=4):
     return result_list
 
 
-def local_now():
+def local_now() -> float:
     return dt.datetime.today().replace(tzinfo=dt.timezone.utc).timestamp()
 
 
-def set_led(dev, colour):
+def set_led(dev, colour) -> None:
     mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
 
-    in_dirfile = f"{APPROOT}/www/{colour}.png"
-    out_dirfile = f'{constants.TREND["website"]}/{dev}.png'
+    in_dirfile: str = f"{APPROOT}/www/{colour}.png"
+    out_dirfile: str = f'{constants.TREND["website"]}/{dev}.png'
     shutil.copy(f"{in_dirfile}", out_dirfile)
 
 
