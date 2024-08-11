@@ -112,9 +112,8 @@ def main() -> None:
                         site_list, start_dt=start_dt, lookback=lookback_hours
                     )
                     set_led("solar", "green")
-                    lookback_hours = (
-                        4  # only during the first loop do we need to lookback further
-                    )
+                    # only during the first loop do we need to lookback further
+                    lookback_hours = 4
                 except Exception:  # noqa  # pylint: disable=W0718
                     set_led("solar", "red")
                     mf.syslog_trace(
