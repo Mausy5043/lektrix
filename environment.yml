@@ -17,6 +17,7 @@ dependencies:
   - pandas
 #  - pandas-stubs
   - pip
+  - pipdeptree
   - pre-commit
   - pyarrow
 # This won't install on anything other than Linux (notably Raspberry Pi):
