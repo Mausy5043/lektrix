@@ -7,13 +7,12 @@ import functools
 import time
 from itertools import tee
 
+import constants
 import dateutil.parser as dtparse
 import dateutil.rrule as dtrule
 import pandas as pd
 import pytz
 import requests
-
-import constants
 
 BASEURL = constants.SOLAREDGE["director"]
 

@@ -7,14 +7,13 @@ import os
 import syslog
 import time
 
+import constants
 import mausy5043_common.funfile as mf
 import numpy as np
 import pandas as pd
 import pytz
 import requests
 from requests.auth import HTTPDigestAuth
-
-import constants
 
 pd.options.display.float_format = "{:.3f}".format
 

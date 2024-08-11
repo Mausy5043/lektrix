@@ -18,12 +18,11 @@ import argparse
 import sqlite3 as s3
 from datetime import datetime as dt
 
+import constants
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
-
-import constants
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]

@@ -9,12 +9,11 @@ import sys
 import syslog
 import traceback
 
+import constants
 import mausy5043_common.funfile as mf
 import numpy as np
 import pandas as pd
 import serial  # noqa # type: ignore  # (cannot be imported in dev environment)
-
-import constants
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 

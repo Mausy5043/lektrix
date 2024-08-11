@@ -4,8 +4,7 @@ import os
 import sys
 
 import pytz
-from sh import CommandNotFound
-from sh import git
+from sh import CommandNotFound, git
 
 _MYHOME = os.environ["HOME"]
 _DATABASE_FILENAME = "lektrix.sqlite3"

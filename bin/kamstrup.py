@@ -15,11 +15,10 @@ import syslog
 import time
 import traceback
 
-import mausy5043_common.libsqlite3 as m3
-
 import constants
-import libkamstrup as kl
 import GracefulKiller as gk
+import libkamstrup as kl
+import mausy5043_common.libsqlite3 as m3
 
 logging.basicConfig(
     level=logging.INFO,

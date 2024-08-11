@@ -12,12 +12,11 @@ import syslog
 import time
 import traceback
 
+import constants
+import GracefulKiller as gk
+import libsolaredge as sl
 import mausy5043_common.funfile as mf
 import mausy5043_common.libsqlite3 as m3
-
-import constants
-import libsolaredge as sl
-import GracefulKiller as gk
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")

@@ -10,13 +10,12 @@ Legacy method.
 import argparse
 from datetime import datetime as dt
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 import constants
 
 # noinspection PyUnresolvedReferences
 import libdbqueries as kl
+import matplotlib.pyplot as plt
+import numpy as np
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]

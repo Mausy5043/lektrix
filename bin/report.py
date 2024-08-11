@@ -9,9 +9,8 @@ import argparse
 import sqlite3 as s3
 from datetime import datetime as dt
 
-import pandas as pd
-
 import constants
+import pandas as pd
 
 DATABASE: str = constants.TREND["database"]
 TABLE_MAINS: str = constants.KAMSTRUP["sql_table"]
