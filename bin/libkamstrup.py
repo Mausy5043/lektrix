@@ -6,11 +6,9 @@ import datetime as dt
 import logging
 import re
 import sys
-import syslog
 import traceback
 
 import constants
-import mausy5043_common.funfile as mf
 import numpy as np
 import pandas as pd
 import serial  # noqa # type: ignore  # (cannot be imported in dev environment)
@@ -199,7 +197,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
         # resample to monotonic timeline
         df_out = df.resample("15min", label="right").max()
-        df_mean = df.resample("15min", label="right").mean()
+        # df_mean = df.resample("15min", label="right").mean()
 
         df_out["powerin"] = df_out["powerin"].astype(int)
         df_out["powerout"] = df_out["powerout"].astype(int)
