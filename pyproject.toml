@@ -1,5 +1,11 @@
 # Project: lektrix
 
+[tool.autopep8]
+max_line_length = 98
+in-place = true
+recursive = true
+aggressive = 1
+
 [tool.bandit]
 skips = []
 
@@ -22,19 +28,11 @@ ignore = [
     "W503",
 ]
 
+[tool.mypy]
+ignore_errors = false
+
 [tool.pydocstyle]
 inherit = false
 convention = 'google'
 match = '.*\\.py'
 add-ignore = 'D'
-
-# pylint is controlled by .pylintrc
-
-[tool.mypy]
-ignore_errors = false
-
-[tool.autopep8]
-max_line_length = 98
-in-place = true
-recursive = true
-aggressive = 1
