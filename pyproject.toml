@@ -24,7 +24,7 @@ add-ignore = 'D'
 # pylint is controlled by .pylintrc
 
 [tool.mypy]
-ignore_errors = true
+ignore_errors = false
 
 [tool.bandit]
 skips = []
