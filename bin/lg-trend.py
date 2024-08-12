@@ -25,18 +25,18 @@ DEBUG = False
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
-parser.add_argument("--hours","-hr",
+parser.add_argument("--hours", "-hr",
                     type=int,
                     help="create hour-trend for last <HOURS> hours",
                     )
-parser.add_argument("--days","-d",
+parser.add_argument("--days", "-d",
                     type=int,
                     help="create day-trend for last <DAYS> days")
-parser.add_argument("--months","-d",
+parser.add_argument("--months", "-d",
                     type=int,
                     help="number of months of data to use for the graph",
                     )
-parser.add_argument("--years","-y",
+parser.add_argument("--years", "-y",
                     type=int,
                     help="number of months of data to use for the graph",
                     )

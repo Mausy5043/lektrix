@@ -21,15 +21,15 @@ DEBUG = False
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create trendgraph or gauge")
-parser.add_argument("--gauge","-g",
+parser.add_argument("--gauge", "-g",
                     type=int,
                     help="generate a gauge. Specify year to aggregate or 0 for current " "year.",
                     )
-parser.add_argument("--months","-m",
+parser.add_argument("--months", "-m",
                     type=int,
                     help="number of months of data to use for the graph or 0 for " "default.",
                     )
-parser.add_argument("--print","-p",
+parser.add_argument("--print", "-p",
                     action="store_true",
                     help="Output data to stdout."
                     )
