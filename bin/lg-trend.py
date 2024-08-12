@@ -32,7 +32,7 @@ parser.add_argument("--hours", "-hr",
 parser.add_argument("--days", "-d",
                     type=int,
                     help="create day-trend for last <DAYS> days")
-parser.add_argument("--months", "-d",
+parser.add_argument("--months", "-m",
                     type=int,
                     help="number of months of data to use for the graph",
                     )
