@@ -243,9 +243,9 @@ def report(data_dict):
         data_frame = data_dict[parameter]  # type: pd.DataFrame
         print(parameter)
         sums = data_frame.sum().rename("total")
-        print(
-            data_frame.to_string()
-        )  # we use to_string() here to prevent pandas compressing the output when redirecting to pipe
+        # we use to_string() here to prevent pandas compressing the output when
+        # redirecting to pipe
+        print(data_frame.to_string())
         print("\nTotals for reported period")
         print(sums.to_string())
         print("\nBalance this period:")
