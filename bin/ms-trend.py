@@ -4,6 +4,7 @@
 Using kamstrup data
 """
 
+# autopep8: off
 import warnings
 
 # FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
@@ -23,6 +24,8 @@ import constants
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import pandas as pd
+
+# autopep8: on
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]

@@ -6,6 +6,7 @@ Using myenergi data
 
 # FIXME: still needs work
 
+# autopep8: off
 import warnings
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
@@ -23,6 +24,8 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
+
+# autopep8: on
 
 DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
