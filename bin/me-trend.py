@@ -28,8 +28,36 @@ DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
 TABLE_PRDCT = constants.SOLAREDGE["sql_table"]
 TABLE_CHRGR = constants.ZAPPI["sql_table"]
-OPTION = ""
 DEBUG = False
+
+# fmt: off
+parser = argparse.ArgumentParser(description="Create a trendgraph")
+parser.add_argument("--hours", "-hr",
+                    type=int,
+                    help="create hour-trend for last <HOURS> hours",
+                    )
+parser.add_argument("--days","-d",
+
+                    type=int,
+                    help="create day-trend for last <DAYS> days"
+                    )
+parser.add_argument("--months","-m",
+
+                    type=int,
+                    help="number of months of data to use for the graph",
+                    )
+parser.add_argument("--years","-y",
+
+                    type=int,
+                    help="number of months of data to use for the graph",
+                    )
+parser_group = parser.add_mutually_exclusive_group(required=False)
+parser_group.add_argument("--debug",
+                          action="store_true",
+                          help="start in debugging mode"
+                          )
+OPTION = parser.parse_args()  # type: ignore
+# fmt: on
 
 
 def fetch_data(hours_to_fetch=48, aggregation="W"):
@@ -295,35 +323,7 @@ def main(opt):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Create a trendgraph")
-    # fmt: off
-    parser.add_argument("-hr",
-                        "--hours",
-                        type=int,
-                        help="create hour-trend for last <HOURS> hours",
-                        )
-    parser.add_argument("-d",
-                        "--days",
-                        type=int,
-                        help="create day-trend for last <DAYS> days"
-                        )
-    parser.add_argument("-m",
-                        "--months",
-                        type=int,
-                        help="number of months of data to use for the graph",
-                        )
-    parser.add_argument("-y",
-                        "--years",
-                        type=int,
-                        help="number of months of data to use for the graph",
-                        )
-    parser_group = parser.add_mutually_exclusive_group(required=False)
-    parser_group.add_argument("--debug",
-                              action="store_true",
-                              help="start in debugging mode"
-                              )
-    OPTION = parser.parse_args()  # type: ignore
-    # fmt: on
+
     if OPTION.hours == 0:
         OPTION.hours = 80
     if OPTION.days == 0:
