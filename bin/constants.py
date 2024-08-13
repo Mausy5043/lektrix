@@ -6,13 +6,13 @@ import sys
 import pytz
 from sh import CommandNotFound, git
 
-_MYHOME = os.environ["HOME"]
-_DATABASE_FILENAME = "lektrix.sqlite3"
-_DATABASE = f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}"
-_HERE = os.path.realpath(__file__).split("/")
+_MYHOME: str = os.environ["HOME"]
+_DATABASE_FILENAME: str = "lektrix.sqlite3"
+_DATABASE: str = f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}"
+_HERE_list: list[str] = os.path.realpath(__file__).split("/")
 # ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
-_HERE = "/".join(_HERE[0:-2])
-_WEBSITE = "/run/lektrix/site/img"
+_HERE: str = "/".join(_HERE_list[0:-2])
+_WEBSITE: str = "/run/lektrix/site/img"
 
 if not os.path.isfile(_DATABASE):
     _DATABASE = f"/srv/databases/{_DATABASE_FILENAME}"
