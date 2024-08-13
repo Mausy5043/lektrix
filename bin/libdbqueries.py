@@ -226,7 +226,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True) -> tuple:
     if dif:
         y = y_data[loc_to] - y_data[loc_from]
 
-    returned_y_data = np.where(y > 0, y, 0)
+    returned_y_data: np.ndarray = np.where(y > 0, y, 0)
 
     return unique_x_texts, returned_y_data
 

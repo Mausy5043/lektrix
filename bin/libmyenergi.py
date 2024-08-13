@@ -314,7 +314,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         return result_data
 
 
-def joules2kwh(df_joules) -> np.array:
+def joules2kwh(df_joules) -> np.ndarray:
     """Convert Joules to kWh values
 
     Args:
@@ -323,9 +323,9 @@ def joules2kwh(df_joules) -> np.array:
     Returns:
         (numpy.ndarray): data in [kWh]
     """
-    df_wh: np.array = np.array(df_joules / 3600, dtype=int)
+    df_wh: np.ndarray = np.array(df_joules / 3600, dtype=int)
     for k, v in enumerate(df_wh):  # type: ignore
         if v < 10:
             df_wh[k] = 0
-    df_kwh: np.array = np.array(df_wh / 1000)
+    df_kwh: np.ndarray = np.array(df_wh / 1000)
     return df_kwh
