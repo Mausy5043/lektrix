@@ -99,7 +99,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
+def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     """
     Query the database to fetch the requested data
 
@@ -113,24 +113,24 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     if DEBUG:
         print("\n*** fetching MAINS data ***")
 
-    mod_start = ""
+    mod_start: str = ""
     # aggregations = "HDMA"
     # mods = ["hour", "day", "month", "year"]
     # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
 
-    where_condition = (
+    where_condition: str = (
         f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
     )
-    group_condition = ""
+    group_condition: str = ""
     if aggregation == "H":
         group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
-    s3_query = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition} {group_condition};"
+    s3_query: str = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition} {group_condition};"
     if DEBUG:
         print(s3_query)
 
     # Get the data
     with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
+        df: pd.DataFrame = pd.read_sql_query(
             s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
         )
     if DEBUG:
@@ -164,7 +164,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation="H"):
+def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     """
     Query the database to fetch the requested data
 

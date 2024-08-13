@@ -19,7 +19,9 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 class Kamstrup:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the P1-port."""
 
-    def __init__(self, debug: bool = False):  # pylint: disable=too-many-instance-attributes
+    def __init__(
+        self, debug: bool = False
+    ) -> None:  # pylint: disable=too-many-instance-attributes
         self.PORT = serial.Serial()
         self.PORT.baudrate = 9600
         self.PORT.bytesize = serial.SEVENBITS
@@ -44,17 +46,17 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         self.powerout = np.nan
         self.tarif = 1
         self.swits = 0
-        self.list_data = []
+        self.list_data: list = []
 
-        self.debug = debug
+        self.debug: bool = debug
         if debug:
             if len(LOGGER.handlers) == 0:
                 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
             LOGGER.level = logging.DEBUG
             LOGGER.debug("Debugging on.")
-            self.telegram = []
+            self.telegram: list = []
 
-    def get_telegram(self):
+    def get_telegram(self) -> bool:
         """Fetch a telegram from the serialport.
 
         Returns:
@@ -109,7 +111,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
             self.list_data.append(self._translate_telegram(telegram))
         return valid_telegram
 
-    def _translate_telegram(self, telegram: list):
+    def _translate_telegram(self, telegram: list) -> dict:
         """Translate the telegram to a dict.
 
         kW or kWh are converted to W resp. kW
@@ -190,7 +192,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
             return int(pd.Timestamp(date_to_convert).timestamp())
 
         def _convert_time_to_text(date_to_convert) -> str:
-            return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
+            return str(pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT))
 
         df = pd.DataFrame(data)
         df = df.set_index("sample_time")

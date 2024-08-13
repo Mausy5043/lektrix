@@ -74,8 +74,8 @@ def main() -> None:
 
     report_interval = int(constants.ZAPPI["report_interval"])
     sample_interval = report_interval / int(constants.ZAPPI["samplespercycle"])
-    pause_interval = 0
-    next_time = pause_interval + time.time()
+    pause_interval: float = 0.01
+    next_time: float = pause_interval + time.time()
     start_dt = sql_db.latest_datapoint()  # type: str
     lookahead_days = 1
     while not killer.kill_now:
@@ -209,7 +209,7 @@ def main() -> None:
             time.sleep(1.0)  # 1s resolution is enough
 
 
-def do_work(zappi, start_dt=dt.datetime.today()):
+def do_work(zappi, start_dt=dt.datetime.today()) -> list:
     """
 
     Args:

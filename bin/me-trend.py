@@ -63,7 +63,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_data(hours_to_fetch=48, aggregation="W"):
+def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -121,7 +121,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W"):
     return data_dict
 
 
-def fetch_data_charger(hours_to_fetch=48, aggregation="H"):
+def fetch_data_charger(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     """Query the database to fetch the requested data
 
     Args:
@@ -213,7 +213,7 @@ def remove_nans(frame, col_name, default):
     return frame
 
 
-def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None):
+def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None) -> None:
     """Plot the data in a chart.
 
     Args:

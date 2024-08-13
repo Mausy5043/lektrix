@@ -6,7 +6,6 @@ import datetime as dt
 import functools
 import time
 from itertools import tee
-from typing import LiteralString
 
 import constants
 import dateutil.parser as dtparse
@@ -25,7 +24,7 @@ class Solaredge:
     See https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf
     """
 
-    def __init__(self, api_token):
+    def __init__(self, api_token) -> None:
         """
         To communicate, you need to set an API access token.
         Get it from your account.
@@ -70,7 +69,7 @@ class Solaredge:
         sort_property="",
         sort_order="ASC",
         status="Active,Pending",
-    ):
+    ) -> dict:
         """
         Request a list of all sites
 
@@ -98,7 +97,7 @@ class Solaredge:
         return rj
 
     @functools.lru_cache(maxsize=128, typed=False)
-    def get_details(self, site_id):
+    def get_details(self, site_id) -> dict:
         """
         Request details about a certain site
 
@@ -115,7 +114,7 @@ class Solaredge:
         return rj
 
     @functools.lru_cache(maxsize=128, typed=False)
-    def get_data_period(self, site_id):
+    def get_data_period(self, site_id) -> dict:
         """
         Request the dataperiod for a certain site.
         This returns the start and end dates for which there
@@ -137,7 +136,7 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_data_period_parsed(self, site_id):
+    def get_data_period_parsed(self, site_id) -> tuple:
         """
         Request the data period for a certain site.
         This returns the start and end dates for which there
@@ -158,7 +157,7 @@ class Solaredge:
         start, end = start.tz_localize(tz), end.tz_localize(tz)
         return start, end
 
-    def get_energy(self, site_id, start_date, end_date, time_unit="DAY"):
+    def get_energy(self, site_id, start_date, end_date, time_unit="DAY") -> dict:
         url = urljoin(BASEURL, "site", site_id, "energy")
         params = {
             "api_key": self.token,
@@ -170,7 +169,7 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_time_frame_energy(self, site_id, start_date, end_date, time_unit="DAY"):
+    def get_time_frame_energy(self, site_id, start_date, end_date, time_unit="DAY") -> dict:
         # BEWARE: only date NO TIME
         url = urljoin(BASEURL, "site", site_id, "timeFrameEnergy")
         params = {
@@ -183,7 +182,7 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_power(self, site_id, start_time, end_time):
+    def get_power(self, site_id, start_time, end_time) -> dict:
         url = urljoin(BASEURL, "site", site_id, "power")
         params = {
             "api_key": self.token,
@@ -194,14 +193,14 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_overview(self, site_id):
+    def get_overview(self, site_id) -> dict:
         url = urljoin(BASEURL, "site", site_id, "overview")
         params = {"api_key": self.token}
 
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_power_details(self, site_id, start_time, end_time, meters=None):
+    def get_power_details(self, site_id, start_time, end_time, meters=None) -> dict:
         url = urljoin(BASEURL, "site", site_id, "powerDetails")
         params = {
             "api_key": self.token,
@@ -215,7 +214,9 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_energy_details(self, site_id, start_time, end_time, meters=None, time_unit="DAY"):
+    def get_energy_details(
+        self, site_id, start_time, end_time, meters=None, time_unit="DAY"
+    ) -> dict:
         """
         Request Energy Details for a specific site and timeframe
 
@@ -257,14 +258,14 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_current_power_flow(self, site_id):
+    def get_current_power_flow(self, site_id) -> dict:
         url = urljoin(BASEURL, "site", site_id, "currentPowerFlow")
         params = {"api_key": self.token}
 
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_storage_data(self, site_id, start_time, end_time, serials=None):
+    def get_storage_data(self, site_id, start_time, end_time, serials=None) -> dict:
         url = urljoin(BASEURL, "site", site_id, "storageData")
         params = {
             "api_key": self.token,
@@ -278,7 +279,7 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_inventory(self, site_id):
+    def get_inventory(self, site_id) -> dict:
         url = urljoin(BASEURL, "site", site_id, "inventory")
         params = {"api_key": self.token}
 
@@ -395,7 +396,7 @@ def urljoin(*parts) -> str:
     return url
 
 
-def pairwise(iterable):
+def pairwise(iterable) -> zip:
     """Create pairs to iterate over.
         eg. [A, B, C, D] -> ([A, B], [B, C], [C, D])
 

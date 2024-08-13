@@ -102,7 +102,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
+def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     """
     Query the database to fetch the requested data
 
@@ -165,7 +165,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H"):
     return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation="H"):
+def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     """
     Query the database to fetch the requested data
 

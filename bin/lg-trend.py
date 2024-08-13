@@ -48,7 +48,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_last_day(hours_to_fetch):
+def fetch_last_day(hours_to_fetch) -> tuple:
     """Retrieve data with hour grouping. Ideally suited for a limited number of days.
 
     Args:
@@ -96,7 +96,7 @@ def fetch_last_day(hours_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_month(days_to_fetch):
+def fetch_last_month(days_to_fetch) -> tuple:
     """..."""
     config = kl.add_time_line(
         {
@@ -121,7 +121,7 @@ def fetch_last_month(days_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year(months_to_fetch):
+def fetch_last_year(months_to_fetch) -> tuple:
     """..."""
     config = kl.add_time_line(
         {
@@ -148,7 +148,7 @@ def fetch_last_year(months_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_years(years_to_fetch):
+def fetch_last_years(years_to_fetch) -> tuple:
     """..."""
     config = kl.add_time_line(
         {
@@ -175,7 +175,7 @@ def fetch_last_years(years_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
+def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0) -> None:
     """Plot the data.
 
     Args:

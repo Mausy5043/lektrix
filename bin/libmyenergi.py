@@ -18,14 +18,14 @@ from requests.auth import HTTPDigestAuth
 pd.options.display.float_format = "{:.3f}".format
 
 # constants
-HERE = os.path.realpath(__file__).split("/")
+HERE: list[str] = os.path.realpath(__file__).split("/")
 # runlist id :
-MYID = HERE[-1]
+MYID: str = HERE[-1]
 # app_name :
-MYAPP = HERE[-3]
-MYROOT = "/".join(HERE[0:-3])
+MYAPP: str = HERE[-3]
+MYROOT: str = "/".join(HERE[0:-3])
 # host_name :
-NODE = os.uname()[1]
+NODE: str = os.uname()[1]
 
 
 # CONFIG_FILE = os.environ["HOME"] + "/.config/kamstrup/key.ini"
@@ -34,7 +34,7 @@ NODE = os.uname()[1]
 class Myenergi:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the myenergi servers"""
 
-    def __init__(self, keys_file, debug=False):
+    def __init__(self, keys_file: str, debug=False) -> None:
         """Initialise the Myenergi object.
 
         The keys-file must be a configparser compatible file containing:
@@ -61,19 +61,19 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             DEBUG (bool): show debugging info
             zappi_data (list): list of dicts containing the data
         """
-        self.DEBUG = debug
-        self.base_url = constants.ZAPPI["director"]
-        self.zappi_data = []
+        self.DEBUG: bool = debug
+        self.base_url: str = constants.ZAPPI["director"]
+        self.zappi_data: list = []
         self.zappi_data_template = constants.ZAPPI["template"]
 
         iniconf = configparser.ConfigParser()
         iniconf.read(keys_file)
-        self.api_key = self.get_key(iniconf, "API", "api_key")
-        self.harvi_serial = self.get_key(iniconf, "HARVI", "serial")
-        self.hub_serial = self.get_key(iniconf, "HUB", "serial")
-        self.zappi_serial = self.get_key(iniconf, "ZAPPI", "serial")
-        self.eddi_serial = self.get_key(iniconf, "EDDI", "serial")
-        self.libbi_serial = self.get_key(iniconf, "LIBBI", "serial")
+        self.api_key: str = self.get_key(iniconf, "API", "api_key")
+        self.harvi_serial: str = self.get_key(iniconf, "HARVI", "serial")
+        self.hub_serial: str = self.get_key(iniconf, "HUB", "serial")
+        self.zappi_serial: str = self.get_key(iniconf, "ZAPPI", "serial")
+        self.eddi_serial: str = self.get_key(iniconf, "EDDI", "serial")
+        self.libbi_serial: str = self.get_key(iniconf, "LIBBI", "serial")
 
         # First call to the API to get the ASN
         _response = requests.get(  # nosec B113
@@ -96,7 +96,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         else:
             raise RuntimeError("myenergi ASN not found in myenergi header")
 
-    def get_key(self, confobj, key_section, key_option):
+    def get_key(self, confobj, key_section: str, key_option: str) -> str:
         """Read keys from keys_file with error handling
 
         Args:
@@ -107,7 +107,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         Returns:
             value of the option
         """
-        key_value = None
+        key_value: str = ""
         try:
             key_value = confobj.get(key_section, key_option)
         except configparser.NoSectionError:
@@ -124,7 +124,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             )
         return key_value
 
-    def get_status(self, command):
+    def get_status(self, command: str) -> dict:
         """Call the API with a command and return the resulting data in a dict.
 
         Args:
@@ -133,9 +133,9 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         Returns:
             (dict): If succesfull, a dict that contains the requested data.
         """
-        result = {}
-        hdrs = {"User-Agent": "Wget/1.20 (linux-gnu)"}
-        call_url = f"{self.base_url}/{command}"
+        result: dict = {}
+        hdrs: dict = {"User-Agent": "Wget/1.20 (linux-gnu)"}
+        call_url: str = f"{self.base_url}/{command}"
         mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
         try:
             response = requests.get(  # nosec B113
@@ -162,7 +162,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
 
         return result
 
-    def standardise_json_block(self, blk):
+    def standardise_json_block(self, blk) -> dict:
         """Standardise a block of data from the myenergi DB
 
         Args:
@@ -173,14 +173,14 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
                     Joules are converted to kWh. Date and time parameters are converted to
                     a datetime-string and epoch-value in the local timezone.
         """
-        result_dict = {}
+        result_dict: dict = {}
         for _key, _value in self.zappi_data_template.items():
             try:
                 result_dict[_key] = blk[_key]
             except KeyError:
                 result_dict[_key] = _value
 
-        utc_date_time = dt.datetime.strptime(
+        utc_date_time: dt.datetime = dt.datetime.strptime(
             f"{result_dict['yr']}-{result_dict['mon']:02d}-{result_dict['dom']:02d} "
             f"{result_dict['hr']:02d}:{result_dict['min']:02d}:00",
             constants.DT_FORMAT,
@@ -192,9 +192,9 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             except KeyError:
                 pass
         # convert the UTC time from MyEnergi to local time
-        lcl_date_time = utc_date_time.replace(tzinfo=pytz.utc)
+        lcl_date_time: dt.datetime = utc_date_time.replace(tzinfo=pytz.utc)
         lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
-        date_time = lcl_date_time.strftime(constants.DT_FORMAT)
+        date_time: str = lcl_date_time.strftime(constants.DT_FORMAT)
         result_dict["sample_time"] = date_time
         result_dict["sample_epoch"] = int(
             dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp()
@@ -203,7 +203,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
 
-    def fetch_data(self, day_to_fetch: dt.date):
+    def fetch_data(self, day_to_fetch: dt.date) -> None:
         """Fetch data from the API for <day_to_fetch> and store it as a list of dicts
         in `zappi_data`.
 
@@ -219,12 +219,12 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
              None
         """
         self.zappi_data = []
-        result = []
+        result: list = []
         # fmt: off
         # pylint: disable=line-too-long
-        extra_day1_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
-        previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
-        current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
+        extra_day1_data: list = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
+        previous_day_data: list = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
+        current_day_data: list = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
         # fmt: on
         try:
             mf.syslog_trace(f"> {extra_day1_data[0]}", False, self.DEBUG)
@@ -239,7 +239,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         result = extra_day1_data + previous_day_data + current_day_data
         self.zappi_data = self.compact_data(result)
 
-    def _fetch(self, this_day: dt.date):
+    def _fetch(self, this_day: dt.date) -> dict:
         """Try to get the data off the server for the date <this_day>.
 
         Args:
@@ -274,7 +274,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
                 time.sleep(23)
         return result
 
-    def compact_data(self, data):
+    def compact_data(self, data) -> list:
         """
         Compact the one-minute data into 15-minute data
 
@@ -285,16 +285,16 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             (list): list of dicts containing compacted data
         """
 
-        def _convert_time_to_epoch(date_to_convert):
+        def _convert_time_to_epoch(date_to_convert) -> int:
             return int(pd.Timestamp(date_to_convert).timestamp())
 
-        def _convert_time_to_text(date_to_convert):
+        def _convert_time_to_text(date_to_convert) -> str:
             return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
 
-        result_data = []
+        result_data: list = []
 
         if data:
-            df = pd.DataFrame(data)
+            df: pd.DataFrame = pd.DataFrame(data)
             df = df.set_index("sample_time")
             df.index = pd.to_datetime(df.index, format=constants.DT_FORMAT, utc=False)
             # resample to monotonic timeline
@@ -314,7 +314,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         return result_data
 
 
-def joules2kwh(df_joules):
+def joules2kwh(df_joules) -> np.array:
     """Convert Joules to kWh values
 
     Args:
@@ -323,9 +323,9 @@ def joules2kwh(df_joules):
     Returns:
         (numpy.ndarray): data in [kWh]
     """
-    df_wh = np.array(df_joules / 3600, dtype=int)
-    for k, v in enumerate(df_wh):
+    df_wh: np.array = np.array(df_joules / 3600, dtype=int)
+    for k, v in enumerate(df_wh):  # type: ignore
         if v < 10:
             df_wh[k] = 0
-    df_kwh = np.array(df_wh / 1000)
+    df_kwh: np.array = np.array(df_wh / 1000)
     return df_kwh

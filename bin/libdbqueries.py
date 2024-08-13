@@ -110,22 +110,22 @@ def interplate(epochrng, epoch, data) -> tuple:
     return epochrng, datarng
 
 
-def contract(arr1, arr2):
+def contract(arr1, arr2) -> np.ndarray:
     """
     Add two arrays together.
     """
     size: int = max(len(arr1), len(arr2))
-    rev_arr1 = np.zeros(size, dtype=float)
-    rev_arr2 = np.zeros(size, dtype=float)
+    rev_arr1: np.ndarray = np.zeros(size, dtype=float)
+    rev_arr2: np.ndarray = np.zeros(size, dtype=float)
     for idx in range(0, len(arr1)):
         rev_arr1[idx] = arr1[::-1][idx]
     for idx in range(0, len(arr2)):
         rev_arr2[idx] = arr2[::-1][idx]
-    result = np.sum([rev_arr1, rev_arr2], axis=0)
+    result: np.ndarray = np.sum([rev_arr1, rev_arr2], axis=0)
     return result[::-1]
 
 
-def distract(arr1, arr2, allow_negatives=False):
+def distract(arr1, arr2, allow_negatives=False) -> np.ndarray:
     """
     Subtract two arrays.
     Note: order is important!
@@ -136,13 +136,13 @@ def distract(arr1, arr2, allow_negatives=False):
         allow_negatives: when False (default), negative results of the subtractions are zeroed.
     """
     size = max(len(arr1), len(arr2))
-    rev_arr1 = np.zeros(size, dtype=float)
-    rev_arr2 = np.zeros(size, dtype=float)
+    rev_arr1: np.ndarray = np.zeros(size, dtype=float)
+    rev_arr2: np.ndarray = np.zeros(size, dtype=float)
     for idx in range(0, len(arr1)):
         rev_arr1[idx] = arr1[::-1][idx]
     for idx in range(0, len(arr2)):
         rev_arr2[idx] = arr2[::-1][idx]
-    result = np.subtract(rev_arr1, rev_arr2)
+    result: np.ndarray = np.subtract(rev_arr1, rev_arr2)
     if not allow_negatives:
         result[result < 0] = 0.0
     return result[::-1]
@@ -217,7 +217,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True) -> tuple:
     if not dif:
         # print(y_data)
         # print(loc1, loc2)
-        y: list = []
+        y = []
         for i, v in enumerate(loc1):
             # f1 = y_data[v:loc2[i]]
             # print(i, v, loc2[i], f1, f1.sum())
