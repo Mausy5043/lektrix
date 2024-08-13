@@ -76,7 +76,7 @@ def main() -> None:
     sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
 
     site_list: list[str] = []
-    pause_interval = 0
+    pause_interval: float = 0.2
     next_time: float = pause_interval + local_now()
     start_dt: dt.datetime = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
     lookback_hours = 24
@@ -152,7 +152,7 @@ def main() -> None:
                         mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
                         raise  # may be changed to pass if errors can be corrected.
 
-            pause_interval: float = (
+            pause_interval = (
                 sample_interval
                 - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                 - (

@@ -43,7 +43,7 @@ TIMEZONE = pytz.timezone("Europe/Amsterdam")
 FLOAT_FMT = "+.0f"
 
 # fmt: off
-BATTERY = {
+BATTERY: dict = {
     "database": _DATABASE,
     "sql_table": "storage",
     "graph_file": ".local/graph.png",
@@ -62,7 +62,7 @@ BATTERY = {
     },
 }
 
-TREND = {
+TREND: dict = {
     "database": _DATABASE,
     "website": _WEBSITE,
     "hour_graph": f"{_WEBSITE}/lex_pasthours",
@@ -79,7 +79,7 @@ TREND = {
     "yg_gauge_v2": f"{_WEBSITE}/lex_gauge",
 }
 
-KAMSTRUP = {
+KAMSTRUP: dict = {
     "database": _DATABASE,
     "sql_table": "mains",
     "sql_command": "INSERT INTO mains ("
@@ -106,7 +106,7 @@ KAMSTRUP = {
     },
 }
 
-SOLAREDGE = {
+SOLAREDGE: dict = {
     "database": _DATABASE,
     "sql_table": "production",
     "sql_command": "INSERT INTO production ("
@@ -126,7 +126,7 @@ SOLAREDGE = {
     },
 }
 
-ZAPPI = {
+ZAPPI: dict = {
     "database": _DATABASE,
     "sql_table": "charger",
     "sql_command": "INSERT INTO charger ("
