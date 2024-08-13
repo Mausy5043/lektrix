@@ -33,7 +33,7 @@ parser.add_argument("--print", "-p",
                     action="store_true",
                     help="Output data to stdout."
                     )
-OPTION = parser.parse_args()  # type: ignore
+OPTION = parser.parse_args()
 # fmt: on
 
 

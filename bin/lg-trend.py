@@ -44,7 +44,7 @@ parser.add_argument("--balance", action="store_true", help="calculate balance (d
 parser.add_argument("--balances", action="store_true", help="calculate balance (single)")
 parser_group = parser.add_mutually_exclusive_group(required=False)
 parser_group.add_argument("--debug", action="store_true", help="start in debugging mode")
-OPTION = parser.parse_args()  # type: ignore
+OPTION = parser.parse_args()
 # fmt: on
 
 
