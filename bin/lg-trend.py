@@ -353,7 +353,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0):
         print(f" --> {output_file}_mains.png\n")
 
 
-def main():
+def main() -> None:
     """
     This is the main loop
     """

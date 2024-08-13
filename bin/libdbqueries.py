@@ -8,14 +8,14 @@ import sqlite3 as s3
 import numpy as np
 
 
-def add_time_line(config):
+def add_time_line(config: dict) -> dict:
     """Create a numpy array of labels based on the settings in config
 
     Args:
         config (dict): settings to be used
 
     Returns:
-        Modified version of `config`
+        dict: Modified version of `config`
     """
     final_epoch = int(dt.datetime.now().timestamp())
     if "year" in config:
@@ -40,7 +40,7 @@ def add_time_line(config):
 
 def get_historic_data(
     dicti, telwerk=None, from_start_of_year=False, include_today=True, dif=True
-):
+) -> tuple:
     """Fetch historic data from SQLITE3 database.
 
     Args:
@@ -103,7 +103,7 @@ def get_historic_data(
     return ret_data[-period:], ret_lbls[-period:]
 
 
-def interplate(epochrng, epoch, data):
+def interplate(epochrng, epoch, data) -> tuple:
     """Interpolate the given data to a neat monotonic dataset
     with 10 minute intervals"""
     datarng = np.interp(epochrng, epoch, data)
@@ -114,7 +114,7 @@ def contract(arr1, arr2):
     """
     Add two arrays together.
     """
-    size = max(len(arr1), len(arr2))
+    size: int = max(len(arr1), len(arr2))
     rev_arr1 = np.zeros(size, dtype=float)
     rev_arr2 = np.zeros(size, dtype=float)
     for idx in range(0, len(arr1)):
@@ -148,7 +148,7 @@ def distract(arr1, arr2, allow_negatives=False):
     return result[::-1]
 
 
-def balance(ilo, ihi, xlo, xhi, own, balans=2):
+def balance(ilo, ihi, xlo, xhi, own, balans=2) -> tuple:
     """Calculate the balance"""
     import_lo = np.zeros(len(ilo), dtype=float)
     import_hi = np.zeros(len(ihi), dtype=float)
@@ -189,7 +189,7 @@ def balance(ilo, ihi, xlo, xhi, own, balans=2):
     return import_lo, import_hi, export_lo, export_hi, own_usage
 
 
-def fast_group_data(x_epochs, y_data, grouping, dif=True):
+def fast_group_data(x_epochs, y_data, grouping, dif=True) -> tuple:
     """A faster version of group_data()."""
     # convert y-values to numpy array
     y_data = np.array(y_data)
@@ -217,7 +217,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     if not dif:
         # print(y_data)
         # print(loc1, loc2)
-        y = []
+        y: list = []
         for i, v in enumerate(loc1):
             # f1 = y_data[v:loc2[i]]
             # print(i, v, loc2[i], f1, f1.sum())
@@ -231,7 +231,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True):
     return unique_x_texts, returned_y_data
 
 
-def build_arrays44(lbls, use_data, expo_data):
+def build_arrays44(lbls, use_data, expo_data) -> tuple:
     """Use the input to build two arrays and return them.
     example input line : "2015-01; 329811; 0"  : YYYY-MM; T1; T2
     the list comes ordered by the first field

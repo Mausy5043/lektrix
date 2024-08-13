@@ -58,7 +58,7 @@ NODE = os.uname()[1]  # rbelec
 # fmt: on
 
 
-def main():
+def main() -> None:
     """Execute main loop until killed."""
     set_led("mains", "orange")
     killer = gk.GracefulKiller()
@@ -130,7 +130,7 @@ def main():
             time.sleep(1.0)  # 1s resolution is enough
 
 
-def set_led(dev, colour):
+def set_led(dev, colour) -> None:
     LOGGER.debug(f"{dev} is {colour}")
 
     in_dirfile = f"{APPROOT}/www/{colour}.png"

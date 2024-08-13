@@ -55,7 +55,7 @@ NODE = os.uname()[1]
 # NODE: rbelec
 
 
-def main():
+def main() -> None:
     """Execute main loop until killed."""
     set_led("ev", "orange")
     killer = gk.GracefulKiller()
@@ -230,7 +230,7 @@ def do_work(zappi, start_dt=dt.datetime.today()):
     return zappi.zappi_data
 
 
-def set_led(dev, colour):
+def set_led(dev, colour) -> None:
     mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
 
     in_dirfile = f"{APPROOT}/www/{colour}.png"

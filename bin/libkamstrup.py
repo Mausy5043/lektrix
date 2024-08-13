@@ -19,7 +19,7 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 class Kamstrup:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the P1-port."""
 
-    def __init__(self, debug=False):  # pylint: disable=too-many-instance-attributes
+    def __init__(self, debug: bool = False):  # pylint: disable=too-many-instance-attributes
         self.PORT = serial.Serial()
         self.PORT.baudrate = 9600
         self.PORT.bytesize = serial.SEVENBITS
@@ -109,7 +109,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
             self.list_data.append(self._translate_telegram(telegram))
         return valid_telegram
 
-    def _translate_telegram(self, telegram):
+    def _translate_telegram(self, telegram: list):
         """Translate the telegram to a dict.
 
         kW or kWh are converted to W resp. kW
@@ -120,7 +120,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         LOGGER.debug(f"    {telegram}")
         for element in telegram:
             try:
-                line = re.split(r"[\(\*\)]", element)
+                line: list[str] = re.split(r"[\(\*\)]", element)
                 # ['1-0:1.8.1', '00175.402', 'kWh', '']  T1 in
                 if line[0] == "1-0:1.8.1":
                     self.electra1in = int(float(line[1]) * 1000)
@@ -159,7 +159,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
                 LOGGER.error(f"    {element}")
                 LOGGER.error("*** Extracted from telegram:")
                 LOGGER.error(f"    {telegram}")
-        idx_dt = dt.datetime.now()
+        idx_dt: dt.datetime = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
 
         return {
@@ -175,7 +175,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
             "swits": self.swits,
         }
 
-    def compact_data(self, data):
+    def compact_data(self, data) -> tuple:
         """
         Compact the ten-second data into 15-minute data
 
@@ -186,10 +186,10 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
             (list): list of dicts containing compacted 15-minute data
         """
 
-        def _convert_time_to_epoch(date_to_convert):
+        def _convert_time_to_epoch(date_to_convert) -> int:
             return int(pd.Timestamp(date_to_convert).timestamp())
 
-        def _convert_time_to_text(date_to_convert):
+        def _convert_time_to_text(date_to_convert) -> str:
             return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
 
         df = pd.DataFrame(data)

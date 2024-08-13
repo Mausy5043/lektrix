@@ -37,7 +37,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_last_months(months_to_fetch):
+def fetch_last_months(months_to_fetch) -> tuple:
     """..."""
     config = kl.add_time_line(
         {
@@ -61,7 +61,7 @@ def fetch_last_months(months_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def fetch_last_year(year_to_fetch):
+def fetch_last_year(year_to_fetch) -> tuple:
     """..."""
     config = kl.add_time_line(
         {
@@ -86,7 +86,7 @@ def fetch_last_year(year_to_fetch):
     return data_lbls, import_lo, import_hi, opwekking, export_lo, export_hi
 
 
-def plot_graph(output_file, data_tuple, plot_title, gauge=False):
+def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
     """
     Create the graph
     """
@@ -186,7 +186,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
         power_dif = power_out - power_in
         if power_in > power_out:
             col_iodif = "orange"
-        power_rng = 2 * max(power_in, power_out)
+        power_rng: float = 2 * max(power_in, power_out)
         if OPTION.print:
             print(f"IN  {power_in:.0f}")
             print(f"OUT {power_out:.0f}")
@@ -272,7 +272,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False):
     plt.savefig(fname=f"{output_file}.png", format="png")
 
 
-def main():
+def main() -> None:
     """
     This is the main loop
     """

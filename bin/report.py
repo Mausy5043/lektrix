@@ -45,7 +45,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_data(hours_to_fetch=48, aggregation="W"):
+def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     """
     Query the database to fetch the requested data
 
@@ -229,7 +229,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     return df
 
 
-def report(data_dict):
+def report(data_dict) -> None:
     """Report the data in a textfile.
 
     Args:

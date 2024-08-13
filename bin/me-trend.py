@@ -289,7 +289,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 print(f" --> {output_file}_{parameter}.png\n")
 
 
-def main(opt):
+def main(opt) -> None:
     """
     This is the main loop
     """

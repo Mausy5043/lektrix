@@ -60,7 +60,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_data(hours_to_fetch=48, aggregation="W"):
+def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     """
     Query the database to fetch the requested data
 
@@ -228,7 +228,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H"):
     return df
 
 
-def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None):
+def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None) -> None:
     """Plot the data in a chart.
 
     Args:
@@ -304,7 +304,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 print(f" --> {output_file}_{parameter}.png\n")
 
 
-def main(opt):
+def main(opt) -> None:
     """
     This is the main loop
     """

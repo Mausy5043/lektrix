@@ -233,7 +233,7 @@ def main() -> None:
             time.sleep(1.0)  # 1s resolution is enough
 
 
-def do_work(site_list, start_dt=dt.datetime.today(), lookback=4):
+def do_work(site_list, start_dt=dt.datetime.today(), lookback=4) -> list:
     """Extract the data from the dict(s)."""
 
     # TODO: This function should be implemented in libsolaredge

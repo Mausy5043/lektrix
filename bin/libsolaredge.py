@@ -6,6 +6,7 @@ import datetime as dt
 import functools
 import time
 from itertools import tee
+from typing import LiteralString
 
 import constants
 import dateutil.parser as dtparse
@@ -368,7 +369,7 @@ class Solaredge:
         return res
 
 
-def urljoin(*parts):
+def urljoin(*parts) -> str:
     """Join terms together with forward slashes.
 
     Parameters
@@ -390,7 +391,7 @@ def urljoin(*parts):
             p = p.strip("/")
         part_list.append(p)
     # join everything together
-    url = "/".join(part_list)
+    url: str = "/".join(part_list)
     return url
 
 
