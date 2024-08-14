@@ -331,43 +331,44 @@ class Solaredge:
 
         return date_obj.strftime(fmt)
 
-    @staticmethod
-    def intervalize(time_unit, start, end):
-        """
-        Create pairs of start and end with regular intervals, to deal with usage
-        restrictions on the API.
-        e.g. requests with `time_unit="DAY"` are limited to 1 year, so when `start` and `end`
-        are more than 1 year apart, pairs of timestamps will be generated that respect this limit.
+    # @staticmethod
+    # def intervalize(time_unit, start, end):
+    #     """
+    #     Create pairs of start and end with regular intervals, to deal with usage
+    #     restrictions on the API.
+    #     e.g. requests with `time_unit="DAY"` are limited to 1 year, so when `start` and `end`
+    # are more than 1 year apart, pairs of timestamps will be generated that
+    # respect this limit.
 
-        Args:
-            time_unit(str): string can be QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR
-            start (dt.datetime | pd.Timestamp): timestamp of start
-            end (dt.datetime | pd.Timestamp): timestamp of end
+    #     Args:
+    #         time_unit(str): string can be QUARTER_OF_AN_HOUR, HOUR, DAY, WEEK, MONTH, YEAR
+    #         start (dt.datetime | pd.Timestamp): timestamp of start
+    #         end (dt.datetime | pd.Timestamp): timestamp of end
 
-        Returns:
-            ((pd.Timestamp, pd.Timestamp))
-        """
+    #     Returns:
+    #         ((pd.Timestamp, pd.Timestamp))
+    #     """
 
-        if time_unit in {"WEEK", "MONTH", "YEAR"}:
-            # no restrictions, so just return start and end
-            return [(start, end)]
-        if time_unit == "DAY":
-            rule = dtrule.YEARLY
-        elif time_unit in {"QUARTER_OF_AN_HOUR", "HOUR"}:
-            rule = dtrule.MONTHLY
-        else:
-            raise ValueError(
-                "Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, "
-                "DAY, WEEK, MONTH, YEAR"
-            )
+    #     if time_unit in {"WEEK", "MONTH", "YEAR"}:
+    #         # no restrictions, so just return start and end
+    #         return [(start, end)]
+    #     if time_unit == "DAY":
+    #         rule = dtrule.YEARLY
+    #     elif time_unit in {"QUARTER_OF_AN_HOUR", "HOUR"}:
+    #         rule = dtrule.MONTHLY
+    #     else:
+    #         raise ValueError(
+    #             "Unknown interval: {}. Choose from QUARTER_OF_AN_HOUR, HOUR, "
+    #             "DAY, WEEK, MONTH, YEAR"
+    #         )
 
-        res = []
-        for day in dtrule.rrule(rule, dtstart=start, until=end):
-            res.append(pd.Timestamp(day))
-        res.append(end)
-        res = sorted(set(res))
-        res = pairwise(res)
-        return res
+    #     res = []
+    #     for day in dtrule.rrule(rule, dtstart=start, until=end):
+    #         res.append(pd.Timestamp(day))
+    #     res.append(end)
+    #     res = sorted(set(res))
+    #     res = pairwise(res)
+    #     return res
 
 
 def urljoin(*parts) -> str:
@@ -396,18 +397,18 @@ def urljoin(*parts) -> str:
     return url
 
 
-def pairwise(iterable) -> zip:
-    """Create pairs to iterate over.
-        eg. [A, B, C, D] -> ([A, B], [B, C], [C, D])
+# def pairwise(iterable) -> zip:
+#     """Create pairs to iterate over.
+#         eg. [A, B, C, D] -> ([A, B], [B, C], [C, D])
 
-    Parameters
-    ----------
-    iterable : iterable
+#     Parameters
+#     ----------
+#     iterable : iterable
 
-    Returns
-    -------
-    iterable
-    """
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
+#     Returns
+#     -------
+#     iterable
+#     """
+#     a, b = tee(iterable)
+#     next(b, None)
+#     return zip(a, b)
