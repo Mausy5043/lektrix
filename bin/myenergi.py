@@ -227,7 +227,8 @@ def do_work(zappi, start_dt=dt.datetime.today()) -> list:
     # 'v1': 2245, 'frq': 5001
     # }
     #
-    return zappi.zappi_data
+    _ret: list = zappi.zappi_data
+    return _ret
 
 
 def set_led(dev, colour) -> None:
