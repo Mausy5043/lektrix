@@ -181,9 +181,9 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         ax1.axvline(x=0, color="k")
         plt.xticks(tick_pos + (bars_width / 2), grph_lbls[1])
     else:
-        power_in = np.sum(imprt)
-        power_out = np.sum(exprt)
-        power_dif = power_out - power_in
+        power_in: float = np.sum(imprt)
+        power_out: float = np.sum(exprt)
+        power_dif: float = power_out - power_in
         if power_in > power_out:
             col_iodif = "orange"
         power_rng: float = 2 * max(power_in, power_out)
@@ -200,15 +200,15 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         ahpla = 0.7
         # 1 - (1 / (len(grph_lbls[0]) + 1) * len(grph_lbls[0]))
         # positions of the left bar-boundaries
-        tick_pos = 0
+        tick_pos: np.ndarray = np.array([0])
 
         # Create the general plot and the bar
         plt.rc("font", size=13)
         dummy, ax1 = plt.subplots(1, figsize=(20, 3))
 
         ax1.barh(
-            tick_pos,
-            power_out,
+            y=tick_pos,
+            width=power_out,
             height=bars_width,
             alpha=ahpla,
             color=col_export,
@@ -223,8 +223,8 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
             fontsize=24,
         )
         ax1.barh(
-            tick_pos,
-            abs(power_dif),
+            y=tick_pos,
+            width=abs(power_dif),
             height=bars_width,
             alpha=ahpla * 0.5,
             color=col_iodif,
