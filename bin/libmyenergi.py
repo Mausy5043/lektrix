@@ -326,7 +326,7 @@ def joules2kwh(df_joules) -> np.ndarray:
         (numpy.ndarray): data in [kWh]
     """
     df_wh: np.ndarray = np.array(df_joules / 3600, dtype=int)
-    for k, v in enumerate(df_wh):  # type: ignore
+    for k, v in enumerate(df_wh):
         if v < 10:
             df_wh[k] = 0
     df_kwh: np.ndarray = np.array(df_wh / 1000)
