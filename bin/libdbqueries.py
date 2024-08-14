@@ -189,12 +189,12 @@ def balance(ilo, ihi, xlo, xhi, own, balans=2) -> tuple:
     return import_lo, import_hi, export_lo, export_hi, own_usage
 
 
-def fast_group_data(x_epochs, y_data, grouping, dif=True) -> tuple:
+def fast_group_data(x_epochs, _y_data, grouping, dif=True) -> tuple:
     """A faster version of group_data()."""
     # convert y-values to numpy array
-    y_data = np.array(y_data)
+    y_data: np.ndarray = np.array(_y_data)
     # convert epochs to text
-    x_texts = np.array(
+    x_texts: np.ndarray = np.array(
         [dt.datetime.fromtimestamp(i).strftime(grouping) for i in x_epochs],
         dtype="str",
     )
@@ -205,7 +205,7 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True) -> tuple:
     #  '01-01 08h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h' '01-01 09h'
     #  '01-01 09h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h' '01-01 10h'
     #  '01-01 10h']
-    y = np.array([0])
+    y: np.ndarray = np.array([0])
     # compress x_texts to a unique list
     # order must be preserved
     _, loc1 = np.unique(x_texts, return_index=True)
@@ -217,11 +217,11 @@ def fast_group_data(x_epochs, y_data, grouping, dif=True) -> tuple:
     if not dif:
         # print(y_data)
         # print(loc1, loc2)
-        y = []
+        y = np.array([0])
         for i, v in enumerate(loc1):
             # f1 = y_data[v:loc2[i]]
             # print(i, v, loc2[i], f1, f1.sum())
-            y.append(y_data[v : loc2[i]].sum())
+            np.append(y, y_data[v : loc2[i]].sum())
         y = np.array(y)
     if dif:
         y = y_data[loc_to] - y_data[loc_from]
