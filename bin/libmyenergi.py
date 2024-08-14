@@ -286,10 +286,12 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         """
 
         def _convert_time_to_epoch(date_to_convert) -> int:
-            return int(pd.Timestamp(date_to_convert).timestamp())
+            _res: int = int(pd.Timestamp(date_to_convert).timestamp())
+            return _res
 
         def _convert_time_to_text(date_to_convert) -> str:
-            return pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
+            _res: str = pd.Timestamp(date_to_convert).strftime(constants.DT_FORMAT)
+            return _res
 
         result_data: list = []
 
