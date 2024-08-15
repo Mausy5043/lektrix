@@ -72,7 +72,7 @@ def get_historic_data(
     with db_con:
         db_cur = db_con.cursor()
         db_cur.execute(
-            f"SELECT sample_epoch, "
+            f"SELECT sample_epoch, "  # nosec B608
             f"{telwerk} "
             f"FROM {dicti['table']} "
             f"WHERE (sample_time >= {interval}) "

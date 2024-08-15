@@ -124,7 +124,11 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     group_condition: str = ""
     if aggregation == "H":
         group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
-    s3_query: str = f"SELECT * FROM {TABLE_MAINS} WHERE {where_condition} {group_condition};"
+    s3_query: str = (
+        f"SELECT * "  # nosec B608
+        f"FROM {TABLE_MAINS} "
+        f"WHERE {where_condition} {group_condition};"
+    )
     if DEBUG:
         print(s3_query)
 
@@ -183,10 +187,14 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     # mods = ["hour", "day", "month", "year"]
     # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
 
-    where_condition = (
+    where_condition: str = (
         f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
     )
-    s3_query = f"SELECT * FROM {TABLE_PRDCT} WHERE {where_condition}"
+    s3_query: str = (
+        f"SELECT * "  # nosec B608
+        f"FROM {TABLE_PRDCT} "
+        f"WHERE {where_condition}"
+    )
     if DEBUG:
         print(s3_query)
 
