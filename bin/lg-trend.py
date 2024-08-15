@@ -335,7 +335,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0) ->
     if show_data == 0:
         y_lo = min(-1 * (max(exprt) + 1), -1.5)
         y_hi = max(max(usage) + 1, 1.5)
-        ax1.set_ylim([y_lo, y_hi])
+        ax1.set_ylim(y_lo, y_hi)
 
     ax1.set_xlabel("Datetime")
     ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
