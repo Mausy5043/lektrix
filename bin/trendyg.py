@@ -212,7 +212,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         )
         ax1.text(
             power_rng / -3,
-            tick_pos + (bars_width / 2),
+            float(tick_pos + (bars_width / 2)),
             f"{power_out:4.0f}",
             {"ha": "center", "va": "center"},
             fontsize=24,
@@ -228,7 +228,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         )
         ax1.text(
             (power_rng / -2) + power_out + abs(power_dif) / 2,
-            tick_pos + (bars_width / 2),
+            float(tick_pos + (bars_width / 2)),
             f"{power_dif:4.0f}",
             {"ha": "center", "va": "center"},
             fontsize=24,
@@ -244,7 +244,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         )
         ax1.text(
             power_rng / 3,
-            tick_pos + (bars_width / 2),
+            float(tick_pos + (bars_width / 2)),
             f"{power_in:4.0f}",
             {"ha": "center", "va": "center"},
             fontsize=24,
