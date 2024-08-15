@@ -96,10 +96,10 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
     opwekking = data_tuple[3]
     export_lo = data_tuple[4]
     export_hi = data_tuple[5]
-    imprt = kl.contract(import_lo, import_hi)
-    exprt = kl.contract(export_lo, export_hi)
-    own_usage = kl.distract(opwekking, exprt)
-    usage = kl.contract(own_usage, imprt)
+    imprt: np.ndarray = kl.contract(import_lo, import_hi)
+    exprt: np.ndarray = kl.contract(export_lo, export_hi)
+    own_usage: np.ndarray = kl.distract(opwekking, exprt)
+    usage: np.ndarray = kl.contract(own_usage, imprt)
     _grph_lbls, total_use, total_out = kl.build_arrays44(data_lbls, usage, exprt)
     grph_lbls = [_grph_lbls[0].astype(str), _grph_lbls[1]]
     if OPTION.print:
@@ -140,7 +140,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         # Set the color alpha
         ahpla = 1 - (1 / (len(grph_lbls[0]) + 1) * len(grph_lbls[0]))
         # positions of the left bar-boundaries
-        tick_pos = np.arange(1, len(grph_lbls[1]) + 1) - (bars_width / 2)
+        tick_pos: np.ndarray = np.arange(1, len(grph_lbls[1]) + 1) - (bars_width / 2)
 
         # Create the general plot and the bar
         plt.rc("font", size=13)
@@ -170,12 +170,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         # Set Axes stuff
         ax1.set_ylabel("[kWh]")
         ax1.set_xlabel("Datetime")
-        ax1.set_xlim(
-            [
-                min(tick_pos) - (bars_width / 2),
-                max(tick_pos) + (bars_width / 2 * 3),
-            ]
-        )
+        ax1.set_xlim(min(tick_pos) - (bars_width / 2), max(tick_pos) + (bars_width / 2 * 3))
         ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
         ax1.axhline(y=0, color="k")
         ax1.axvline(x=0, color="k")
@@ -200,7 +195,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         ahpla = 0.7
         # 1 - (1 / (len(grph_lbls[0]) + 1) * len(grph_lbls[0]))
         # positions of the left bar-boundaries
-        tick_pos: np.ndarray = np.array([0])
+        tick_pos = np.array([0])
 
         # Create the general plot and the bar
         plt.rc("font", size=13)
@@ -258,7 +253,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         # Set  Axes stuff
         ax1.set_xlabel("[kWh]")
         ax1.grid(which="major", axis="x", color="k", linestyle="--", linewidth=0.5)
-        ax1.set_xlim([power_rng / -2, power_rng / 2])
+        ax1.set_xlim(power_rng / -2, power_rng / 2)
         # ax1.axhline(y=0, color='k')
         ax1.axvline(x=0, color="k")
         ax1.set_yticks([])  # no y-ticks
