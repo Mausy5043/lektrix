@@ -105,7 +105,9 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         if valid_telegram:
             if self.debug:
                 self.telegram = telegram
-                with open("/tmp/kamstrup.raw", "w", encoding="utf-8") as output_file:
+                with open(
+                    "/tmp/kamstrup.raw", "w", encoding="utf-8"
+                ) as output_file:  # nosec B108
                     for line in self.telegram:
                         output_file.write(f"{line}\n")
             self.list_data.append(self._translate_telegram(telegram))
