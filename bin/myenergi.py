@@ -191,6 +191,12 @@ def main() -> None:
                 start_dt = new_start_dt
                 lookahead_days = 1
 
+            _d = (
+                dt.datetime.now() - dt.datetime.strptime(new_start_dt, constants.DT_FORMAT)
+            ) / dt.timedelta(days=1)
+            if _d > 7.0:
+                pause_interval = pause_interval / 10
+
             if pause_interval > 0:
                 mf.syslog_trace(
                     f"Waiting  : {pause_interval:.1f}s",
