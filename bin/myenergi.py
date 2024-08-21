@@ -133,17 +133,13 @@ def main() -> None:
 
             pause_interval = (
                 sample_interval
-                - (time.time() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-                - (
-                    start_time % sample_interval
-                )  # number of seconds to next loop    eg. 3 % 60 = 3s
+                - (time.time() - start_time)  # time spent in this loop  eg. (40-3) = 37s
+                - (start_time % sample_interval)  # number of seconds to next loop eg. 3 % 60 = 3s
             )
-            pause_interval += constants.ZAPPI[
-                "delay"
-            ]  # allow the charger to update the data on the server.
-            next_time = (
-                pause_interval + time.time()
-            )  # gives the actual time when the next loop should start
+            # allow the charger to update the data on the server.
+            pause_interval += constants.ZAPPI["delay"]
+            # gives the actual time when the next loop should start
+            next_time = pause_interval + time.time()
             # pylint: disable-next=W0105
             """Example calculation:
             sample_interval = 60s   # target duration one loop
@@ -172,6 +168,7 @@ def main() -> None:
                 dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(
                     days=lookahead_days
                 )
+
                 if dati > dt.datetime.today():
                     mf.syslog_trace(
                         f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
