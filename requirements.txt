@@ -4,8 +4,8 @@ gracefulkiller
 matplotlib
 mausy5043-common
 numpy
-pandas
-pyarrow
+pandas>=2.2.2
+pyarrow>=17.0.0
 pyserial==3.5
 python-dateutil
 pytz
