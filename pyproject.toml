@@ -29,6 +29,10 @@ ignore = [
     "W503",
 ]
 
+[tool.isort]
+profile = "black"
+py_version="auto"
+
 [tool.mypy]
 ignore_missing_imports = true
 disable_error_code = ["import-untyped", "annotation-unchecked"]
