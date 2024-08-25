@@ -5,10 +5,10 @@ name = "lektrix"
 version = "0.0.0"   # rolling release has no version
 description = "monitoring electricity management devices"
 dependencies = [
-    "gracefulkiller",
+    "gracefulkiller==0.4.7",
     "matplotlib",
     "mausy5043-common",
-    "numpy",
+    "numpy==2.1.0",
     "pandas>=2.2.2",
     "pyarrow>=17.0.0",
     "pyserial==3.5",
