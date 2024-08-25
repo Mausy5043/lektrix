@@ -1,5 +1,31 @@
 # Project: lektrix
 
+[project]
+name = "lektrix"
+version = "0.0.0"   # rolling release has no version
+description = "monitoring electricity management devices"
+dependencies = [
+    "gracefulkiller",
+    "matplotlib",
+    "mausy5043-common",
+    "numpy",
+    "pandas>=2.2.2",
+    "pyarrow>=17.0.0",
+    "pyserial==3.5",
+    "python-dateutil",
+    "pytz",
+    "requests",
+    "sh",
+    "tabulate",
+    ]
+license = "MIT"
+authors = [
+  { name="Mausy5043" },
+  ]
+readme = "README.md"
+requires-python = ">=3.11"
+
+
 [tool.autopep8]
 max_line_length = 98
 in-place = true
