@@ -159,7 +159,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         except json.decoder.JSONDecodeError:
             mf.syslog_trace("Could not load JSON data.", syslog.LOG_ERR, self.DEBUG)
             return result
-
+        mf.syslog_trace(f"{result}", False, self.DEBUG)
         return result
 
     def standardise_json_block(self, blk) -> dict:
@@ -220,11 +220,14 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         """
         self.zappi_data = []
         result: list = []
+        extra_day1_data: list = []
+        previous_day_data: list = []
+        current_day_data: list = []
         # fmt: off
         # pylint: disable=line-too-long
-        extra_day1_data: list = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
-        previous_day_data: list = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
-        current_day_data: list = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
+        # extra_day1_data= [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
+        # previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
+        current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
         # fmt: on
         try:
             mf.syslog_trace(f"> {extra_day1_data[0]}", False, self.DEBUG)
@@ -248,6 +251,8 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         Returns:
             (dict): whatever was returned by the server (probably a dict)
         """
+
+        mf.syslog_trace(f">> Asking for data from {this_day}", False, self.DEBUG)
         result = {}
         done_flag = False
         timeout_retries = 3
@@ -265,6 +270,8 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
                 )
                 done_flag = True
             except requests.exceptions.ReadTimeout:
+                if self.DEBUG:
+                    print("Timeout receiving data from server")
                 timeout_retries -= 1
                 if timeout_retries <= 0:
                     # raise for testing
