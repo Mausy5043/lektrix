@@ -81,14 +81,14 @@ def main() -> None:
     while not killer.kill_now:
         if time.time() > next_time:
             start_time: float = time.time()
+            data: list = []
             try:
-                data: list = do_work(
+                data = do_work(
                     API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT)
                 )  # noqa
                 set_led("ev", "green")
             except ConnectionError:
                 set_led("ev", "orange")
-                data = None
                 mf.syslog_trace(
                     "ConnectionError occured. Will try again later.",
                     syslog.LOG_WARNING,
