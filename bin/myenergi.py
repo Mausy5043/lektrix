@@ -138,8 +138,6 @@ def main() -> None:
             )
             # allow the charger to update the data on the server.
             pause_interval += constants.ZAPPI["delay"]
-            # gives the actual time when the next loop should start
-            next_time = pause_interval + time.time()
             # pylint: disable-next=W0105
             """Example calculation:
             sample_interval = 60s   # target duration one loop
@@ -193,6 +191,9 @@ def main() -> None:
             ) / dt.timedelta(days=1)
             if _d > 7.0:
                 pause_interval = pause_interval / 10
+
+            # gives the actual time when the next loop should start
+            next_time = pause_interval + time.time()
 
             if pause_interval > 0:
                 mf.syslog_trace(
