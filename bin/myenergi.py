@@ -80,9 +80,9 @@ def main() -> None:
     lookahead_days = 1
     while not killer.kill_now:
         if time.time() > next_time:
-            start_time = time.time()
+            start_time: float = time.time()
             try:
-                data = do_work(
+                data: list = do_work(
                     API_ZP, start_dt=dt.datetime.strptime(start_dt, constants.DT_FORMAT)
                 )  # noqa
                 set_led("ev", "green")
@@ -158,7 +158,7 @@ def main() -> None:
             """
 
             new_start_dt = sql_db.latest_datapoint()  # type: str
-            if new_start_dt < start_dt:
+            if new_start_dt < start_dt or not data:
                 # there is a hole in the data
                 mf.syslog_trace(
                     f"Found a hole in the data between {start_dt} and {new_start_dt}.",
