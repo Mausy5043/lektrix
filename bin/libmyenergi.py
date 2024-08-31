@@ -225,6 +225,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         current_day_data: list = []
         # fmt: off
         # pylint: disable=line-too-long
+        # TODO: reactivate next two lines, but ONLY if day_to_fetch is today!
         # extra_day1_data= [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
         # previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
         current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
