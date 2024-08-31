@@ -74,7 +74,7 @@ def main() -> None:
 
     report_interval = int(constants.ZAPPI["report_interval"])
     sample_interval = report_interval / int(constants.ZAPPI["samplespercycle"])
-    pause_interval: float = 0.01
+    pause_interval: float = 0.5
     next_time: float = pause_interval + time.time()
     start_dt = sql_db.latest_datapoint()  # type: str
     lookahead_days = 1
