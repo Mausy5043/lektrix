@@ -138,7 +138,7 @@ ZAPPI: dict = {
                    "?, ?, ?, ?, ?, ?,"
                    "?, ?"
                    ")",
-    "report_interval": 3599,
+    "report_interval": int(60*60*24/365 * 10),
     "samplespercycle": 1,
     "delay": 180,
     "director": "https://director.myenergi.net",
