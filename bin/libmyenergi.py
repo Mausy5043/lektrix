@@ -203,7 +203,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
         return result_dict
 
-    def fetch_data(self, day_to_fetch: dt.date) -> None:
+    def fetch_data(self, day_to_fetch: dt.datetime) -> None:
         """Fetch data from the API for <day_to_fetch> and store it as a list of dicts
         in `zappi_data`.
 
@@ -220,14 +220,15 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         """
         self.zappi_data = []
         result: list = []
+        _dif: dt.timedelta = dt.datetime.now() - day_to_fetch
         extra_day1_data: list = []
         previous_day_data: list = []
         current_day_data: list = []
         # fmt: off
         # pylint: disable=line-too-long
-        # TODO: execute next two lines ONLY if day_to_fetch is today!
-        extra_day1_data= [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
-        previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
+        if (_dif.days) < 7:
+            extra_day1_data= [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=2.0))[f"U{self.zappi_serial}"]]
+            previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
         current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
         # fmt: on
         try:
