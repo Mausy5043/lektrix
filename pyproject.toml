@@ -6,17 +6,17 @@ version = "0.0.0"   # rolling release has no version
 description = "monitoring electricity management devices"
 dependencies = [
     "gracefulkiller==0.4.7",
-    "matplotlib",
-    "mausy5043-common",
+    "matplotlib==3.9.2",
+    "mausy5043-common==1.8.2",
     "numpy==2.1.1",
-    "pandas>=2.2.2",
-    "pyarrow>=17.0.0",
+    "pandas==2.2.2",
+    "pyarrow==17.0.0",
     "pyserial==3.5",
-    "python-dateutil",
-    "pytz",
-    "requests",
-    "sh",
-    "tabulate",
+    "python-dateutil==2.9.0",
+    "pytz==2024.1",
+    "requests==2.32.3",
+    "sh==2.0.7",
+    "tabulate==0.9.0",
     ]
 license = "MIT"
 authors = [
