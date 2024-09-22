@@ -35,3 +35,4 @@ dependencies:
   - pipdeptree
   - pre-commit
   - scipy
+  - pylint>=-3.0.1
