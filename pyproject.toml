@@ -1,5 +1,7 @@
 # Project: lektrix
 
+# when changing dependencies also consider `requirements.txt` and `environment.yml`
+
 [project]
 name = "lektrix"
 version = "0.0.0"   # rolling release has no version

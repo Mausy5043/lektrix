@@ -1,4 +1,4 @@
-# When making changes to this file update requirements.txt also !!
+# when changing this file also consider `pyproject.toml` and `requirements.txt`
 # Usage:
 # conda -v env update --file environment.yml; pre-commit run --all-files; pycheck
 
