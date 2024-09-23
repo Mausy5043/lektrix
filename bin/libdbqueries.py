@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# lektrix
+# Copyright (C) 2024  Maurice (mausy5043) Hendrix
+# AGPL-3.0-or-later  - see LICENSE
+
 """Common functions for use with the KAMSTRUP electricity meter"""
 
 import datetime as dt
