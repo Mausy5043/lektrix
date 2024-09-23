@@ -15,7 +15,7 @@ dependencies:
   # imported deps
   - matplotlib=3.9.2
   - numpy=2.1.1
-  - pandas=2.2.3
+  - pandas=2.2.2
   # Not on conda channels:
   - pip:
       - gracefulkiller==0.4.7
