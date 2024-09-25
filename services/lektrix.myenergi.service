@@ -8,6 +8,7 @@ After=multi-user.target
 [Service]
 Type=simple
 User=pi
+EnvironmentFile=/home/pi/.pyenvpaths
 # ExecStartPre=/bin/sleep 20
 ExecStart=/home/pi/lektrix/bin/myenergi.py --start
 RestartSec=60s
