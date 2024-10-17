@@ -63,7 +63,7 @@ class Solaredge:
         return rq_json
 
     @functools.lru_cache(maxsize=128, typed=False)
-    def get_list(
+    def get_list(  # pylint: disable=R0917
         self,
         size=100,
         start_index=0,
@@ -216,7 +216,7 @@ class Solaredge:
         rj = self.request_get_json(url, params)
         return rj
 
-    def get_energy_details(
+    def get_energy_details(  # pylint: disable=R0917
         self, site_id, start_time, end_time, meters=None, time_unit="DAY"
     ) -> dict:
         """

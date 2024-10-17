@@ -152,7 +152,7 @@ def distract(arr1, arr2, allow_negatives=False) -> np.ndarray:
     return result[::-1]
 
 
-def balance(ilo, ihi, xlo, xhi, own, balans=2) -> tuple:
+def balance(ilo, ihi, xlo, xhi, own, balans=2) -> tuple:  # pylint: disable=R0917
     """Calculate the balance"""
     import_lo = np.zeros(len(ilo), dtype=float)
     import_hi = np.zeros(len(ihi), dtype=float)
