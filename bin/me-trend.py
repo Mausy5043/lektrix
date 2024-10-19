@@ -278,7 +278,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             if show_data:
                 x_offset = -0.1
                 for p in ax1.patches:
-                    b = p.get_bbox()
+                    b = p.get_bbox()  # type: ignore
                     val = f"{b.y1 - b.y0:{constants.FLOAT_FMT}}"
                     ax1.annotate(
                         val,
