@@ -8,8 +8,7 @@
 Legacy method.
 """
 
-# NOTE: Due to ms-trend.py not working properly, the legacy trend.py is provided
-# to do the trending.
+# NOTE: lg-trend.py is deprecated but provided here for referenee.
 
 import argparse
 from datetime import datetime as dt
