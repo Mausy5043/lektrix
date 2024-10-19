@@ -36,6 +36,7 @@ TABLE_MAINS = constants.KAMSTRUP["sql_table"]
 TABLE_PRDCT = constants.SOLAREDGE["sql_table"]
 TABLE_CHRGR = constants.ZAPPI["sql_table"]
 DEBUG = False
+EDATETIME = "'now'"
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
@@ -58,6 +59,10 @@ parser.add_argument("--years", "-y",
                     type=int,
                     help="number of months of data to use for the graph",
                     )
+parser.add_argument("-e", "--edate",
+                    type=str,
+                    help="date of last day of the graph (default: now)",
+                    )
 parser_group = parser.add_mutually_exclusive_group(required=False)
 parser_group.add_argument("--debug",
                           action="store_true",
@@ -78,7 +83,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
         dict with dataframes containing mains and production data
     """
     if DEBUG:
-        print("\nRequest data from charger")
+        print(f"\nRequest {hours_to_fetch} hours of data from charger")
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
     # rename rows and perform calculations
@@ -138,13 +143,9 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     if DEBUG:
         print("\n*** fetching CHARGER data ***")
 
-    mod_start = ""
-    # aggregations = "HDMA"
-    # mods = ["hour", "day", "month", "year"]
-    # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
-
     where_condition = (
-        f" (sample_time >= datetime('now'," f" '-{hours_to_fetch + 1} hours'{mod_start}))"
+        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
+        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
     )
     group_condition = ""
     # if aggregation == 'H':
@@ -343,6 +344,9 @@ if __name__ == "__main__":
         OPTION.months = 6 * 12 + dt.now().month
     if OPTION.years == 0:
         OPTION.years = 10
+    if OPTION.edate:
+        print("NOT NOW")
+        EDATETIME = f"'{OPTION.edate}'"
 
     if OPTION.debug:
         print(OPTION)

@@ -21,6 +21,7 @@ TABLE_MAINS: str = constants.KAMSTRUP["sql_table"]
 TABLE_PRDCT: str = constants.SOLAREDGE["sql_table"]
 TABLE_CHRGR: str = constants.ZAPPI["sql_table"]
 DEBUG: bool = False
+EDATETIME = "'now'"
 
 # fmt:off
 parser = argparse.ArgumentParser(description="Create a report")
@@ -39,6 +40,10 @@ parser.add_argument("--months", "-m",
 parser.add_argument("--years", "-y",
                     type=int,
                     help="number of months of data to use for the graph",
+                    )
+parser.add_argument("-e", "--edate",
+                    type=str,
+                    help="date of last day of the graph (default: now)",
                     )
 parser_group = parser.add_mutually_exclusive_group(required=False)
 parser_group.add_argument("--debug",
@@ -123,7 +128,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
 
     where_condition: str = (
-        f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
+        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'{mod_start}))"
     )
     group_condition: str = ""
     if aggregation == "H":
@@ -186,13 +191,9 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
 
-    mod_start = ""
-    # aggregations = "HDMA"
-    # mods = ["hour", "day", "month", "year"]
-    # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
-
     where_condition: str = (
-        f" (sample_time >= datetime('now', '-{hours_to_fetch + 1} hours'{mod_start}))"
+        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'{mod_start}))"
+        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
     )
     s3_query: str = (
         f"SELECT * "  # nosec B608
@@ -295,6 +296,9 @@ if __name__ == "__main__":
         OPTION.months = 6 * 12 + dt.now().month
     if OPTION.years == 0:
         OPTION.years = 10
+    if OPTION.edate:
+        print("NOT NOW")
+        EDATETIME = f"'{OPTION.edate}'"
 
     if OPTION.debug:
         print(OPTION)
