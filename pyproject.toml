@@ -76,9 +76,11 @@ no_implicit_reexport = true
 check_untyped_defs = true
 extra_checks = true
 
-
 [tool.pydocstyle]
 inherit = false
 convention = 'google'
 match = '.*\\.py'
 add-ignore = 'D'
+
+[tool.pyright]
+reportAttributeAccessIssue="none"

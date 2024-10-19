@@ -190,11 +190,6 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     if DEBUG:
         print("\n*** fetching PRODUCTION data ***")
 
-    mod_start = ""
-    # aggregations = "HDMA"
-    # mods = ["hour", "day", "month", "year"]
-    # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
-
     where_condition = (
         f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
         f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
@@ -302,7 +297,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             if show_data:
                 x_offset = -0.1
                 for p in ax1.patches:
-                    b = p.get_bbox()  # type: ignore
+                    b = p.get_bbox()
                     val = f"{b.y1 - b.y0:{constants.FLOAT_FMT}}"
                     ax1.annotate(
                         val,
