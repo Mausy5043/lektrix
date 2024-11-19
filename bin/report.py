@@ -122,13 +122,8 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     if DEBUG:
         print("\n*** fetching MAINS data ***")
 
-    mod_start: str = ""
-    # aggregations = "HDMA"
-    # mods = ["hour", "day", "month", "year"]
-    # mod_start = f", 'start of {mods[aggregations.index(aggregation)]}'"
-
     where_condition: str = (
-        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'{mod_start}))"
+        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'))"
     )
     group_condition: str = ""
     if aggregation == "H":
@@ -192,8 +187,8 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
         print("\n*** fetching PRODUCTION data ***")
 
     where_condition: str = (
-        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'{mod_start}))"
-        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
+        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'))"
+        f" AND (sample_time <= datetime({EDATETIME}, '+2 hours') )"
     )
     s3_query: str = (
         f"SELECT * "  # nosec B608
