@@ -254,16 +254,16 @@ action_services() {
 # See if packages are installed and install them using apt-get
 action_apt_install() {
     PKG=$1
-    echo "*********************************************************"
+    echo "***************************************************(APT)*"
     echo "* $app_name running on $host_name requesting ${PKG}"
     status=$(dpkg -l | awk '{print $2}' | grep -c -e "^${PKG}*")
     if [ "${status}" -eq 0 ]; then
         echo -n "* Installing ${PKG} "
         sudo apt-get -yqq install "${PKG}" && echo " ... [OK]"
-        echo "*********************************************************"
+        echo "***************************************************(APT)*"
     else
         echo "* Already installed !!!"
-        echo "*********************************************************"
+        echo "***************************************************(APT)*"
     fi
     echo
 }
