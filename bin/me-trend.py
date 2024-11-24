@@ -35,8 +35,6 @@ DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
 TABLE_PRDCT = constants.SOLAREDGE["sql_table"]
 TABLE_CHRGR = constants.ZAPPI["sql_table"]
-DEBUG = False
-EDATETIME = "'now'"
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
@@ -45,21 +43,18 @@ parser.add_argument("--hours", "-hr",
                     help="create hour-trend for last <HOURS> hours",
                     )
 parser.add_argument("--days", "-d",
-
                     type=int,
                     help="create day-trend for last <DAYS> days"
                     )
 parser.add_argument("--months", "-m",
-
                     type=int,
                     help="number of months of data to use for the graph",
                     )
 parser.add_argument("--years", "-y",
-
                     type=int,
                     help="number of months of data to use for the graph",
                     )
-parser.add_argument("-e", "--edate",
+parser.add_argument("--edate", "-e",
                     type=str,
                     help="date of last day of the graph (default: now)",
                     )
@@ -70,6 +65,9 @@ parser_group.add_argument("--debug",
                           )
 OPTION = parser.parse_args()
 # fmt: on
+
+DEBUG = False
+EDATETIME = "'now'"
 
 
 def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
