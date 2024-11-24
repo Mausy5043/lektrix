@@ -172,7 +172,7 @@ install_lektrix() {
     done
     # install Python3 stuff
     python3 -m pip install --upgrade pip setuptools wheel
-    python3 -m pip install --upgrade .
+    python3 -m pip install --upgrade -r requirements.txt
     echo
 
     # install account keys from local fileserver
