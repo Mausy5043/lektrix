@@ -20,7 +20,7 @@ dependencies:
   - pip:
       - gracefulkiller==0.4.7
       - mausy5043-common==1.8.2
-      - python-homewizard-energy==6.8.1
+      - python-homewizard-energy==6.3.0
 # This won't install on anything other than Linux (notably Raspberry Pi):
 # - pyserial=3.5
   - pyarrow=17.0.0
