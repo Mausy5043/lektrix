@@ -8,8 +8,6 @@
 Using myenergi data
 """
 
-# FIXME: still needs work
-
 # autopep8: off
 import warnings
 
@@ -103,7 +101,6 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     df_chrg["EB"] = df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
     # ... and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
-
     # 'gen' is energy consumed by solar (operational power to converter) mainly at night.
     # TODO: 'gen' is currently disregarded
     df_chrg.drop(
@@ -276,7 +273,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             if show_data:
                 x_offset = -0.1
                 for p in ax1.patches:
-                    b = p.get_bbox()  # type: ignore
+                    b = p.get_bbox()
                     val = f"{b.y1 - b.y0:{constants.FLOAT_FMT}}"
                     ax1.annotate(
                         val,
