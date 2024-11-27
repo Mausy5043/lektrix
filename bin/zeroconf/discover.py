@@ -16,6 +16,7 @@ import logging
 import logging.handlers
 import syslog
 import os
+import sys
 
 logging.basicConfig(
     level=logging.INFO,
@@ -231,6 +232,17 @@ if __name__ == "__main__":
     )
     # we keep a registry of discovered devices
     DEBUG = True
+
+    if DEBUG:
+        # DEBUG = True
+        # print(OPTION)
+        if len(LOGGER.handlers) == 0:
+            LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+        LOGGER.level = logging.DEBUG
+        LOGGER.debug("Debugging on.")
+        LOGGER.debug("Debug-mode started.")
+        # print("Use <Ctrl>+C to stop.")
+
     DISCOVERED = __load_discovery()
     LOGGER.debug(get_ip("_hwenergy"))
     # _zc = Zeroconf()
