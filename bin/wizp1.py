@@ -11,6 +11,7 @@ import asyncio
 from libzeroconf import discover as zcd
 from homewizard_energy import HomeWizardEnergyV1
 
+# get a HomeWizard IP
 _howip = zcd.get_ip("_hwenergy")
 
 if _howip:
@@ -36,6 +37,11 @@ async def main():
         wiz_data = await api.data()
         print("\ndata")
         print(wiz_data)  # .total_energy_import_kwh)
+
+        # Get most recent telegram
+        wiz_telegram = await api.telegram()
+        print("\ndata")
+        print(wiz_telegram)  # .total_energy_import_kwh)
 
         wiz_state = await api.state()
         print("\nstate")
