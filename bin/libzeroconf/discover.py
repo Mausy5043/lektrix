@@ -7,16 +7,15 @@
 """Discover Multi-cast devices that support Homewizard."""
 
 import json
+import logging
+import logging.handlers
+import os
+import sys
+import syslog
 import time
 from typing import Any
 
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
-
-import logging
-import logging.handlers
-import syslog
-import os
-import sys
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,7 +31,7 @@ logging.basicConfig(
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
 # fmt: off
-#parser goes here
+# <parser goes here>
 # constants
 DEBUG = False
 HERE = os.path.realpath(__file__).split("/")
@@ -207,9 +206,9 @@ def get_ip(service: str) -> list[str]:
     _ip = []
     _zc = Zeroconf()
     _ls = MyListener()
-
-    if "_tcp.local." not in service:
-        _service = "".join([service, "._tcp.local."])
+    _service: str = service
+    if "_tcp.local." not in _service:
+        _service: str = "".join([service, "._tcp.local."])
     # find the service:
     _browser = ServiceBrowser(_zc, _service, _ls)
 
