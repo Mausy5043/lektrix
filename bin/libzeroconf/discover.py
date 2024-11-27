@@ -43,7 +43,7 @@ APPROOT = "/".join(HERE[0:-3])  # /home/pi/lektrix
 NODE = os.uname()[1]  # rbelec
 # fmt: on
 
-DISCOVERED = {}
+DISCOVERED: dict = {}
 
 
 class MyListener(ServiceListener):
@@ -206,9 +206,9 @@ def get_ip(service: str) -> list[str]:
     _ip = []
     _zc = Zeroconf()
     _ls = MyListener()
-    _service: str = service
+    _service = service
     if "_tcp.local." not in _service:
-        _service: str = "".join([service, "._tcp.local."])
+        _service = "".join([service, "._tcp.local."])
     # find the service:
     _browser = ServiceBrowser(_zc, _service, _ls)
 
@@ -218,8 +218,8 @@ def get_ip(service: str) -> list[str]:
         dt = time.time() - t0
     _zc.close()
     LOGGER.debug(DISCOVERED)
-    for i in DISCOVERED.keys():
-        _ip.append(DISCOVERED[i][service]["ip"])
+    for _i in DISCOVERED.keys():
+        _ip.append(DISCOVERED[_i][service]["ip"])
     return _ip
 
 
