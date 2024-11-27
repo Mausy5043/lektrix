@@ -8,13 +8,47 @@
 
 import json
 import time
+from typing import Any
 
-from zeroconf import ServiceBrowser, ServiceListener, Zeroconf, ZeroconfServiceTypes
+from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
+
+import logging
+import logging.handlers
+import syslog
+import os
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.handlers.SysLogHandler(
+            address="/dev/log",
+            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+        )
+    ],
+)
+LOGGER: logging.Logger = logging.getLogger(__name__)
+
+# fmt: off
+#parser goes here
+# constants
+DEBUG = False
+HERE = os.path.realpath(__file__).split("/")
+# example HERE = ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
+MYID = HERE[-1]  # kamstrup.py
+MYAPP = HERE[-4]  # lektrix
+MYROOT = "/".join(HERE[0:-4])  # /home/pi
+APPROOT = "/".join(HERE[0:-3])  # /home/pi/lektrix
+NODE = os.uname()[1]  # rbelec
+# fmt: on
+
+DISCOVERED = {}
 
 
 class MyListener(ServiceListener):
-    """
-    Overloaded class of zeroconf.ServiceListener
+    r"""
+    Overloaded class of zeroconf.ServiceListener.
 
     Examples of output:
     Service DABMAN i205 CDCCai6fu6g4c4ZZ._http._tcp.local. discovered
@@ -58,7 +92,7 @@ class MyListener(ServiceListener):
         """Forget services that disappear during the discovery scan."""
         _name = name.replace(" ", "_")
         __name = _name.split(".")[0]
-        print(f"(  -) Service {__name} {type_} disappeared.")
+        LOGGER.debug(f"(  -) Service {__name} {type_} disappeared.")
         if __name in DISCOVERED:
             del DISCOVERED[__name]
 
@@ -67,7 +101,7 @@ class MyListener(ServiceListener):
         _name = name.replace(" ", "_")
         __name = _name.split(".")[0]
         __type = type_.split(".")[0]
-        print(f"( * ) Service {__name} updated. ( {__type} )")
+        LOGGER.debug(f"( * ) Service {__name} updated. ( {__type} )")
         # find out updated info about this device
         info = zc.get_service_info(type_, name)
         svc: str = ""
@@ -78,7 +112,7 @@ class MyListener(ServiceListener):
                 if info.addresses:
                     svc = ".".join(list(map(str, list(info.addresses[0]))))
             except BaseException:
-                print(
+                LOGGER.debug(
                     f"Exception for device info: {info}\n {
                         info.properties}\n {
                         info.addresses}\n"
@@ -107,13 +141,13 @@ class MyListener(ServiceListener):
                 if info.addresses:
                     svc = ".".join(list(map(str, list(info.addresses[0]))))
             except BaseException:
-                print(
+                LOGGER.debug(
                     f"Exception for device info: {info}\n {
                         info.properties}\n {
                         info.addresses}\n"
                 )
                 raise
-        print(f"(+  ) Service {__name} discovered ( {__type} ) on {svc}")
+        LOGGER.debug(f"(+  ) Service {__name} discovered ( {__type} ) on {svc}")
         # register the device
         if __name not in DISCOVERED:
             DISCOVERED[__name] = {
@@ -134,7 +168,8 @@ class MyListener(ServiceListener):
             }
 
     @staticmethod
-    def debyte(bytedict: dict[bytes, bytes | None]) -> dict:
+    def debyte(bytedict: Any) -> dict[str, str]:
+        """Transform a dict of bytes to a dict of strings"""
         normdict = {}
         if bytedict:
             # bytedict may be empty or None
@@ -150,43 +185,65 @@ class MyListener(ServiceListener):
         return normdict
 
 
-def load_discovery():
-    print("loading...")
+def __load_discovery():
+    """(unavailable) Load an existing discovery from file."""
+    LOGGER.debug("loading...")
+    # not doing anything at the moment
     return {}
 
 
-def save_discovery(disco_dict):
-    print(json.dumps(disco_dict, indent=4))
-    print("saving...")
+def __save_discovery(disco_dict):
+    """Save the discovered services and info to a file."""
+    LOGGER.debug("saving...")
+    disco_str = json.dumps(disco_dict, indent=4, sort_keys=True)
+    # LOGGER.debug(disco_str)
+    with open("devices.json", "w", encoding="utf-8") as fp:
+        fp.write(disco_str)
 
 
-# we keep a registry of discovered devices
-DISCOVERED: dict = load_discovery()
+def get_ip(service: str) -> list[str]:
+    """."""
+    _ip = []
+    _zc = Zeroconf()
+    _ls = MyListener()
 
-_zc = Zeroconf()
-_ls = MyListener()
+    if "_tcp.local." not in service:
+        _service = "".join([service, "._tcp.local."])
+    # find the service:
+    _browser = ServiceBrowser(_zc, _service, _ls)
 
-# for testing: discover everything
-service_list = ZeroconfServiceTypes.find()
-N = 0
-browsers = []
-for _service in service_list:
-    print(f"(   ) Listening for service: {_service}")
-    browsers.append(ServiceBrowser(_zc, _service, _ls))
+    t0: float = time.time()
+    dt: float = 0.0
+    while (dt < 60.0) and not DISCOVERED:
+        dt = time.time() - t0
+    _zc.close()
+    LOGGER.debug(DISCOVERED)
+    for i in DISCOVERED.keys():
+        _ip.append(DISCOVERED[i][service]["ip"])
+    return _ip
 
-# for reals
-# browser1 = ServiceBrowser(_zc, "_hwenergy._tcp.local.", _ls)  # api v1
-# browser2 = ServiceBrowser(_zc, "_homewizard._tcp.local.", _ls)  # api v2
-# # for testing
-# browser3 = ServiceBrowser(_zc, "_smb._tcp.local.", _ls)
-# browser4 = ServiceBrowser(_zc, "_http._tcp.local.", _ls)
-# browser5 = ServiceBrowser(_zc, "_https._tcp.local.", _ls)
 
-t0: float = time.time()
-dt: float = 0.0
-while dt < 60.0:
-    dt = time.time() - t0
+if __name__ == "__main__":
+    # initialise logging
+    syslog.openlog(
+        ident=f'{MYAPP}.{MYID.split(".")[0]}',
+        facility=syslog.LOG_LOCAL0,
+    )
+    # we keep a registry of discovered devices
+    DEBUG = True
+    DISCOVERED = __load_discovery()
+    LOGGER.debug(get_ip("_hwenergy"))
+    # _zc = Zeroconf()
+    # _ls = MyListener()
 
-_zc.close()
+    # # find a specific service:
+    # browser1 = ServiceBrowser(_zc, "_homewizard._tcp.local.", _ls)
+    # browser2 = ServiceBrowser(_zc, "_hwenergy._tcp.local.", _ls)
 
-save_discovery(DISCOVERED)
+    # t0: float = time.time()
+    # dt: float = 0.0
+    # while dt < 60.0:
+    #     dt = time.time() - t0
+
+    # __save_discovery(DISCOVERED)
+    LOGGER.debug("...done")
