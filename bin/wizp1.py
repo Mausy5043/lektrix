@@ -8,11 +8,11 @@
 
 import asyncio
 
-import constants as cs
 from libzeroconf import discover as zcd
 from homewizard_energy import HomeWizardEnergyV1
 
 _howip = zcd.get_ip("_hwenergy")
+
 if _howip:
     IP_ADDRESS = _howip[0]
 
