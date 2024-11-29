@@ -74,6 +74,8 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
             LOGGER.debug(wiz_data)
 
         self.list_data.append(self._translate_telegram(wiz_data))
+        LOGGER.debug(self.list_data)
+        LOGGER.debug("*-*")
 
     def _translate_telegram(self, telegram) -> dict:
         """Translate the telegram to a dict.
