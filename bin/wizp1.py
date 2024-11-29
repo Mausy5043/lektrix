@@ -80,7 +80,7 @@ def main() -> None:
     sample_interval = report_interval / int(constants.WIZ_P1["samplespercycle"])
     cycle_time = report_interval / sample_interval
 
-    next_time = time.time() + (sample_interval - (time.time() % sample_interval))
+    next_time = time.time()  # + (sample_interval - (time.time() % sample_interval))
     rprt_time = time.time() + (report_interval - (time.time() % report_interval))
     while not killer.kill_now:
         if time.time() > next_time:
