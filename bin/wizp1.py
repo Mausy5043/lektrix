@@ -85,7 +85,7 @@ def main() -> None:
         if time.time() > next_time:
             start_time = time.time()
             try:
-                LOGGER.debug("requesting telegram")
+                LOGGER.debug("\n...requesting telegram")
                 asyncio.run(API_P1.get_telegram())
                 set_led("mains", "green")
             except Exception:  # noqa
@@ -95,11 +95,12 @@ def main() -> None:
                 raise
             # check if we already need to report the result data
             if time.time() > rprt_time:
-                LOGGER.debug("Reporting")
+                LOGGER.debug("\n...reporting")
                 LOGGER.debug(f"Result   : {API_P1.list_data}")
                 # resample to 15m entries
                 data, API_P1.list_data = API_P1.compact_data(API_P1.list_data)
                 try:
+                    LOGGER.debug("\n...queueing")
                     for element in data:
                         LOGGER.debug(f"{element}")  # is already logged by sql_db.queue()
                         # *# sql_db.queue(element)
@@ -109,7 +110,7 @@ def main() -> None:
                     LOGGER.error(traceback.format_exc())
                     raise  # may be changed to pass if errors can be corrected.
                 try:
-                    LOGGER.debug("Inserting data")
+                    LOGGER.debug("\n...inserting data")
                     # *# sql_db.insert(method="replace")
                 except Exception:  # noqa
                     set_led("mains", "red")

@@ -21,7 +21,7 @@ async def async_work():
 
     async with HomeWizardEnergyV1(host=IP_ADDRESS) as api:
         # blink the LED on the device
-        _ok = await api.identify()
+        await api.identify()
 
         wiz_host = api.host  # call function
         print("\nhost")
