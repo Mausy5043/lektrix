@@ -125,6 +125,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
         self.electra2out = int(telegram.total_energy_export_t2_kwh * 1000)
         self.tarif = telegram.active_tariff
         self.powerin = telegram.active_power_w
+        self.powerout = 0.0
         self.swits = 1
         if self.powerin < 0.0:
             self.swits = 0
