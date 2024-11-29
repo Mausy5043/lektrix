@@ -69,10 +69,13 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
                 # Get device information, like firmware version
                 wiz_dev = await _api.device()
                 LOGGER.debug(wiz_dev)
+                LOGGER.debug("")
+                self.firstcall = False
 
             # Get measurements
             wiz_data = await _api.data()
             LOGGER.debug(wiz_data)
+            LOGGER.debug("---")
 
         self.list_data.append(self._translate_telegram(wiz_data))
         LOGGER.debug(self.list_data)
@@ -86,7 +89,6 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
         Returns:
             (dict): data converted to a dict.
         """
-        LOGGER.debug(f"    {telegram}")
 
         # telegram will look something like this:
         #
