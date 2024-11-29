@@ -69,12 +69,12 @@ def main() -> None:
     killer = gk.GracefulKiller()
     API_P1 = p1.WizP1_v1(debug=DEBUG)
 
-    # *# sql_db = m3.SqlDatabase(
-    # *#     database=constants.WIZ_P1["database"],
-    # *#     table=constants.WIZ_P1["sql_table"],
-    # *#     insert=constants.WIZ_P1["sql_command"],
-    # *#     debug=DEBUG,
-    # *# )
+    sql_db = m3.SqlDatabase(
+        database=constants.WIZ_P1["database"],
+        table=constants.WIZ_P1["sql_table"],
+        insert=constants.WIZ_P1["sql_command"],
+        debug=DEBUG,
+    )
 
     report_interval = int(constants.WIZ_P1["report_interval"])
     sample_interval = report_interval / int(constants.WIZ_P1["samplespercycle"])
@@ -103,7 +103,7 @@ def main() -> None:
                     LOGGER.debug("\n...queueing")
                     for element in data:
                         LOGGER.debug(f"{element}")  # is already logged by sql_db.queue()
-                        # *# sql_db.queue(element)
+                        sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("mains", "red")
                     LOGGER.critical("Unexpected error while trying to queue the data")
@@ -111,7 +111,7 @@ def main() -> None:
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     LOGGER.debug("\n...inserting data")
-                    # *# sql_db.insert(method="replace")
+                    sql_db.insert(method="replace")
                 except Exception:  # noqa
                     set_led("mains", "red")
                     LOGGER.critical(
