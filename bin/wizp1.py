@@ -67,7 +67,7 @@ def main() -> None:
     """Execute main loop until killed."""
     set_led("mains", "orange")
     killer = gk.GracefulKiller()
-    API_P1 = p1.WizP1_v1(DEBUG)
+    API_P1 = p1.WizP1_v1(debug=DEBUG)
 
     # *# sql_db = m3.SqlDatabase(
     # *#     database=constants.WIZ_P1["database"],
@@ -85,6 +85,7 @@ def main() -> None:
         if time.time() > next_time:
             start_time = time.time()
             try:
+                LOGGER.debug("requesting telegram")
                 asyncio.run(API_P1.get_telegram())
                 set_led("mains", "green")
             except Exception:  # noqa
