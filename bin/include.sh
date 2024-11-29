@@ -32,7 +32,7 @@ declare -a lektrix_timers=("lektrix.trend.day.timer"
     "lektrix.trend.year.timer")
   # "lektrix.update.timer" (incl. the .service) is not installed
 # list of services provided
-declare -a lektrix_services=("lektrix.kamstrup.service"
+declare -a lektrix_services=("lektrix.wizp1.service"
     "lektrix.myenergi.service"
     "lektrix.solaredge.service")
 # Install python3 and develop packages

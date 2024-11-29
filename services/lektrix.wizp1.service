@@ -1,0 +1,17 @@
+# This service is for starting the Home Wizard P1 telemetry reader
+
+[Unit]
+Description=smart electricity meter (Home Wizard P1) telemetry service
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+EnvironmentFile=/home/pi/.pyenvpaths
+ExecStartPre=/home/pi/lektrix/lektrix --boot
+ExecStart=/home/pi/lektrix/bin/wizp1.py --start
+RestartSec=360s
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
