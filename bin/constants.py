@@ -170,6 +170,33 @@ ZAPPI: dict = {
     },
     "template_keys_to_drop": ["yr", "mon", "dom", "hr", "min"],
 }
+
+WIZ_P1: dict = {
+    "database": _DATABASE,
+    "sql_table": "mains",
+    "sql_command": "INSERT INTO mains ("
+                   "sample_time, sample_epoch, "
+                   "T1in, T2in, powerin, "
+                   "T1out, T2out, powerout, "
+                   "tarif, swits"
+                   ");"
+                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    "report_interval": 900,
+    "samplespercycle": 15,
+    "delay": 0,
+    "template": {
+        "sample_time": "dd-mmm-yyyy hh:mm:ss",
+        "sample_epoch": 0,
+        "T1in": 0,
+        "T2in": 0,
+        "powerin": 0,
+        "T1out": 0,
+        "T2out": 0,
+        "powerout": 0,
+        "tarif": 1,
+        "swits": 1,
+    },
+}
 # fmt: on
 
 
