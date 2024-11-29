@@ -50,6 +50,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
         self.list_data: list = []
 
         self.debug: bool = debug
+        self.firstcall = True
         if debug:
             if len(LOGGER.handlers) == 0:
                 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
@@ -64,7 +65,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
             (bool): valid telegram received True or False
         """
         async with HomeWizardEnergyV1(host=self.ip) as _api:
-            if self.debug:
+            if self.debug and self.firstcall:
                 # Get device information, like firmware version
                 wiz_dev = await _api.device()
                 LOGGER.debug(wiz_dev)
