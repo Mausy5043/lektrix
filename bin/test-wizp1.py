@@ -13,6 +13,7 @@ from libzeroconf import discover as zcd
 # get a HomeWizard IP
 _howip = zcd.get_ip("_hwenergy")
 
+IP_ADDRESS = "0.0.0.0"
 if _howip:
     IP_ADDRESS = _howip[0]
 

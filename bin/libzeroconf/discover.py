@@ -6,7 +6,6 @@
 
 """Discover Multi-cast devices that support Homewizard."""
 
-import json
 import logging
 import logging.handlers
 import os
@@ -35,12 +34,11 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 # constants
 DEBUG = False
 HERE = os.path.realpath(__file__).split("/")
-# example HERE = ['', 'home', 'pi', 'lektrix', 'bin', 'kamstrup.py']
-MYID = HERE[-1]  # kamstrup.py
-MYAPP = HERE[-4]  # lektrix
-MYROOT = "/".join(HERE[0:-4])  # /home/pi
-APPROOT = "/".join(HERE[0:-3])  # /home/pi/lektrix
-NODE = os.uname()[1]  # rbelec
+MYID = HERE[-1]
+MYAPP = HERE[-4]
+MYROOT = "/".join(HERE[0:-4])
+APPROOT = "/".join(HERE[0:-3])
+NODE = os.uname()[1]
 # fmt: on
 
 DISCOVERED: dict = {}
@@ -185,22 +183,6 @@ class MyListener(ServiceListener):
         return normdict
 
 
-def __load_discovery():
-    """(unavailable) Load an existing discovery from file."""
-    LOGGER.debug("loading...")
-    # not doing anything at the moment
-    return {}
-
-
-def __save_discovery(disco_dict):
-    """Save the discovered services and info to a file."""
-    LOGGER.debug("saving...")
-    disco_str = json.dumps(disco_dict, indent=4, sort_keys=True)
-    # LOGGER.debug(disco_str)
-    with open("devices.json", "w", encoding="utf-8") as fp:
-        fp.write(disco_str)
-
-
 def get_ip(service: str) -> list[str]:
     """."""
     _ip = []
@@ -210,7 +192,7 @@ def get_ip(service: str) -> list[str]:
     if "_tcp.local." not in _service:
         _service = "".join([service, "._tcp.local."])
     # find the service:
-    _browser = ServiceBrowser(_zc, _service, _ls)
+    _ = ServiceBrowser(_zc, _service, _ls)
 
     t0: float = time.time()
     dt: float = 0.0
@@ -218,7 +200,7 @@ def get_ip(service: str) -> list[str]:
         dt = time.time() - t0
     _zc.close()
     LOGGER.debug(DISCOVERED)
-    for _i in DISCOVERED.keys():
+    for _i in DISCOVERED:  # pylint: disable=consider-using-dict-items
         _ip.append(DISCOVERED[_i][service]["ip"])
     return _ip
 
@@ -242,19 +224,5 @@ if __name__ == "__main__":
         LOGGER.debug("Debug-mode started.")
         # print("Use <Ctrl>+C to stop.")
 
-    DISCOVERED = __load_discovery()
     LOGGER.debug(get_ip("_hwenergy"))
-    # _zc = Zeroconf()
-    # _ls = MyListener()
-
-    # # find a specific service:
-    # browser1 = ServiceBrowser(_zc, "_homewizard._tcp.local.", _ls)
-    # browser2 = ServiceBrowser(_zc, "_hwenergy._tcp.local.", _ls)
-
-    # t0: float = time.time()
-    # dt: float = 0.0
-    # while dt < 60.0:
-    #     dt = time.time() - t0
-
-    # __save_discovery(DISCOVERED)
     LOGGER.debug("...done")
