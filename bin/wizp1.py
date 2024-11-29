@@ -78,7 +78,6 @@ def main() -> None:
 
     report_interval = int(constants.WIZ_P1["report_interval"])
     sample_interval = report_interval / int(constants.WIZ_P1["samplespercycle"])
-    cycle_time = report_interval / sample_interval
 
     next_time = time.time()  # + (sample_interval - (time.time() % sample_interval))
     rprt_time = time.time() + (report_interval - (time.time() % report_interval))
@@ -127,7 +126,7 @@ def main() -> None:
             #     pause_interval + time.time()
             # )  # gives the actual time when the next loop should start
             # determine moment of next report
-            next_time = cycle_time + start_time - (start_time % cycle_time)
+            next_time = sample_interval + start_time - (start_time % sample_interval)
             rprt_time = time.time() + (report_interval - (time.time() % report_interval))
             LOGGER.debug(f"Spent          {time.time() - start_time:.1f}s getting data")
             LOGGER.debug(f"Report in      {rprt_time - time.time():.0f}s")
