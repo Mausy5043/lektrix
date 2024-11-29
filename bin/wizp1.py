@@ -129,8 +129,9 @@ def main() -> None:
             # determine moment of next report
             next_time = cycle_time + start_time - (start_time % cycle_time)
             rprt_time = time.time() + (report_interval - (time.time() % report_interval))
-            LOGGER.debug(f"Spent {time.time() - start_time:.1f}s getting data")
-            LOGGER.debug(f"Report in {rprt_time - time.time():.0f}s")
+            LOGGER.debug(f"Spent          {time.time() - start_time:.1f}s getting data")
+            LOGGER.debug(f"Report in      {rprt_time - time.time():.0f}s")
+            LOGGER.debug(f"Next sample in {next_time - time.time():.0f}s")
             LOGGER.debug("................................")
         else:
             time.sleep(1.0)  # 1s resolution is enough
