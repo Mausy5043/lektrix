@@ -57,7 +57,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
             LOGGER.debug("Debugging on.")
             self.telegram: list = []
 
-    async def get_telegram(self) -> bool:
+    async def get_telegram(self):
         """Fetch a telegram from the serialport.
 
         Returns:
@@ -74,8 +74,6 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
             LOGGER.debug(wiz_data)
 
         self.list_data.append(self._translate_telegram(wiz_data))
-        # legacy: returning a bool
-        return True
 
     def _translate_telegram(self, telegram) -> dict:
         """Translate the telegram to a dict.
