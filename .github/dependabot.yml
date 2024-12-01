@@ -4,7 +4,7 @@ version: 2
 updates:
   - package-ecosystem: 'pip'
     directory: '/'
-    target-branch: 'homewiz'
+    target-branch: 'master'
     schedule:
       interval: 'weekly'
     allow:
