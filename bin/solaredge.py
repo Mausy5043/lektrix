@@ -85,7 +85,7 @@ def main() -> None:
     pause_interval: float = 0.2
     next_time: float = pause_interval + local_now()
     start_dt: dt.datetime = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
-    lookback_hours = 24
+    lookback_hours = 96
     lookahead_days = 1
     while not killer.kill_now:  # pylint: disable=too-many-nested-blocks
         if local_now() > next_time:
