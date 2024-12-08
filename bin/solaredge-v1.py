@@ -4,7 +4,8 @@
 # Copyright (C) 2024  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
-"""Daemon to periodically call the SolarEdge API to fetch energy production data.
+"""Daemon to periodically call the SolarEdge API, using the module py-solaredge,
+   to fetch energy production data.
 
 Store the data in a SQLite3 database.
 """
@@ -12,6 +13,9 @@ Store the data in a SQLite3 database.
 import argparse
 import configparser
 import datetime as dt
+import json
+import logging
+import logging.handlers
 import os
 import shutil
 import syslog
@@ -20,9 +24,21 @@ import traceback
 
 import constants
 import GracefulKiller as gk
-import libsolaredge as sl
-import mausy5043_common.funfile as mf
 import mausy5043_common.libsqlite3 as m3
+from solaredge.api.client import Client
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.handlers.SysLogHandler(
+            address="/dev/log",
+            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+        )
+    ],
+)
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")
@@ -51,112 +67,88 @@ APPROOT: str = "/".join(HERE[0:-2])
 NODE: str = os.uname()[1]
 
 # example values:
-# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge.py']
-# MYID: 'solaredge.py
+# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge-v1.py']
+# MYID: 'solaredge-v1.py
 # MYAPP: lektrix
 # MYROOT: /home/pi
 # NODE: rbelec
 
-API_SE = sl.Solaredge("000000")
-
 
 def main() -> None:
     """Execute main loop until killed."""
-    global API_SE  # pylint: disable=W0603
+    single_loop = False
     set_led("solar", "orange")
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
     iniconf.read(f"{os.environ['HOME']}/.config/solaredge/account.ini")
     api_key: str = iniconf.get("account", "api_key")
-    API_SE = sl.Solaredge(api_key)
+    sol = Client()
+    sol.set_api_key(api_key)
+    sites = sol.sites.get_sites()
+    site_id = sites["sites"]["site"][0]["id"]
+    start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
+    LOGGER.debug(json.dumps(sol.get_site_details(site_id=site_id), indent=4, sort_keys=True))
 
-    sql_db = m3.SqlDatabase(
-        database=constants.SOLAREDGE["database"],
-        table="production",
-        insert=constants.SOLAREDGE["sql_command"],
-        debug=DEBUG,
-    )
+    if not DEBUG:
+        sql_db = m3.SqlDatabase(
+            database=constants.SOLAREDGE["database"],
+            table="production",
+            insert=constants.SOLAREDGE["sql_command"],
+            debug=DEBUG,
+        )
+        start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
 
     report_interval = int(constants.SOLAREDGE["report_interval"])
     sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
-
-    site_list: list[str] = []
     pause_interval: float = 0.2
     next_time: float = pause_interval + local_now()
-    start_dt: dt.datetime = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
     lookback_hours = 24
     lookahead_days = 1
-    while not killer.kill_now:  # pylint: disable=too-many-nested-blocks
+    set_led("solar", "orange")
+    while not killer.kill_now and not single_loop:  # pylint: disable=too-many-nested-blocks
         if local_now() > next_time:
             start_time: float = local_now()
+            if start_dt > dt.datetime.today():
+                LOGGER.debug(f"Can't query {start_dt.strftime('%Y-%m-%d')} in the future.")
+                start_dt = dt.datetime.today()
+                LOGGER.debug(f"Will update data for  {start_dt.strftime('%Y-%m-%d')}.")
+            try:
+                data: list[dict] = do_work(
+                    client=sol, site_id=site_id, start_dt=start_dt, lookback=lookback_hours
+                )
+                set_led("solar", "green")
+                # only during the first loop do we need to lookback further
+                lookback_hours = 2
+            except Exception:  # noqa  # pylint: disable=W0718
+                set_led("solar", "red")
+                LOGGER.critical("Unexpected error while trying to do some work!")
+                LOGGER.critical(traceback.format_exc())
+                raise
 
-            if not site_list:
+            # Not pushing data to the database when debugging.
+            LOGGER.debug(f"Data to add (first) : {data[0]}")
+            LOGGER.debug(f"            (last)  : {data[-1]}")
+            if data and not DEBUG:
                 try:
-                    site_list = API_SE.get_list()["sites"]["site"]
-                except Exception:  # noqa  # pylint: disable=W0718
-                    set_led("solar", "orange")
-                    mf.syslog_trace("Error connecting to SolarEdge", syslog.LOG_CRIT, DEBUG)
-                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-                    site_list = []
-
-            if site_list:
-                if start_dt > dt.datetime.today():
-                    mf.syslog_trace(
-                        f"Can't query {start_dt.strftime('%Y-%m-%d')} in the future.",
-                        False,
-                        DEBUG,
-                    )
-                    start_dt = dt.datetime.today()
-                    mf.syslog_trace(
-                        f"Will update data for  {start_dt.strftime('%Y-%m-%d')}.",
-                        False,
-                        DEBUG,
-                    )
-                try:
-                    data: list[dict] = do_work(
-                        site_list, start_dt=start_dt, lookback=lookback_hours
-                    )
-                    set_led("solar", "green")
-                    # only during the first loop do we need to lookback further
-                    lookback_hours = 2
+                    for element in data:
+                        # also add data for the running quarter
+                        if element["sample_epoch"] < (local_now() + 15 * 60):
+                            sql_db.queue(element)
                 except Exception:  # noqa  # pylint: disable=W0718
                     set_led("solar", "red")
-                    mf.syslog_trace(
-                        "Unexpected error while trying to do some work!",
-                        syslog.LOG_CRIT,
-                        DEBUG,
+                    LOGGER.warning("Unexpected error while trying to queue the data")
+                    LOGGER.warning(traceback.format_exc())
+                    raise  # may be changed to pass if errors can be corrected.
+                try:
+                    sql_db.insert(method="replace")
+                except Exception:  # noqa  # pylint: disable=W0718
+                    set_led("solar", "red")
+                    LOGGER.warning(
+                        "Unexpected error while trying to commit the data to the database"
                     )
-                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
-                    raise
-                if data:
-                    try:
-                        mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
-                        mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
-                        for element in data:
-                            # also add data for the running quarter
-                            if element["sample_epoch"] < (local_now() + 15 * 60):
-                                sql_db.queue(element)
-                    except Exception:  # noqa  # pylint: disable=W0718
-                        set_led("solar", "red")
-                        mf.syslog_trace(
-                            "Unexpected error while trying to queue the data",
-                            syslog.LOG_ALERT,
-                            DEBUG,
-                        )
-                        mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
-                        raise  # may be changed to pass if errors can be corrected.
-                    try:
-                        sql_db.insert(method="replace")
-                    except Exception:  # noqa  # pylint: disable=W0718
-                        set_led("solar", "red")
-                        mf.syslog_trace(
-                            "Unexpected error while trying to commit the data to the database",
-                            syslog.LOG_ALERT,
-                            DEBUG,
-                        )
-                        mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
-                        raise  # may be changed to pass if errors can be corrected.
+                    LOGGER.warning(traceback.format_exc())
+                    raise  # may be changed to pass if errors can be corrected.
 
             pause_interval = (
                 sample_interval
@@ -188,92 +180,89 @@ def main() -> None:
              = 3 seconds behind (no waiting)
             """
 
-            new_start_dt: dt.datetime = dt.datetime.strptime(
-                sql_db.latest_datapoint(), constants.DT_FORMAT
-            )
-            if new_start_dt <= start_dt:
-                # there is a hole in the data
-                mf.syslog_trace(
-                    f"Found a hole in the data starting at "
-                    f"{new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}.",
-                    syslog.LOG_WARNING,
-                    DEBUG,
+            if not DEBUG:
+                new_start_dt: dt.datetime = dt.datetime.strptime(
+                    sql_db.latest_datapoint(), constants.DT_FORMAT
                 )
-                dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
-                if dati > dt.datetime.today():
-                    mf.syslog_trace(
-                        f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
-                        syslog.LOG_WARNING,
-                        DEBUG,
+                if new_start_dt <= start_dt:
+                    # there is a hole in the data
+                    LOGGER.warning(
+                        f"Found a hole in the data starting at {new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
                     )
-                    dati = dt.datetime.today()
-                start_dt = dati
-                mf.syslog_trace(
-                    f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.",
-                    syslog.LOG_WARNING,
-                    DEBUG,
-                )
-                # if we don't cross the gap then next time check more days ahead
-                lookahead_days += 1
-                if DEBUG:
-                    pause_interval = 10
-            else:
-                start_dt = new_start_dt
-                lookahead_days = 1
+                    dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
+                    if dati > dt.datetime.today():
+                        LOGGER.debug(
+                            f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
+                            syslog.LOG_WARNING,
+                            DEBUG,
+                        )
+                        dati = dt.datetime.today()
+                    start_dt = dati
+                    LOGGER.warning(
+                        f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                    )
+                    # if we don't cross the gap then next time check more days ahead
+                    lookahead_days += 1
+                    if DEBUG:
+                        pause_interval = 10
+                else:
+                    start_dt = new_start_dt
+                    lookahead_days = 1
 
             if pause_interval > 0:
-                mf.syslog_trace(
-                    f"Waiting  : {pause_interval:.1f}s",
-                    False,
-                    DEBUG,
-                )
-                mf.syslog_trace("................................", False, DEBUG)
+                LOGGER.debug(f"Waiting  : {pause_interval:.1f}s")
+                LOGGER.debug("................................")
             else:
-                mf.syslog_trace(
-                    f"Behind   : {pause_interval:.1f}s",
-                    False,
-                    DEBUG,
-                )
-                mf.syslog_trace("................................", False, DEBUG)
+                LOGGER.debug(f"Behind   : {pause_interval:.1f}s")
+                LOGGER.debug("................................")
         else:
             time.sleep(1.0)  # 1s resolution is enough
+        if DEBUG:
+            single_loop = True
 
 
-def do_work(site_list, start_dt=dt.datetime.today(), lookback=4) -> list:
+def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
     """Extract the data from the dict(s)."""
-
-    # TODO: This function should be implemented in libsolaredge
 
     # request 4 hours back and 1 day ahead
     back_dt: dt.datetime = start_dt - dt.timedelta(hours=lookback)
-    start_dt += dt.timedelta(days=1)
-    # result_dict = constants.SOLAREDGE['template']
+    end_dt = start_dt + dt.timedelta(days=1)
     data_list: list[dict] = []
     result_list: list[dict] = []
 
-    for site in site_list:
-        site_id: str = site["id"]
-        try:
-            data_list = API_SE.get_energy_details(
-                site_id,
-                dt.datetime.strftime(back_dt, constants.DT_FORMAT),
-                dt.datetime.strftime(start_dt, constants.DT_FORMAT),
-                time_unit="QUARTER_OF_AN_HOUR",
-            )["energyDetails"]["meters"][0]["values"]
-        except Exception:  # noqa  # pylint: disable=W0718
-            mf.syslog_trace("Request was unsuccesful.", syslog.LOG_WARNING, DEBUG)
-            mf.syslog_trace(traceback.format_exc(), syslog.LOG_WARNING, DEBUG)
-            mf.syslog_trace("Maybe next time...", syslog.LOG_WARNING, DEBUG)
+    try:
+        sol_energy = client.sites.get_energy(
+            site_id=site_id,
+            startDate=dt.datetime.strftime(back_dt, constants.DT_FORMAT),
+            endDate=dt.datetime.strftime(end_dt, constants.DT_FORMAT),
+            timeUnit="QUARTER_OF_AN_HOUR",
+        )
+
+        # data_list = API_SE.get_energy_details(
+        #     site_id,
+        #     dt.datetime.strftime(back_dt, constants.DT_FORMAT),
+        #     dt.datetime.strftime(start_dt, constants.DT_FORMAT),
+        #     time_unit="QUARTER_OF_AN_HOUR",
+        # )["energyDetails"]["meters"][0]["values"]
+        data_list = sol_energy["energy"]["values"]
+        LOGGER.debug(json.dumps(data_list, indent=4, sort_keys=True))
+    except Exception:  # noqa  # pylint: disable=W0718
+        LOGGER.warning("Request was unsuccesful.")
+        LOGGER.warning(traceback.format_exc())
+        LOGGER.warning("Maybe next time...")
 
         # data_list looks like this:
-        # [{'date': '2022-04-30 05:15:00'},
-        #  {'date': '2022-04-30 05:30:00'},
-        #  {'date': '2022-04-30 05:45:00'},
-        #  {'date': '2022-04-30 06:00:00'},
-        #  {'date': '2022-04-30 06:15:00', 'value': 0.0},
-        #  {'date': '2022-04-30 06:30:00', 'value': 2.0},
-        #  {'date': '2022-04-30 06:45:00', 'value': 10.0}
-        #  ...
+        # [
+        # {'date': '2024-11-26 08:00:00', 'value': 38.0},
+        # {'date': '2024-11-26 09:00:00', 'value': 191.0},
+        # {'date': '2024-11-26 10:00:00', 'value': 390.0},
+        # {'date': '2024-11-26 11:00:00', 'value': 1059.0},
+        # {'date': '2024-11-26 12:00:00', 'value': 753.0},
+        # {'date': '2024-11-26 13:00:00', 'value': 382.0},
+        # {'date': '2024-11-26 14:00:00', 'value': 239.0},
+        # {'date': '2024-11-26 15:00:00', 'value': 69.0},
+        # {'date': '2024-11-26 16:00:00', 'value': 0.0},
+        # {'date': '2024-11-26 17:00:00', 'value': None}
         # ]
 
         if data_list:
@@ -293,7 +282,7 @@ def do_work(site_list, start_dt=dt.datetime.today(), lookback=4) -> list:
                 )
                 result_dict["site_id"] = site_id
                 result_dict["energy"] = int(energy)
-                mf.syslog_trace(f"    : {date_time} = {energy}", False, DEBUG)
+                LOGGER.debug(f"    : {date_time} = {energy}")
                 result_list.append(result_dict)
     return result_list
 
@@ -303,7 +292,7 @@ def local_now() -> float:
 
 
 def set_led(dev, colour) -> None:
-    mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
+    LOGGER.debug(f"{dev} is {colour}")
 
     in_dirfile: str = f"{APPROOT}/www/{colour}.png"
     out_dirfile: str = f'{constants.TREND["website"]}/{dev}.png'
@@ -316,7 +305,12 @@ if __name__ == "__main__":
 
     if OPTION.debug:
         DEBUG = True
-        mf.syslog_trace("Debug-mode started.", syslog.LOG_DEBUG, DEBUG)
+        print(OPTION)
+        if len(LOGGER.handlers) == 0:
+            LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+        LOGGER.level = logging.DEBUG
+        LOGGER.debug("Debugging on.")
+        LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 
     # OPTION.start only executes this next line, we don't need to test for it.
