@@ -52,8 +52,8 @@ APPROOT: str = "/".join(HERE[0:-2])
 NODE: str = os.uname()[1]
 
 # example values:
-# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge.py']
-# MYID: 'solaredge.py
+# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge-lx.py']
+# MYID: 'solaredge-lx.py
 # MYAPP: lektrix
 # MYROOT: /home/pi
 # NODE: rbelec
