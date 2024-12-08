@@ -18,8 +18,8 @@ import logging
 import logging.handlers
 import os
 import shutil
-import syslog
 import sys
+import syslog
 import time
 import traceback
 
@@ -190,7 +190,8 @@ def main() -> None:
                 if new_start_dt <= start_dt:
                     # there is a hole in the data
                     LOGGER.warning(
-                        f"Found a hole in the data starting at {new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                        f"Found a hole in the data starting at {
+                            new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
                     )
                     dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
                     if dati > dt.datetime.today():
@@ -274,10 +275,9 @@ def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
             result_dict: dict = {}
             date_time: str = element["date"]
             try:
-                energy: float = element["value"]
+                # element["value"] may be None; return 0.0 in that case
+                energy: float = element["value"] or 0.0
             except KeyError:
-                energy = 0.0
-            if not energy:
                 energy = 0.0
             result_dict["sample_time"] = date_time
             result_dict["sample_epoch"] = int(
