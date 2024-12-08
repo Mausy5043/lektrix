@@ -7,14 +7,14 @@
 # lektrix
 
 Interface
-with [KAMSTRUP smart electricity meter](https://www.kamstrup.com/), [SolarEdge API](https://www.solaredge.com/)
-and [ZAPPI v2](https://myenergi.com/) APIs using Raspberry Pi
+with [KAMSTRUP smart electricity meter](https://www.kamstrup.com/), [SolarEdge API](https://www.solaredge.com/), [ZAPPI v2](https://myenergi.com/) and [HomeWizard](https://www.homewizard.com/) APIs using Raspberry Pi
 
 ## What is does
 
-- Read data from a KAMSTRUP smart meter.
+- Read data from a KAMSTRUP smart meter. (deprecated)
 - Read data from solarpanels via SolarEdge API.
 - Read data from zappi v2 EV charger via ZAPPI API.
+- Read data from Home Wizard P1 meter via the Home Wizard API.
 - Store all that data in an SQLite3 database.
 - Regularly create trendgraphs.
 - Show trendgraphs on a local website.
