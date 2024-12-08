@@ -93,14 +93,13 @@ def main() -> None:
         json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True)
     )
 
-    if not DEBUG:
-        sql_db = m3.SqlDatabase(
-            database=constants.SOLAREDGE["database"],
-            table="production",
-            insert=constants.SOLAREDGE["sql_command"],
-            debug=DEBUG,
-        )
-        start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
+    sql_db = m3.SqlDatabase(
+        database=constants.SOLAREDGE["database"],
+        table="production",
+        insert=constants.SOLAREDGE["sql_command"],
+        debug=DEBUG,
+    )
+    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
 
     report_interval = int(constants.SOLAREDGE["report_interval"])
     sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
@@ -132,7 +131,7 @@ def main() -> None:
             # Not pushing data to the database when debugging.
             LOGGER.debug(f"Data to add (first) : {data[0]}")
             LOGGER.debug(f"            (last)  : {data[-1]}")
-            if data and not DEBUG:
+            if data:
                 try:
                     for element in data:
                         # also add data for the running quarter
@@ -183,35 +182,34 @@ def main() -> None:
              = 3 seconds behind (no waiting)
             """
 
-            if not DEBUG:
-                new_start_dt: dt.datetime = dt.datetime.strptime(
-                    sql_db.latest_datapoint(), constants.DT_FORMAT
+            new_start_dt: dt.datetime = dt.datetime.strptime(
+                sql_db.latest_datapoint(), constants.DT_FORMAT
+            )
+            if new_start_dt <= start_dt:
+                # there is a hole in the data
+                LOGGER.warning(
+                    f"Found a hole in the data starting at {
+                        new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
                 )
-                if new_start_dt <= start_dt:
-                    # there is a hole in the data
-                    LOGGER.warning(
-                        f"Found a hole in the data starting at {
-                            new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
+                if dati > dt.datetime.today():
+                    LOGGER.debug(
+                        f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
+                        syslog.LOG_WARNING,
+                        DEBUG,
                     )
-                    dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
-                    if dati > dt.datetime.today():
-                        LOGGER.debug(
-                            f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
-                            syslog.LOG_WARNING,
-                            DEBUG,
-                        )
-                        dati = dt.datetime.today()
-                    start_dt = dati
-                    LOGGER.warning(
-                        f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
-                    )
-                    # if we don't cross the gap then next time check more days ahead
-                    lookahead_days += 1
-                    if DEBUG:
-                        pause_interval = 10
-                else:
-                    start_dt = new_start_dt
-                    lookahead_days = 1
+                    dati = dt.datetime.today()
+                start_dt = dati
+                LOGGER.warning(
+                    f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                )
+                # if we don't cross the gap then next time check more days ahead
+                lookahead_days += 1
+                if DEBUG:
+                    pause_interval = 10
+            else:
+                start_dt = new_start_dt
+                lookahead_days = 1
 
             if pause_interval > 0:
                 LOGGER.debug(f"Waiting  : {pause_interval:.1f}s")
