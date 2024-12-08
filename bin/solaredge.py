@@ -4,7 +4,8 @@
 # Copyright (C) 2024  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
-"""Daemon to periodically call the SolarEdge API to fetch energy production data.
+"""Daemon to periodically call the SolarEdge API, using the local module libsolaredge,
+   to fetch energy production data.
 
 Store the data in a SQLite3 database.
 """
