@@ -32,7 +32,7 @@ if not os.path.isfile(_DATABASE):
     print(f"Searching for {_DATABASE}")
 if not os.path.isfile(_DATABASE):
     print("Database is missing.")
-    sys.exit(1)
+    # sys.exit(1)
 
 if not os.path.isdir(_WEBSITE):
     print("Graphics will be diverted to /tmp")
