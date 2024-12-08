@@ -38,6 +38,7 @@ if not os.path.isdir(_WEBSITE):
     print("Graphics will be diverted to /tmp")
     _WEBSITE = "/tmp"  # nosec B108
 
+D_FORMAT = "%Y-%m-%d"
 DT_FORMAT = "%Y-%m-%d %H:%M:%S"
 TIMEZONE = pytz.timezone("Europe/Amsterdam")
 FLOAT_FMT = "+.0f"

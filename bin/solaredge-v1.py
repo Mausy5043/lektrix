@@ -19,6 +19,7 @@ import logging.handlers
 import os
 import shutil
 import syslog
+import sys
 import time
 import traceback
 
@@ -88,7 +89,9 @@ def main() -> None:
     sites = sol.sites.get_sites()
     site_id = sites["sites"]["site"][0]["id"]
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
-    LOGGER.debug(json.dumps(sol.get_site_details(site_id=site_id), indent=4, sort_keys=True))
+    LOGGER.debug(
+        json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True)
+    )
 
     if not DEBUG:
         sql_db = m3.SqlDatabase(
@@ -101,7 +104,7 @@ def main() -> None:
 
     report_interval = int(constants.SOLAREDGE["report_interval"])
     sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
-    pause_interval: float = 0.2
+    pause_interval: float = 0.0
     next_time: float = pause_interval + local_now()
     lookback_hours = 24
     lookahead_days = 1
@@ -225,16 +228,16 @@ def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
     """Extract the data from the dict(s)."""
 
     # request 4 hours back and 1 day ahead
-    back_dt: dt.datetime = start_dt - dt.timedelta(hours=lookback)
-    end_dt = start_dt + dt.timedelta(days=1)
+    back_dt = dt.datetime.strftime(start_dt - dt.timedelta(hours=lookback), constants.D_FORMAT)
+    end_dt = dt.datetime.strftime(start_dt + dt.timedelta(days=1), constants.D_FORMAT)
     data_list: list[dict] = []
     result_list: list[dict] = []
 
     try:
         sol_energy = client.sites.get_energy(
             site_id=site_id,
-            startDate=dt.datetime.strftime(back_dt, constants.DT_FORMAT),
-            endDate=dt.datetime.strftime(end_dt, constants.DT_FORMAT),
+            startDate=back_dt,
+            endDate=end_dt,
             timeUnit="QUARTER_OF_AN_HOUR",
         )
 
@@ -250,40 +253,42 @@ def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
         LOGGER.warning("Request was unsuccesful.")
         LOGGER.warning(traceback.format_exc())
         LOGGER.warning("Maybe next time...")
+        raise
 
-        # data_list looks like this:
-        # [
-        # {'date': '2024-11-26 08:00:00', 'value': 38.0},
-        # {'date': '2024-11-26 09:00:00', 'value': 191.0},
-        # {'date': '2024-11-26 10:00:00', 'value': 390.0},
-        # {'date': '2024-11-26 11:00:00', 'value': 1059.0},
-        # {'date': '2024-11-26 12:00:00', 'value': 753.0},
-        # {'date': '2024-11-26 13:00:00', 'value': 382.0},
-        # {'date': '2024-11-26 14:00:00', 'value': 239.0},
-        # {'date': '2024-11-26 15:00:00', 'value': 69.0},
-        # {'date': '2024-11-26 16:00:00', 'value': 0.0},
-        # {'date': '2024-11-26 17:00:00', 'value': None}
-        # ]
+    # data_list looks like this:
+    # [
+    # {'date': '2024-11-26 08:00:00', 'value': 38.0},
+    # {'date': '2024-11-26 09:00:00', 'value': 191.0},
+    # {'date': '2024-11-26 10:00:00', 'value': 390.0},
+    # {'date': '2024-11-26 11:00:00', 'value': 1059.0},
+    # {'date': '2024-11-26 12:00:00', 'value': 753.0},
+    # {'date': '2024-11-26 13:00:00', 'value': 382.0},
+    # {'date': '2024-11-26 14:00:00', 'value': 239.0},
+    # {'date': '2024-11-26 15:00:00', 'value': 69.0},
+    # {'date': '2024-11-26 16:00:00', 'value': 0.0},
+    # {'date': '2024-11-26 17:00:00', 'value': None}
+    # ]
 
-        if data_list:
-            for element in data_list:
-                result_dict: dict = {}
-                date_time: str = element["date"]
-                try:
-                    energy: float = element["value"]
-                except KeyError:
-                    energy = 0.0
-
-                result_dict["sample_time"] = date_time
-                result_dict["sample_epoch"] = int(
-                    dt.datetime.strptime(date_time, constants.DT_FORMAT)
-                    .replace(tzinfo=dt.timezone.utc)
-                    .timestamp()
-                )
-                result_dict["site_id"] = site_id
-                result_dict["energy"] = int(energy)
-                LOGGER.debug(f"    : {date_time} = {energy}")
-                result_list.append(result_dict)
+    if data_list:
+        for element in data_list:
+            result_dict: dict = {}
+            date_time: str = element["date"]
+            try:
+                energy: float = element["value"]
+            except KeyError:
+                energy = 0.0
+            if not energy:
+                energy = 0.0
+            result_dict["sample_time"] = date_time
+            result_dict["sample_epoch"] = int(
+                dt.datetime.strptime(date_time, constants.DT_FORMAT)
+                .replace(tzinfo=dt.timezone.utc)
+                .timestamp()
+            )
+            result_dict["site_id"] = site_id
+            result_dict["energy"] = int(energy)
+            LOGGER.debug(f"    : {date_time} = {energy}")
+            result_list.append(result_dict)
     return result_list
 
 
