@@ -21,6 +21,7 @@ dependencies:
       - gracefulkiller==0.4.7
       - mausy5043-common==1.8.2
       - python-homewizard-energy==7.0.0
+      - py-solaredge=0.0.4.9
 # This won't install on anything other than Linux (notably Raspberry Pi):
 # - pyserial=3.5
   - pyarrow=18.1.0
