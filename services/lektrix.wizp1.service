@@ -10,7 +10,8 @@ User=pi
 EnvironmentFile=/home/pi/.pyenvpaths
 ExecStartPre=/home/pi/lektrix/lektrix --boot
 ExecStart=/home/pi/lektrix/bin/wizp1.py --start
-RestartSec=360s
+# stand back for 1 minute to allow for dongle to recover
+RestartSec=60s
 Restart=on-failure
 
 [Install]
