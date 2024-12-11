@@ -89,9 +89,7 @@ def main() -> None:
     sites = sol.sites.get_sites()
     site_id = sites["sites"]["site"][0]["id"]
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
-    LOGGER.debug(
-        json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True)
-    )
+    LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True))
 
     sql_db = m3.SqlDatabase(
         database=constants.SOLAREDGE["database"],
@@ -239,19 +237,14 @@ def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
             endDate=end_dt,
             timeUnit="QUARTER_OF_AN_HOUR",
         )
-
-        # data_list = API_SE.get_energy_details(
-        #     site_id,
-        #     dt.datetime.strftime(back_dt, constants.DT_FORMAT),
-        #     dt.datetime.strftime(start_dt, constants.DT_FORMAT),
-        #     time_unit="QUARTER_OF_AN_HOUR",
-        # )["energyDetails"]["meters"][0]["values"]
         data_list = sol_energy["energy"]["values"]
         LOGGER.debug(json.dumps(data_list, indent=4, sort_keys=True))
-    except Exception:  # noqa  # pylint: disable=W0718
-        LOGGER.warning("Request was unsuccesful.")
-        LOGGER.warning(traceback.format_exc())
+    except json.decoder.JSONDecodeError:
+        LOGGER.warning("Request returned no usable data.")
         LOGGER.warning("Maybe next time...")
+    except Exception:  # noqa  # pylint: disable=W0718
+        LOGGER.error("Unhandled error occured.")
+        LOGGER.error(traceback.format_exc())
         raise
 
     # data_list looks like this:
