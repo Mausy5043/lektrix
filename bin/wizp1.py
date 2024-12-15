@@ -86,7 +86,7 @@ def main() -> None:
             start_time = time.time()
             try:
                 LOGGER.debug("\n...requesting telegram")
-                asyncio.run(API_P1.get_telegram())  # type ignore:[no-untyped-call]
+                asyncio.run(API_P1.get_telegram())
                 set_led("mains", "green")
             except Exception:  # noqa
                 set_led("mains", "red")
