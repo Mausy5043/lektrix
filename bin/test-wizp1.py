@@ -19,7 +19,6 @@ if _howip:
 
 
 async def async_work():
-
     async with HomeWizardEnergyV1(host=IP_ADDRESS) as api:
         # blink the LED on the device
         await api.identify()

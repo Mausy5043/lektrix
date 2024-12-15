@@ -330,7 +330,6 @@ def main(opt) -> None:
 
 
 if __name__ == "__main__":
-
     if OPTION.hours == 0:
         OPTION.hours = 80
     if OPTION.days == 0:
