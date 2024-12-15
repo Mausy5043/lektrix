@@ -22,11 +22,11 @@ def add_time_line(config: dict) -> dict:
         dict: Modified version of `config`
     """
     final_epoch = int(dt.datetime.now().timestamp())
+    # fmt: off
     if "year" in config:
         ytf = int(config["year"]) + 1
-        final_epoch = int(
-            dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp()  # noqa: E501
-        )
+        final_epoch = int(dt.datetime.strptime(f"{ytf}-01-01 00:00", "%Y-%m-%d %H:%M").timestamp())  # noqa: E501
+    # fmt: on
     step_epoch = 15 * 60
     multi = 3600
     if config["timeframe"] == "hour":
@@ -61,10 +61,12 @@ def get_historic_data(
     period = dicti["period"]
     interval = f"datetime('now', '-{period + 1} {dicti['timeframe']}')"
     and_where_not_today = ""
+    # fmt: off
     if from_start_of_year:
         interval = (
             f"datetime(datetime('now', '-{period + 1} {dicti['timeframe']}'), 'start of year')"
         )
+    # fmt: on
     if not include_today:
         and_where_not_today = "AND (sample_time <= datetime('now', '-1 day'))"
     if "year" in dicti:

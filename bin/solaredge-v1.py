@@ -150,16 +150,15 @@ def main() -> None:
                     LOGGER.warning(traceback.format_exc())
                     raise  # may be changed to pass if errors can be corrected.
 
+            # fmt: off
             pause_interval = (
                 sample_interval
                 - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
-                - (
-                    start_time % sample_interval
-                )  # number of seconds to next loop    eg. 3 % 60 = 3s
+                - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
             )
-            pause_interval += constants.SOLAREDGE[
-                "delay"
-            ]  # allow the inverter to update the data on the server.
+            # fmt: on
+            # allow the inverter to update the data on the server.
+            pause_interval += constants.SOLAREDGE["delay"]
             next_time = (
                 pause_interval + local_now()
             )  # gives the actual time when the next loop should start
@@ -199,7 +198,8 @@ def main() -> None:
                     dati = dt.datetime.today()
                 start_dt = dati
                 LOGGER.warning(
-                    f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                    f"Attempting to cross it at {
+                        start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
                 )
                 # if we don't cross the gap then next time check more days ahead
                 lookahead_days += 1

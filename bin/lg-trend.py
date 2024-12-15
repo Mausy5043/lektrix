@@ -189,6 +189,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0) ->
         balancing (int):    how to balance imports and exports against each other
                             (0=not; 1=single; 2=double)
     """
+    # fmt: off
     data_lbls = data_tuple[0]
     import_lo = data_tuple[1]  # light-red bar in trends
     import_hi = data_tuple[2]  # red bar in trends
@@ -196,9 +197,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0) ->
     export_lo = data_tuple[4]  # light-blue bar in trends
     export_hi = data_tuple[5]  # blue bar in trends
 
-    own_usage = kl.distract(
-        opwekking, kl.contract(export_lo, export_hi)
-    )  # green bar in all trends
+    own_usage = kl.distract(opwekking, kl.contract(export_lo, export_hi))  # green bar in all trends
 
     if balancing:
         # balance import and export with own_usage
@@ -210,7 +209,7 @@ def plot_graph(output_file, data_tuple, plot_title, show_data=0, balancing=0) ->
     exprt = kl.contract(export_lo, export_hi)  # used for show_data=1 and show_data = 2
 
     usage = kl.contract(own_usage, imprt)  # not used for trends
-
+    # fmt: on
     btm_hi = kl.contract(import_lo, own_usage)
     if DEBUG:
         plot_title = f"(DEBUG) {plot_title}"
@@ -360,6 +359,7 @@ def main() -> None:
     """
     This is the main loop
     """
+    # fmt: off
     if OPTION.hours:
         plot_graph(
             constants.TREND["hour_graph"],
@@ -386,11 +386,11 @@ def main() -> None:
         plot_graph(
             constants.TREND["year_graph"],
             fetch_last_years(OPTION.years),
-            f"Energietrend per jaar afgelopen jaren "
-            f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            f"Energietrend per jaar afgelopen jaren " f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=2,
             balancing=OPTION.balancing,
         )
+    # fmt: on
 
 
 if __name__ == "__main__":

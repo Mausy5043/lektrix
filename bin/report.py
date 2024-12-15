@@ -122,9 +122,8 @@ def fetch_data_mains(hours_to_fetch: int = 48, aggregation: str = "H") -> pd.Dat
     if DEBUG:
         print("\n*** fetching MAINS data ***")
 
-    where_condition: str = (
-        f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'))"
-    )
+    # fmt: off
+    where_condition: str = f" (sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours'))"
     group_condition: str = ""
     if aggregation == "H":
         group_condition = "GROUP BY strftime('%Y-%m-%d %H', sample_time)"
@@ -133,6 +132,7 @@ def fetch_data_mains(hours_to_fetch: int = 48, aggregation: str = "H") -> pd.Dat
         f"FROM {TABLE_MAINS} "
         f"WHERE {where_condition} {group_condition};"
     )
+    # fmt: on
     if DEBUG:
         print(s3_query)
 
