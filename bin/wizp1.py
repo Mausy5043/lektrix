@@ -21,7 +21,7 @@ import time
 import traceback
 
 import constants
-import GracefulKiller as gk
+import GracefulKiller as gk  # type: ignore[import-untyped]
 import libwizp1 as p1
 import mausy5043_common.libsqlite3 as m3
 
@@ -86,7 +86,7 @@ def main() -> None:
             start_time = time.time()
             try:
                 LOGGER.debug("\n...requesting telegram")
-                asyncio.run(API_P1.get_telegram())
+                asyncio.run(API_P1.get_telegram())  # type ignore:[no-untyped-call]
                 set_led("mains", "green")
             except Exception:  # noqa
                 set_led("mains", "red")

@@ -48,5 +48,5 @@ async def async_work():
         print(wiz_system)
 
 
-asyncio.run(async_work())
+asyncio.run(async_work())  # type ignore:[no-untyped-call]
 print("\n\nNORMAL\n\n")

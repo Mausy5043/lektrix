@@ -54,7 +54,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "W") -> dict:
     """
     Query the database to fetch the requested data
 
@@ -108,7 +108,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     return data_dict
 
 
-def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
+def fetch_data_mains(hours_to_fetch: int = 48, aggregation: str = "H") -> pd.DataFrame:
     """
     Query the database to fetch the requested data
 
@@ -172,7 +172,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     return df
 
 
-def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
+def fetch_data_production(hours_to_fetch: int = 48, aggregation: str = "H") -> pd.DataFrame:
     """
     Query the database to fetch the requested data
 
@@ -224,7 +224,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     lbl = "right"
     if aggregation == "D":
         lbl = "left"
-    df = df.resample(f"{aggregation}", label=lbl).sum()
+    df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
 
     df["energy"] *= 0.001  # -> kWh
 
@@ -237,7 +237,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     return df
 
 
-def report(data_dict) -> None:
+def report(data_dict: dict) -> None:
     """Report the data in a textfile.
 
     Args:

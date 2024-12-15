@@ -228,7 +228,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     lbl = "right"
     if aggregation == "D":
         lbl = "left"
-    df = df.resample(f"{aggregation}", label=lbl).sum()
+    df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
 
     df["energy"] *= 0.001  # -> kWh
 
@@ -297,7 +297,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             if show_data:
                 x_offset = -0.1
                 for p in ax1.patches:
-                    b = p.get_bbox()
+                    b = p.get_bbox()  # type: ignore[attr-defined]
                     val = f"{b.y1 - b.y0:{constants.FLOAT_FMT}}"
                     ax1.annotate(
                         val,

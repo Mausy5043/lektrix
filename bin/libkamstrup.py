@@ -15,7 +15,7 @@ import traceback
 import constants
 import numpy as np
 import pandas as pd
-import serial  # noqa # type: ignore  # (cannot be imported in dev environment)
+import serial  # type: ignore[import-not-found]  # (cannot be imported in dev environment)
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 

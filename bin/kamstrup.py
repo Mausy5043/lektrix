@@ -20,7 +20,7 @@ import time
 import traceback
 
 import constants
-import GracefulKiller as gk
+import GracefulKiller as gk  # type: ignore[import-untyped]
 import libkamstrup as kl
 import mausy5043_common.libsqlite3 as m3
 
