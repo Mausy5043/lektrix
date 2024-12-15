@@ -292,8 +292,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 color=["skyblue", "blue", "seagreen", "salmon", "red"],
             )
             # linewidth and alpha need to be set separately
-            for _, l in enumerate(ax1.lines):
-                plt.setp(l, alpha=ahpla, linewidth=1, linestyle=" ")
+            for _, a in enumerate(ax1.lines):
+                plt.setp(a, alpha=ahpla, linewidth=1, linestyle=" ")
             if show_data:
                 x_offset = -0.1
                 for p in ax1.patches:
