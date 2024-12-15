@@ -9,15 +9,7 @@ Using kamstrup data
 """
 
 # autopep8: off
-import warnings
 
-# FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
-# In a future version, numeric_only will default to False. Either specify numeric_only or
-# select only columns which should be valid for the function.
-#   df = df.resample(f"{aggregation}", label=lbl).sum()
-warnings.simplefilter(action="ignore", category=FutureWarning)
-# DeprecationWarning: Pyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0)
-warnings.simplefilter(action="ignore", category=DeprecationWarning)
 
 # pylint: disable=C0413
 import argparse
@@ -28,7 +20,13 @@ import constants
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import pandas as pd
+import warnings
 
+# FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
+# In a future version, numeric_only will default to False. Either specify numeric_only or
+# select only columns which should be valid for the function.
+#   df = df.resample(f"{aggregation}", label=lbl).sum()
+warnings.simplefilter(action="ignore", category=FutureWarning)
 # autopep8: on
 
 DATABASE = constants.TREND["database"]
