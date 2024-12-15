@@ -8,10 +8,10 @@
 Using myenergi data
 """
 
-
 # pylint: disable=C0413
 import argparse
 import sqlite3 as s3
+import warnings
 from datetime import datetime as dt
 
 import constants
@@ -19,7 +19,6 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
-import warnings
 
 # FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
 # In a future version, numeric_only will default to False. Either specify numeric_only or
