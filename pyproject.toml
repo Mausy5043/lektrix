@@ -8,7 +8,7 @@ version = "0.0.0"   # rolling release has no version
 description = "monitoring electricity management devices"
 dependencies = [
     "gracefulkiller==0.4.7",
-    "matplotlib==3.9.3",
+    "matplotlib==3.10.0",
     "mausy5043-common==1.8.2",
     "numpy==2.2.0",
     "pandas==2.2.3",
