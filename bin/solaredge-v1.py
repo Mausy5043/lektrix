@@ -273,7 +273,7 @@ def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
             result_dict["sample_time"] = date_time
             result_dict["sample_epoch"] = int(
                 dt.datetime.strptime(date_time, constants.DT_FORMAT)
-                .replace(tzinfo=dt.timezone.utc)
+                .replace(tzinfo=dt.UTC)
                 .timestamp()
             )
             result_dict["site_id"] = site_id
@@ -284,7 +284,7 @@ def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
 
 
 def local_now() -> float:
-    return dt.datetime.today().replace(tzinfo=dt.timezone.utc).timestamp()
+    return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
 
 
 def set_led(dev, colour) -> None:

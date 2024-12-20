@@ -252,7 +252,7 @@ def build_arrays44(lbls, use_data, expo_data) -> tuple:
     usage = np.zeros((num_years, 12))
     exprt = np.zeros((num_years, 12))
 
-    for data_point in zip(lbls, use_data, expo_data):
+    for data_point in zip(lbls, use_data, expo_data, strict=False):
         [year, month] = data_point[0].split("-")
         col_idx = int(month) - 1
         row_idx = int(year) - first_year

@@ -94,11 +94,16 @@ fix = true
 indent-width = 4
 line-length = 98
 output-format = "concise"
+include = ["pyproject.toml", "bin/**/*.py"]
 
 [tool.ruff.format]
 indent-style = "space"
 line-ending = "auto"
 quote-style = "preserve"
+
+[tool.ruff.lint]
+select = ["B", "E", "F", "I", "SIM", "UP", "W"]
+ignore = []
 
 # pylint is controlled by .pylintrc
 
