@@ -89,6 +89,16 @@ convention = "google"
 match = ".*\\.py"
 add-ignore = "D"
 
+[tool.ruff]
+fix = true
+indent-width = 4
+line-length = 98
+output-format = "concise"
+
+[tool.ruff.format]
+indent-style = "space"
+line-ending = "auto"
+quote-style = "preserve"
 
 # pylint is controlled by .pylintrc
 
