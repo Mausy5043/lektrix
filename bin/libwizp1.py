@@ -28,9 +28,7 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 class WizP1_v1:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the Home Wizard P1-dongle."""
 
-    def __init__(
-        self, debug: bool = False
-    ) -> None:  # pylint: disable=too-many-instance-attributes
+    def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
         # get a HomeWizard IP
         _howip = zcd.get_ip("_hwenergy")
 
