@@ -171,7 +171,7 @@ class MyListener(ServiceListener):
         normdict = {}
         if bytedict:
             # bytedict may be empty or None
-            for _y in bytedict.keys():
+            for _y in bytedict:
                 _x = bytedict[_y]
                 # value None can't be decoded
                 if _x:

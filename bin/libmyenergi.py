@@ -5,6 +5,7 @@
 # AGPL-3.0-or-later  - see LICENSE
 
 import configparser
+import contextlib
 import datetime as dt
 import json
 import logging
@@ -193,10 +194,8 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         )  # UTC!
         # discard fields we nolonger need
         for _key in constants.ZAPPI["template_keys_to_drop"]:
-            try:
+            with contextlib.suppress(KeyError):
                 del result_dict[_key]
-            except KeyError:
-                pass
         # convert the UTC time from MyEnergi to local time
         lcl_date_time: dt.datetime = utc_date_time.replace(tzinfo=pytz.utc)
         lcl_date_time = lcl_date_time.astimezone(constants.TIMEZONE)
