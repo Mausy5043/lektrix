@@ -103,7 +103,13 @@ quote-style = "preserve"
 
 [tool.ruff.lint]
 select = ["B", "E", "F", "I", "SIM", "UP", "W"]
-ignore = []
+ignore = [
+    # line too long: formatter is leading
+    "E501"
+    ]
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
 
 # pylint is controlled by .pylintrc
 
