@@ -24,6 +24,9 @@ __pycache__/
 .dmypy.json
 dmypy.json
 
+# ruff
+.ruff_cache/
+
 ### Apple stuff
 .DS_Store
 
