@@ -245,10 +245,8 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             mf.syslog_trace(f"> {current_day_data[-1]}", False, self.DEBUG)
         except IndexError:
             LOGGER.warning(f"IndexError encountered for {day_to_fetch.strftime(format=constants.DT_FORMAT)}")
-            pass
         except KeyError:
             LOGGER.warning(f"KeyError encountered for {day_to_fetch.strftime(format=constants.DT_FORMAT)}")
-            pass
         # fmt: on
         result = extra_day1_data + previous_day_data + current_day_data
         self.zappi_data = self.compact_data(result)
