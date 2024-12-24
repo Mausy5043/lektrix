@@ -6,13 +6,13 @@
 
 """Discover Multi-cast devices that support Homewizard."""
 
+import json
 import logging
 import logging.handlers
 import os
 import sys
 import syslog
 import time
-import json
 from typing import Any
 
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
