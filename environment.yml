@@ -14,7 +14,7 @@ dependencies:
 
   # imported deps
   - matplotlib=3.10.0
-  - numpy=2.2.0
+  - numpy>=2.2.0
   - pandas=2.2.3
   # Not on conda channels:
   - pip:
@@ -22,7 +22,7 @@ dependencies:
       - mausy5043-common==1.10.1
       - python-homewizard-energy==7.0.0
       - py-solaredge==0.0.4.9
-# This won't install on anything other than Linux (notably Raspberry Pi):
+# legacy: This won't install on anything other than Linux (notably Raspberry Pi):
 # - pyserial=3.5
   - pyarrow=18.1.0
   - python-dateutil=2.9.0.post0

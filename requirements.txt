@@ -10,7 +10,8 @@ numpy>=2.2.0
 pandas==2.2.3
 py-solaredge==0.0.4.9
 pyarrow==18.1.0
-pyserial==3.5
+# legacy:
+# pyserial==3.5
 python-dateutil==2.9.0.post0
 python-homewizard-energy==7.0.0
 pytz==2024.2
