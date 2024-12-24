@@ -10,7 +10,7 @@ dependencies = [
     "gracefulkiller==0.4.7",
     "matplotlib==3.10.0",
     "mausy5043-common==1.10.1",
-    "numpy==2.2.0",
+    "numpy==2.2.1",
     "pandas==2.2.3",
     "py-solaredge==0.0.4.9",
     "pyarrow==18.1.0",
