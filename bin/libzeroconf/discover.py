@@ -12,6 +12,7 @@ import os
 import sys
 import syslog
 import time
+import json
 from typing import Any
 
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
@@ -24,7 +25,8 @@ logging.basicConfig(
         logging.handlers.SysLogHandler(
             address="/dev/log",
             facility=logging.handlers.SysLogHandler.LOG_DAEMON,
-        )
+        ),
+        # logging.StreamHandler(sys.stdout)
     ],
 )
 LOGGER: logging.Logger = logging.getLogger(__name__)
@@ -153,6 +155,7 @@ class MyListener(ServiceListener):
                     "ip": svc,
                     "name": name,
                     "type": type_,
+                    "service": prop["product_type"],
                     "properties": prop,
                 }
             }
@@ -162,6 +165,7 @@ class MyListener(ServiceListener):
                 "ip": svc,
                 "name": name,
                 "type": type_,
+                "service": prop["product_type"],
                 "properties": prop,
             }
 
@@ -183,7 +187,7 @@ class MyListener(ServiceListener):
         return normdict
 
 
-def get_ip(service: str) -> list[str]:
+def get_ip(service: str, filter) -> list[str]:
     """."""
     _ip = []
     _zc = Zeroconf()
@@ -199,9 +203,11 @@ def get_ip(service: str) -> list[str]:
     while (dt < 60.0) and not DISCOVERED:
         dt = time.time() - t0
     _zc.close()
-    LOGGER.debug(DISCOVERED)
+    LOGGER.debug("Discovery done.")
+    LOGGER.debug(json.dumps(DISCOVERED, indent=4))
     for _i in DISCOVERED:  # pylint: disable=consider-using-dict-items
-        _ip.append(DISCOVERED[_i][service]["ip"])
+        if filter and filter == DISCOVERED[_i][service]['service']:
+            _ip.append(DISCOVERED[_i][service]["ip"])
     return _ip
 
 
@@ -220,9 +226,8 @@ if __name__ == "__main__":
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
         LOGGER.level = logging.DEBUG
-        LOGGER.debug("Debugging on.")
         LOGGER.debug("Debug-mode started.")
         # print("Use <Ctrl>+C to stop.")
 
-    LOGGER.debug(get_ip("_hwenergy"))
+    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filter='HWE-P1')}")
     LOGGER.debug("...done")
