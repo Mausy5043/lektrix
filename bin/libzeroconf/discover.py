@@ -229,5 +229,5 @@ if __name__ == "__main__":
         LOGGER.debug("Debug-mode started.")
         # print("Use <Ctrl>+C to stop.")
 
-    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filter='HWE-P1')}")
+    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filtr='HWE-P1')}")
     LOGGER.debug("...done")
