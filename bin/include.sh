@@ -93,7 +93,8 @@ update_lektrix() {
     git fetch origin
     git checkout "${branch_name}"
     git reset --hard "origin/${branch_name}" && git clean -f -d
-    spinner python -m pip install --upgrade pip -r "${APPDIR}/requirements.txt" \
+    echo "pip update..."
+    python -m pip install --upgrade pip -r "${APPDIR}/requirements.txt" \
         | grep -v "Requirement already satisfied"
 }
 
