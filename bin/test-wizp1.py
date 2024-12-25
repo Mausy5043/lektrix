@@ -11,7 +11,7 @@ from homewizard_energy import HomeWizardEnergyV1
 from libzeroconf import discover as zcd
 
 # get a HomeWizard IP
-_howip = zcd.get_ip("_hwenergy", filter="HWE-P1")
+_howip = zcd.get_ip("_hwenergy", filtr="HWE-P1")
 
 IP_ADDRESS = "0.0.0.0"  # nosec - B104: hardcoded_bind_all_interfaces
 if _howip:

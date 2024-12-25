@@ -187,7 +187,7 @@ class MyListener(ServiceListener):
         return normdict
 
 
-def get_ip(service: str, filter) -> list[str]:
+def get_ip(service: str, filtr) -> list[str]:
     """."""
     _ip = []
     _zc = Zeroconf()
@@ -206,7 +206,7 @@ def get_ip(service: str, filter) -> list[str]:
     LOGGER.debug("Discovery done.")
     LOGGER.debug(json.dumps(DISCOVERED, indent=4))
     for _i in DISCOVERED:  # pylint: disable=consider-using-dict-items
-        if filter and filter == DISCOVERED[_i][service]['service']:
+        if filtr and filtr == DISCOVERED[_i][service]['service']:
             _ip.append(DISCOVERED[_i][service]["ip"])
     return _ip
 
