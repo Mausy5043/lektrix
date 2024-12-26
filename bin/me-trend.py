@@ -10,7 +10,9 @@ Using myenergi data
 
 # pylint: disable=C0413
 import argparse
+import random
 import sqlite3 as s3
+import time
 import warnings
 from datetime import datetime as dt
 
@@ -152,10 +154,22 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
         print(s3_query)
 
     # Get the data
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
-        )
+    success = False
+    retries = 5
+    while not success and retries > 0:
+        try:
+            with s3.connect(DATABASE) as con:
+                df = pd.read_sql_query(
+                    s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
+                )
+                success = True
+        except (s3.OperationalError, pd.errors.DatabaseError) as exc:
+            if DEBUG:
+                print("Database may be locked. Waiting...")
+            retries -= 1
+            time.sleep(random.randint(30, 60))
+            if retries == 0:
+                raise TimeoutError("Database seems locked.") from exc
 
     # convert Joules to kWh
     J_to_kWh = 1 / (60 * 60 * 1000)
