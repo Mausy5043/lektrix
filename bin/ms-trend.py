@@ -119,6 +119,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     Returns:
         pandas.DataFrame() with data
     """
+    df = pd.DataFrame()
     if DEBUG:
         print("\n*** fetching MAINS data ***")
 
