@@ -167,7 +167,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
             if DEBUG:
                 print("Database may be locked. Waiting...")
             retries -= 1
-            time.sleep(random.randint(30, 60))
+            time.sleep(random.randint(30, 60))  # nosec bandit B311
             if retries == 0:
                 raise TimeoutError("Database seems locked.") from exc
 
