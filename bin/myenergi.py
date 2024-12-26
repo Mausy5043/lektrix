@@ -217,7 +217,7 @@ def main() -> None:
             time.sleep(1.0)  # 1s resolution is enough
 
 
-def do_work(zappi, start_dt=dt.datetime.today()) -> list:
+def do_work(zappi, start_dt=None) -> list:
     """
 
     Args:
@@ -227,6 +227,8 @@ def do_work(zappi, start_dt=dt.datetime.today()) -> list:
     Returns:
         (list) list of dicts containing data retrieved
     """
+    if start_dt is None:
+        start_dt = dt.datetime.now()
     zappi.fetch_data(start_dt)
 
     #

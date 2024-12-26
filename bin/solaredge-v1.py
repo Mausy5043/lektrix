@@ -221,8 +221,10 @@ def main() -> None:
             single_loop = True
 
 
-def do_work(client, site_id, start_dt=dt.datetime.today(), lookback=4) -> list:
+def do_work(client, site_id, start_dt=None, lookback=4) -> list:
     """Extract the data from the dict(s)."""
+    if start_dt is None:
+        start_dt = dt.datetime.now()
 
     # request 4 hours back and 1 day ahead
     back_dt = dt.datetime.strftime(start_dt - dt.timedelta(hours=lookback), constants.D_FORMAT)
