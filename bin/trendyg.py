@@ -6,7 +6,7 @@
 
 """Create multi-year graphs"""
 
-# TODO:
+# TODO: fix DeprecationWarning: Conversion of an array with ndim > 0
 # trendyg.py:215: DeprecationWarning: Conversion of an array with ndim > 0
 # to a scalar is deprecated, and will error in future.
 # Ensure you extract a single element from your array before performing this operation.
