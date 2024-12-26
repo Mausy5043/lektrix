@@ -13,7 +13,7 @@ source ./include.sh
 
 execute_sql() {
     local sql=$2
-    local database = $1
+    local database=$1
     for ((i=1; i<=max_retries; i++)); do
         if sqlite3 "${database}" "${sql}"; then
             echo "SQL executed successfully: ${sql}"
