@@ -10,7 +10,9 @@ Using kamstrup data
 
 # pylint: disable=C0413
 import argparse
+import random
 import sqlite3 as s3
+import time
 import warnings
 from datetime import datetime as dt
 
@@ -136,13 +138,26 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
         print(s3_query)
 
     # Get the data
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
-        )
+    success = False
+    retries = 5
+    while not success and retries > 0:
+        try:
+            with s3.connect(DATABASE) as con:
+                df = pd.read_sql_query(
+                    s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
+                )
+                success = True
+        except (s3.OperationalError, pd.errors.DatabaseError) as exc:
+            if DEBUG:
+                print("Database may be locked. Waiting...")
+            retries -= 1
+            time.sleep(random.randint(30, 60))
+            if retries == 0:
+                raise TimeoutError("Database seems locked.") from exc
+
     if DEBUG:
         print("o  database mains data")
-        print(df)
+        print(df.to_markdown(floatfmt=".3f"))
 
     # Pre-processing
     # drop sample_time separately!
@@ -167,7 +182,7 @@ def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
 
     if DEBUG:
         print("o  database mains data pre-processed")
-        print(df)
+        print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -232,7 +247,7 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
 
     if DEBUG:
         print("o  database production data pre-processed")
-        print(df)
+        print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -258,7 +273,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         data_frame = data_dict[parameter]  # type: pd.DataFrame
         if DEBUG:
             print(parameter)
-            print(data_frame)
+            print(data_frame.to_markdown(floatfmt=".3f"))
         mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
             mjr_ticks = 1
