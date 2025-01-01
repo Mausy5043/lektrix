@@ -102,7 +102,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     # ... and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
     # 'gen' is energy consumed by solar (operational power to converter) mainly at night.
-    # TODO: 'gen' is currently disregarded
+    # NOTE: 'gen' is currently disregarded
     df_chrg.drop(
         ["h1b", "h1d", "gen", "imp", "exp", "gep"],
         axis=1,
