@@ -9,7 +9,7 @@ description = "monitoring electricity management devices"
 dependencies = [
     "gracefulkiller~=0.4",
     "matplotlib~=3.10",
-    "mausy5043-common==1.10.1",
+    "mausy5043-common==1.12.1",
     "numpy~=2.2",
     "pandas~=2.2",
     "py-solaredge==0.0.4.9",
