@@ -6,17 +6,6 @@
 
 """Create multi-year graphs"""
 
-# TODO: fix DeprecationWarning: Conversion of an array with ndim > 0
-# trendyg.py:215: DeprecationWarning: Conversion of an array with ndim > 0
-# to a scalar is deprecated, and will error in future.
-# Ensure you extract a single element from your array before performing this operation.
-# (Deprecated NumPy 1.25.)
-# 226:   float(tick_pos + (bars_width / 2)),
-# trendyg.py:231: DeprecationWarning:
-# 248:   float(tick_pos + (bars_width / 2)),
-# trendyg.py:247: DeprecationWarning:
-# 252:   float(tick_pos + (bars_width / 2)),
-
 import argparse
 import time
 from datetime import datetime as dt
@@ -227,7 +216,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         )
         ax1.text(
             power_rng / -3,
-            float(tick_pos + (bars_width / 2)),
+            float((tick_pos + (bars_width / 2)).item()),
             f"{power_out:4.0f}",
             {"ha": "center", "va": "center"},
             fontsize=24,
@@ -243,7 +232,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         )
         ax1.text(
             (power_rng / -2) + power_out + abs(power_dif) / 2,
-            float(tick_pos + (bars_width / 2)),
+            float((tick_pos + (bars_width / 2)).item()),
             f"{power_dif:4.0f}",
             {"ha": "center", "va": "center"},
             fontsize=24,
@@ -259,7 +248,7 @@ def plot_graph(output_file, data_tuple, plot_title, gauge=False) -> None:
         )
         ax1.text(
             power_rng / 3,
-            float(tick_pos + (bars_width / 2)),
+            float((tick_pos + (bars_width / 2)).item()),
             f"{power_in:4.0f}",
             {"ha": "center", "va": "center"},
             fontsize=24,
