@@ -161,7 +161,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         except json.decoder.JSONDecodeError:
             LOGGER.critical("Could not load JSON data.")
             return result
-        LOGGER.debug(f"{result.to_markdown()}")
+        # LOGGER.debug(f"{result}")
         return result
 
     def standardise_json_block(self, blk) -> dict:
