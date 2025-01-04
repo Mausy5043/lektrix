@@ -161,7 +161,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         except json.decoder.JSONDecodeError:
             LOGGER.critical("Could not load JSON data.")
             return result
-        LOGGER.debug(f"{result}")
+        LOGGER.debug(f"{result.to_markdown()}")
         return result
 
     def standardise_json_block(self, blk) -> dict:
@@ -232,12 +232,12 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
                 previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
             current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
 
-            LOGGER.debug(f"> {extra_day1_data[0]}")
-            LOGGER.debug(f"> {extra_day1_data[1]}")
-            LOGGER.debug(f"> {previous_day_data[0]}")
-            LOGGER.debug(f"> {previous_day_data[1]}")
-            LOGGER.debug(f"> {current_day_data[-2]}")
-            LOGGER.debug(f"> {current_day_data[-1]}")
+            # LOGGER.debug(f"> {extra_day1_data[0]}")
+            # LOGGER.debug(f"> {extra_day1_data[1]}")
+            # LOGGER.debug(f"> {previous_day_data[0]}")
+            # LOGGER.debug(f"> {previous_day_data[1]}")
+            # LOGGER.debug(f"> {current_day_data[-2]}")
+            # LOGGER.debug(f"> {current_day_data[-1]}")
         except IndexError:
             LOGGER.warning(f"IndexError encountered for {day_to_fetch.strftime(format=constants.DT_FORMAT)}")
         except KeyError:
@@ -274,8 +274,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
                 )
                 done_flag = True
             except requests.exceptions.ReadTimeout:
-                if self.DEBUG:
-                    print("Timeout receiving data from server")
+                LOGGER.warning("Timeout receiving data from server")
                 timeout_retries -= 1
                 if timeout_retries <= 0:
                     # raise for testing
@@ -322,7 +321,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             df["frq"] = np.array(df["frq"] / 15, dtype="int")
             # recalculate 'sample_epoch'
             df["sample_epoch"] = df["sample_time"].apply(_convert_time_to_epoch)
-            LOGGER.debug(f"{df}")
+            LOGGER.debug(f"{df.to_markdown()}")
             result_data = df.to_dict("records")
         return result_data
 
