@@ -18,7 +18,6 @@ import shutil
 import sys
 import syslog
 import time
-import traceback
 
 import constants
 import GracefulKiller as gk  # type: ignore[import-untyped]
