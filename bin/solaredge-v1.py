@@ -240,7 +240,9 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
             timeUnit="QUARTER_OF_AN_HOUR",
         )
         data_list = sol_energy["energy"]["values"]
-        LOGGER.debug(json.dumps(data_list, indent=4, sort_keys=True))
+        if DEBUG:
+            for item in data_list:
+                LOGGER.debug(f"    : {item}")
     except json.decoder.JSONDecodeError:
         LOGGER.warning("Request returned no usable data.")
         LOGGER.warning("Maybe next time...")
