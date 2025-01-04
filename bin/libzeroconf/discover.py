@@ -43,6 +43,7 @@ APPROOT = "/".join(HERE[0:-3])
 NODE = os.uname()[1]
 # fmt: on
 
+# We keep a registry of discovered devices in the DISCOVERED dict.
 DISCOVERED: dict = {}
 
 
@@ -203,11 +204,11 @@ def get_ip(service: str, filtr) -> list[str]:
     while (dt < 60.0) and not DISCOVERED:
         dt = time.time() - t0
     _zc.close()
-    LOGGER.debug("Discovery done.")
-    LOGGER.debug(json.dumps(DISCOVERED, indent=4))
+    LOGGER.info(json.dumps(DISCOVERED, indent=4))
     for _i in DISCOVERED:  # pylint: disable=consider-using-dict-items
         if filtr and filtr == DISCOVERED[_i][service]['service']:
             _ip.append(DISCOVERED[_i][service]["ip"])
+    LOGGER.info(f"IP = {_ip}")
     return _ip
 
 
@@ -217,17 +218,14 @@ if __name__ == "__main__":
         ident=f'{MYAPP}.{MYID.split(".")[0]}',
         facility=syslog.LOG_LOCAL0,
     )
-    # we keep a registry of discovered devices
     DEBUG = True
 
     if DEBUG:
-        # DEBUG = True
-        # print(OPTION)
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
         LOGGER.level = logging.DEBUG
-        LOGGER.debug("Debug-mode started.")
-        # print("Use <Ctrl>+C to stop.")
+        LOGGER.debug("Debugging started.")
+        print("Use <Ctrl>+C to stop.")
 
     LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filtr='HWE-P1')}")
     LOGGER.debug("...done")

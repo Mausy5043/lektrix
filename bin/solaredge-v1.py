@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# lektrix
+# lektrix - solaredge-v1
 # Copyright (C) 2024  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
@@ -307,7 +307,6 @@ if __name__ == "__main__":
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
         LOGGER.level = logging.DEBUG
-        LOGGER.debug("Debugging on.")
         LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 
