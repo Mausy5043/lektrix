@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# lektrix
+# lektrix - myenergi
 # Copyright (C) 2024  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
@@ -12,8 +12,10 @@ Store the data in a SQLite3 database.
 import argparse
 import configparser
 import datetime as dt
+import logging
 import os
 import shutil
+import sys
 import syslog
 import time
 import traceback
@@ -21,8 +23,20 @@ import traceback
 import constants
 import GracefulKiller as gk  # type: ignore[import-untyped]
 import libmyenergi as zl
-import mausy5043_common.funfile as mf
 import mausy5043_common.libsqlite3 as m3
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.handlers.SysLogHandler(
+            address="/dev/log",
+            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+        )
+    ],
+)
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the zappi daemon.")
@@ -93,46 +107,29 @@ def main() -> None:
                 set_led("ev", "green")
             except ConnectionError:
                 set_led("ev", "orange")
-                mf.syslog_trace(
-                    "ConnectionError occured. Will try again later.",
-                    syslog.LOG_WARNING,
-                    DEBUG,
-                )
+                LOGGER.warning("ConnectionError occured. Will try again later.")
             except Exception:  # noqa
                 set_led("ev", "red")
-                mf.syslog_trace(
-                    "Unexpected error while trying to do some work!",
-                    syslog.LOG_CRIT,
-                    DEBUG,
-                )
-                mf.syslog_trace(traceback.format_exc(), syslog.LOG_CRIT, DEBUG)
+                LOGGER.critical("Unexpected error while trying to do some work!")
+                # LOGGER.critical(traceback.format_exc())   # raising will log this
                 raise
             if data:
                 try:
-                    mf.syslog_trace(f"Data to add (first) : {data[0]}", False, DEBUG)
-                    mf.syslog_trace(f"            (last)  : {data[-1]}", False, DEBUG)
+                    LOGGER.debug(f"Data to add (first) : {data[0]}")
+                    LOGGER.debug(f"            (last)  : {data[-1]}")
                     for element in data:
                         sql_db.queue(element)
                 except Exception:  # noqa
                     set_led("ev", "red")
-                    mf.syslog_trace(
-                        "Unexpected error while trying to queue the data",
-                        syslog.LOG_ALERT,
-                        DEBUG,
-                    )
-                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
+                    LOGGER.critical("Unexpected error while trying to queue the data")
+                    # LOGGER.critical(traceback.format_exc())   # raising will log this
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     sql_db.insert(method="replace")
                 except Exception:  # noqa
                     set_led("ev", "red")
-                    mf.syslog_trace(
-                        "Unexpected error while trying to commit the queued data "
-                        "to the database",
-                        syslog.LOG_ALERT,
-                        DEBUG,
-                    )
-                    mf.syslog_trace(traceback.format_exc(), syslog.LOG_ALERT, DEBUG)
+                    LOGGER.critical("Unexpected error while trying to commit the queued data ")
+                    # LOGGER.critical(traceback.format_exc())   # raising will log this
                     raise  # may be changed to pass if errors can be corrected.
 
             pause_interval = (
@@ -162,26 +159,16 @@ def main() -> None:
             new_start_dt = sql_db.latest_datapoint()  # type: str
             if new_start_dt < start_dt or not data:
                 # there is a hole in the data
-                mf.syslog_trace(
-                    f"Found a hole in the data between {start_dt} and {new_start_dt}.",
-                    syslog.LOG_WARNING,
-                    DEBUG,
-                )
+                LOGGER.warning(f"Found a hole in the data between {start_dt} and {new_start_dt}.")
                 dati = dt.datetime.strptime(new_start_dt, constants.DT_FORMAT) + dt.timedelta(
                     days=lookahead_days
                 )
 
                 if dati > dt.datetime.today():
-                    mf.syslog_trace(
-                        f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
-                        syslog.LOG_WARNING,
-                        DEBUG,
-                    )
+                    LOGGER.warning(f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.")
                     dati = dt.datetime.today()
                 start_dt = dati.strftime("%Y-%m-%d %H:%M:%S")
-                mf.syslog_trace(
-                    f"Attempting to cross it at {start_dt}.", syslog.LOG_WARNING, DEBUG
-                )
+                LOGGER.warning(f"Attempting to cross it at {start_dt}.")
                 # if we don't cross the gap then next time check more days ahead
                 lookahead_days += 1
                 if DEBUG:
@@ -200,19 +187,11 @@ def main() -> None:
             next_time = pause_interval + time.time()
 
             if pause_interval > 0:
-                mf.syslog_trace(
-                    f"Waiting  : {pause_interval:.1f}s",
-                    False,
-                    DEBUG,
-                )
-                mf.syslog_trace("................................", False, DEBUG)
+                LOGGER.debug(f"Waiting  : {pause_interval:.1f}s")
+                LOGGER.debug("................................")
             else:
-                mf.syslog_trace(
-                    f"Behind   : {pause_interval:.1f}s",
-                    False,
-                    DEBUG,
-                )
-                mf.syslog_trace("................................", False, DEBUG)
+                LOGGER.debug(f"Behind   : {pause_interval:.1f}s")
+                LOGGER.debug("................................")
         else:
             time.sleep(1.0)  # 1s resolution is enough
 
@@ -242,7 +221,7 @@ def do_work(zappi, start_dt=None) -> list:
 
 
 def set_led(dev, colour) -> None:
-    mf.syslog_trace(f"{dev} is {colour}", False, DEBUG)
+    LOGGER.debug(f"{dev} is {colour}")
 
     in_dirfile = f"{APPROOT}/www/{colour}.png"
     out_dirfile = f'{constants.TREND["website"]}/{dev}.png'
@@ -255,7 +234,11 @@ if __name__ == "__main__":
 
     if OPTION.debug:
         DEBUG = True
-        mf.syslog_trace("Debug-mode started.", syslog.LOG_DEBUG, DEBUG)
+        print(OPTION)
+        if len(LOGGER.handlers) == 0:
+            LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+        LOGGER.level = logging.DEBUG
+        LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 
     # OPTION.start only executes this next line, we don't need to test for it.

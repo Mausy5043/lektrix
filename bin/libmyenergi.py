@@ -10,11 +10,11 @@ import datetime as dt
 import json
 import logging
 import os
+import sys
 import syslog
 import time
 
 import constants
-import mausy5043_common.funfile as mf
 import numpy as np
 import pandas as pd
 import pytz
@@ -88,18 +88,22 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             auth=HTTPDigestAuth(self.hub_serial, self.api_key),
             timeout=constants.ZAPPI["requests_timeout"],
         )
-        if self.DEBUG:
-            mf.syslog_trace(f"Response Status Code : {_response.status_code}", False, self.DEBUG)
+        if debug:
+            if len(LOGGER.handlers) == 0:
+                LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+            LOGGER.level = logging.DEBUG
+            LOGGER.debug("Debugging on.")
+            LOGGER.debug(f"Response Status Code: {_response.status_code}")
             for key in _response.headers:
-                mf.syslog_trace(f"   {key}\t::\t{_response.headers[key]}", False, self.DEBUG)
-            mf.syslog_trace("", False, self.DEBUG)
+                LOGGER.debug(f"   {key} :: {_response.headers[key]}")
+            LOGGER.debug("***** ***** *****")
 
         # construct the URL for the ASN
         if "X_MYENERGI-asn" in _response.headers:
             _asn = _response.headers["X_MYENERGI-asn"]
             self.base_url = "https://" + _asn
-            mf.syslog_trace(f"ASN             : {_asn}", syslog.LOG_INFO, self.DEBUG)
-            mf.syslog_trace(f"Constructed URL : {self.base_url}", syslog.LOG_INFO, self.DEBUG)
+            LOGGER.info(f"ASN             : {_asn}")
+            LOGGER.info(f"Constructed URL : {self.base_url}")
         else:
             raise RuntimeError("myenergi ASN not found in myenergi header")
 
@@ -118,17 +122,9 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         try:
             key_value = confobj.get(key_section, key_option)
         except configparser.NoSectionError:
-            mf.syslog_trace(
-                f"Section [{key_section}] does not exist.",
-                syslog.LOG_WARNING,
-                self.DEBUG,
-            )
+            LOGGER.warning(f"Section [{key_section}] does not exist.")
         except configparser.NoOptionError:
-            mf.syslog_trace(
-                f"Option [{key_section}]\n{key_option} = ...    does not exist.",
-                syslog.LOG_WARNING,
-                self.DEBUG,
-            )
+            LOGGER.warning(f"Option [{key_section}]\n{key_option} = ...\ndoes not exist.")
         return key_value
 
     def get_status(self, command: str) -> dict:
@@ -143,7 +139,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
         result: dict = {}
         hdrs: dict = {"User-Agent": "Wget/1.20 (linux-gnu)"}
         call_url: str = f"{self.base_url}/{command}"
-        mf.syslog_trace(f"Calling {call_url}", False, self.DEBUG)
+        LOGGER.debug(f"Calling {call_url}")
         try:
             response = requests.get(  # nosec B113
                 call_url,
@@ -153,20 +149,20 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             )
         except requests.exceptions.ReadTimeout:
             # We raise the time-out here. If desired, retries should be handled by caller
-            mf.syslog_trace(f"{call_url} timed out!", syslog.LOG_WARNING, self.DEBUG)
+            LOGGER.warning(f"{call_url} timed out!")
             raise
         if self.DEBUG:
-            mf.syslog_trace(f"Response Status Code: {response.status_code}", False, self.DEBUG)
+            LOGGER.debug(f"Response Status Code: {response.status_code}")
             for key in response.headers:
-                mf.syslog_trace(f"   {key} :: {response.headers[key]}", False, self.DEBUG)
-            mf.syslog_trace("***** ***** *****", False, self.DEBUG)
+                LOGGER.debug(f"   {key} :: {response.headers[key]}")
+            LOGGER.debug("***** ***** *****")
 
         try:
             result = json.loads(response.content)
         except json.decoder.JSONDecodeError:
-            mf.syslog_trace("Could not load JSON data.", syslog.LOG_ERR, self.DEBUG)
+            LOGGER.critical("Could not load JSON data.")
             return result
-        mf.syslog_trace(f"{result}", False, self.DEBUG)
+        LOGGER.debug(f"{result}")
         return result
 
     def standardise_json_block(self, blk) -> dict:
@@ -205,7 +201,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             dt.datetime.strptime(date_time, constants.DT_FORMAT).timestamp()
         )
 
-        # mf.syslog_trace(f"> {result_dict}", False, self.DEBUG)
+        # LOGGER.debug(f"> {result_dict}")
         return result_dict
 
     def fetch_data(self, day_to_fetch: dt.datetime) -> None:
@@ -237,12 +233,12 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
                 previous_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch - dt.timedelta(days=1.0))[f"U{self.zappi_serial}"]]
             current_day_data = [self.standardise_json_block(block) for block in self._fetch(day_to_fetch)[f"U{self.zappi_serial}"]]
 
-            mf.syslog_trace(f"> {extra_day1_data[0]}", False, self.DEBUG)
-            mf.syslog_trace(f"> {extra_day1_data[1]}", False, self.DEBUG)
-            mf.syslog_trace(f"> {previous_day_data[0]}", False, self.DEBUG)
-            mf.syslog_trace(f"> {previous_day_data[1]}", False, self.DEBUG)
-            mf.syslog_trace(f"> {current_day_data[-2]}", False, self.DEBUG)
-            mf.syslog_trace(f"> {current_day_data[-1]}", False, self.DEBUG)
+            LOGGER.debug(f"> {extra_day1_data[0]}")
+            LOGGER.debug(f"> {extra_day1_data[1]}")
+            LOGGER.debug(f"> {previous_day_data[0]}")
+            LOGGER.debug(f"> {previous_day_data[1]}")
+            LOGGER.debug(f"> {current_day_data[-2]}")
+            LOGGER.debug(f"> {current_day_data[-1]}")
         except IndexError:
             LOGGER.warning(f"IndexError encountered for {day_to_fetch.strftime(format=constants.DT_FORMAT)}")
         except KeyError:
@@ -261,7 +257,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             (dict): whatever was returned by the server (probably a dict)
         """
 
-        mf.syslog_trace(f">> Asking for data from {this_day}", False, self.DEBUG)
+        LOGGER.debug(f">> Asking for data from {this_day}")
         result = {}
         done_flag = False
         timeout_retries = 3
@@ -327,7 +323,7 @@ class Myenergi:  # pylint: disable=too-many-instance-attributes
             df["frq"] = np.array(df["frq"] / 15, dtype="int")
             # recalculate 'sample_epoch'
             df["sample_epoch"] = df["sample_time"].apply(_convert_time_to_epoch)
-            mf.syslog_trace(f"{df}", False, self.DEBUG)
+            LOGGER.debug(f"{df}")
             result_data = df.to_dict("records")
         return result_data
 
