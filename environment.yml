@@ -20,7 +20,7 @@ dependencies:
   - pip:
       - gracefulkiller~=0.4
       - mausy5043-common==1.12.1
-      - python-homewizard-energy==7.0.0
+      - python-homewizard-energy==7.0.1
       - py-solaredge==0.0.4.9
 # legacy: This won't install on anything other than Linux (notably Raspberry Pi):
 # - pyserial=3.5
@@ -39,4 +39,3 @@ dependencies:
   - pipdeptree
   - pre-commit
   - scipy
-  - pylint
