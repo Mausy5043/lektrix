@@ -118,9 +118,7 @@ class MyListener(ServiceListener):
                     svc = ".".join(list(map(str, list(info.addresses[0]))))
             except BaseException:
                 LOGGER.debug(
-                    f"Exception for device info: {info}\n {
-                        info.properties}\n {
-                        info.addresses}\n"
+                    f"Exception for device info: {info}\n {info.properties}\n {info.addresses}\n"
                 )
                 raise
         if (__name in DISCOVERED) and (__type in DISCOVERED[__name]):
@@ -147,9 +145,7 @@ class MyListener(ServiceListener):
                     svc = ".".join(list(map(str, list(info.addresses[0]))))
             except BaseException:
                 LOGGER.debug(
-                    f"Exception for device info: {info}\n {
-                        info.properties}\n {
-                        info.addresses}\n"
+                    f"Exception for device info: {info}\n {info.properties}\n {info.addresses}\n"
                 )
                 raise
         LOGGER.debug(f"(+  ) Service {__name} discovered ( {__type} ) on {svc}")

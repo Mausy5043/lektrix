@@ -287,8 +287,7 @@ def main() -> None:
         plot_graph(
             constants.TREND["yg_gauge"],
             fetch_last_year(OPTION.gauge),
-            f"Salderingsbalans over {OPTION.gauge} "
-            f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            f"Salderingsbalans over {OPTION.gauge} ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             gauge=True,
         )
 
