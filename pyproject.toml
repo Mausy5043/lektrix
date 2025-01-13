@@ -15,7 +15,7 @@ dependencies = [
     "py-solaredge==0.0.4.9",
     "pyarrow~=18.1",
     "python-dateutil~=2.9",
-    "python-homewizard-energy==8.0.0",
+    "python-homewizard-energy~=7.0",
     "pytz~=2024.2",
     "requests~=2.32",
     "sh~=2.2",
