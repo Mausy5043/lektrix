@@ -16,6 +16,6 @@ python-dateutil~=2.9
 python-homewizard-energy==8.0.0
 pytz~=2024.2
 requests~=2.32
-sh~=2.1
+sh~=2.2
 tabulate~=0.9
-zeroconf==0.136.2
+zeroconf==0.139.0
