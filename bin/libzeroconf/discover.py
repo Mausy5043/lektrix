@@ -10,14 +10,12 @@ import json
 import logging
 import logging.handlers
 import os
+import platform
 import sys
-import syslog
 import time
 from typing import Any
-import platform
 
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
-
 
 # initialize logging
 is_macos = platform.system() == "Darwin"
@@ -223,5 +221,5 @@ if __name__ == "__main__":
     LOGGER.level = logging.DEBUG
 
     LOGGER.debug("Debug-mode started.")
-    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filtr='HWE-WTR')}")
+    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filtr='HWE-P1')}")
     LOGGER.debug("...done")
