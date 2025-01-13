@@ -14,20 +14,26 @@ import sys
 import syslog
 import time
 from typing import Any
+import platform
 
 from zeroconf import ServiceBrowser, ServiceListener, Zeroconf
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
-    datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
+
+# initialize logging
+is_macos = platform.system() == "Darwin"
+hndlrs: list = []
+if not is_macos:
+    hndlrs = [
         logging.handlers.SysLogHandler(
             address="/dev/log",
             facility=logging.handlers.SysLogHandler.LOG_DAEMON,
         ),
-        # logging.StreamHandler(sys.stdout)
-    ],
+    ]
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=hndlrs,
 )
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -208,24 +214,14 @@ def get_ip(service: str, filtr) -> list[str]:
     for _i in DISCOVERED:  # pylint: disable=consider-using-dict-items
         if filtr and filtr == DISCOVERED[_i][service]['service']:
             _ip.append(DISCOVERED[_i][service]["ip"])
-    LOGGER.info(f"IP = {_ip}")
     return _ip
 
 
 if __name__ == "__main__":
-    # initialise logging
-    syslog.openlog(
-        ident=f'{MYAPP}.{MYID.split(".")[0]}',
-        facility=syslog.LOG_LOCAL0,
-    )
-    DEBUG = True
+    # initialise logging to console
+    LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+    LOGGER.level = logging.DEBUG
 
-    if DEBUG:
-        if len(LOGGER.handlers) == 0:
-            LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-        LOGGER.level = logging.DEBUG
-        LOGGER.debug("Debugging started.")
-        print("Use <Ctrl>+C to stop.")
-
-    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filtr='HWE-P1')}")
+    LOGGER.debug("Debug-mode started.")
+    LOGGER.debug(f"IP = {get_ip(service='_hwenergy', filtr='HWE-WTR')}")
     LOGGER.debug("...done")
