@@ -186,7 +186,8 @@ def main() -> None:
                 # there is a hole in the data
                 LOGGER.warning(
                     f"Found a hole in the data starting at {
-                        new_start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                        new_start_dt.strftime('%Y-%m-%d %H:%M:%S')
+                    }."
                 )
                 dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
                 if dati > dt.datetime.today():
@@ -198,8 +199,7 @@ def main() -> None:
                     dati = dt.datetime.today()
                 start_dt = dati
                 LOGGER.warning(
-                    f"Attempting to cross it at {
-                        start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
+                    f"Attempting to cross it at {start_dt.strftime('%Y-%m-%d %H:%M:%S')}."
                 )
                 # if we don't cross the gap then next time check more days ahead
                 lookahead_days += 1
