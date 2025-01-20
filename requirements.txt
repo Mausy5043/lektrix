@@ -13,7 +13,7 @@ pyarrow~=19.0
 # legacy:
 # pyserial==3.5
 python-dateutil~=2.9
-python-homewizard-energy~=7.0
+python-homewizard-energy~=8.1
 pytz~=2024.2
 requests~=2.32
 sh~=2.2
