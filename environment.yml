@@ -31,7 +31,7 @@ dependencies:
   - requests=2.32
   - sh=2.2
   - tabulate=0.9
-  - zeroconf=0.141
+  - zeroconf=0.141.0
 
   # dev deps
   - jupyterlab
