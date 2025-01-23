@@ -9,7 +9,8 @@ mausy5043-common==1.12.1
 numpy~=2.2
 pandas~=2.2
 py-solaredge==0.0.4.9
-pyarrow~=19.0
+# already delivered by mausy5043-common:
+# pyarrow~=19.0
 # legacy:
 # pyserial==3.5
 python-dateutil~=2.9

@@ -22,9 +22,10 @@ dependencies:
       - mausy5043-common==1.12.1
       - python-homewizard-energ~=7.0
       - py-solaredge==0.0.4.9
-# legacy: This won't install on anything other than Linux (notably Raspberry Pi):
-# - pyserial=3.5
-  - pyarrow=18.1
+  # legacy: This won't install on anything other than Linux (notably Raspberry Pi):
+  # - pyserial=3.5
+  # already delivered by mausy5043-common:
+  # - pyarrow=18.1
   - python-dateutil=2.9
   - pytz=2024.2
   - requests=2.32
