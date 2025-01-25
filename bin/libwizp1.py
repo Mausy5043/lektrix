@@ -12,6 +12,7 @@
 import datetime as dt
 import logging
 import sys
+import time
 
 import constants
 import numpy as np
@@ -30,10 +31,16 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
 
     def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
         # get a HomeWizard IP
-        _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
-
-        if _howip:
-            self.ip = _howip[0]
+        self.ip = ""
+        deltat = 10
+        while not self.ip:
+            _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
+            if _howip:
+                self.ip = _howip[0]
+            else:
+                LOGGER.error(f"No HomeWizard P1 found. Retrying in {deltat} seconds.")
+                time.sleep(deltat)
+                deltat *= 1.4142
         self.dt_format = constants.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
         # starting values
         self.electra1in = np.nan

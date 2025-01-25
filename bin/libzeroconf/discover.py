@@ -188,9 +188,9 @@ class MyListener(ServiceListener):
         return normdict
 
 
-def get_ip(service: str, filtr) -> list[str]:
+def get_ip(service: str, filtr: str) -> list[str]:
     """."""
-    _ip = []
+    _ip: list[str] = []
     _zc = Zeroconf()
     _ls = MyListener()
     _service = service
