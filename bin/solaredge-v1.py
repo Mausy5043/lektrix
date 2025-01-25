@@ -77,6 +77,7 @@ NODE: str = os.uname()[1]
 
 def main() -> None:
     """Execute main loop until killed."""
+    LOGGER.info(f"Running on Python {sys.version}")
     single_loop = False
     set_led("solar", "orange")
     killer = gk.GracefulKiller()

@@ -75,6 +75,7 @@ NODE = os.uname()[1]
 
 def main() -> None:
     """Execute main loop until killed."""
+    LOGGER.info(f"Running on Python {sys.version}")
     set_led("ev", "orange")
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()

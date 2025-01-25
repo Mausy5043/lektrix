@@ -7,6 +7,7 @@
 """Create multi-year graphs"""
 
 import argparse
+import sys
 import time
 from datetime import datetime as dt
 
@@ -293,6 +294,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    print(f"Trending with Python {sys.version}")
     year_to_graph = int(time.strftime("%Y", time.localtime()))
 
     if OPTION.months == 0:

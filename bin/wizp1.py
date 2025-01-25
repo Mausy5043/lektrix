@@ -65,6 +65,7 @@ NODE = os.uname()[1]  # rbelec
 
 def main() -> None:
     """Execute main loop until killed."""
+    LOGGER.info(f"Running on Python {sys.version}")
     set_led("mains", "orange")
     killer = gk.GracefulKiller()
     API_P1 = p1.WizP1_v1(debug=DEBUG)

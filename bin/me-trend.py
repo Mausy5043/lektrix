@@ -12,6 +12,7 @@ Using myenergi data
 import argparse
 import random
 import sqlite3 as s3
+import sys
 import time
 import warnings
 from datetime import datetime as dt
@@ -310,6 +311,7 @@ def main(opt) -> None:
     """
     This is the main loop
     """
+    print(f"Trending with Python {sys.version}")
     if opt.hours:
         plot_graph(
             constants.TREND["hour_graph_v2"],
