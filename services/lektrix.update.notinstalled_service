@@ -10,5 +10,6 @@ Wants=lektrix.update.timer
 Type=oneshot
 User=pi
 EnvironmentFile=/home/pi/.pyenvpaths
+WorkingDirectory=/home/pi/wizwtr
 ExecStart=/home/pi/lektrix/lektrix --systemd
 TimeoutStopSec=900

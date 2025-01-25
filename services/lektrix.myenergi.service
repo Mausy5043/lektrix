@@ -9,7 +9,7 @@ After=multi-user.target
 Type=simple
 User=pi
 EnvironmentFile=/home/pi/.pyenvpaths
-# ExecStartPre=/bin/sleep 20
+WorkingDirectory=/home/pi/wizwtr
 ExecStart=/home/pi/lektrix/bin/myenergi.py --start
 # stand back for 15 minutes to allow for server to fail-over
 RestartSec=900s

@@ -8,6 +8,7 @@ Wants=lektrix.trend.month.timer
 Type=oneshot
 User=pi
 EnvironmentFile=/home/pi/.pyenvpaths
+WorkingDirectory=/home/pi/wizwtr
 ExecStart=/home/pi/lektrix/bin/pastmonth.sh -
 
 # [Install]

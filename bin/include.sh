@@ -174,6 +174,8 @@ install_lektrix() {
         action_apt_install "${PKG}"
     done
     # install Python3 stuff
+    pyenv virtualenv 3.12 lektrix
+    pyenv local lektrix
     python3 -m pip install --upgrade pip setuptools wheel
     python3 -m pip install --upgrade -r requirements.txt
     echo
