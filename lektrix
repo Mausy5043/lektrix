@@ -6,6 +6,8 @@ pushd "${HERE}" >/dev/null || exit 1
 
 PARENT_COMMAND=$(ps $PPID | tail -n 1 | awk "{print \$5}")
 echo "*** lektrix caller: ${PARENT_COMMAND}"
+echo "*** calling from  : ${HERE} || $(pwd)"
+echo "*** using Python  : $(pyenv which python)"
 
 # shellcheck disable=SC1091
 source ./bin/include.sh
