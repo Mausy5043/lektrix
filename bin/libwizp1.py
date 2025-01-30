@@ -78,7 +78,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
                 self.firstcall = False
 
             # Get measurements
-            wiz_data = await _api.data()
+            wiz_data = await _api.measurement()
             LOGGER.debug(wiz_data)
             LOGGER.debug("---")
 
@@ -94,47 +94,12 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
         Returns:
             (dict): data converted to a dict.
         """
-
-        # telegram will look something like this:
-        #
-        # Data(wifi_ssid='wifiSSID', wifi_strength=72, smr_version=None,
-        # meter_model='KamstrupKA_______', unique_meter_id=' KA________',
-        # active_tariff=2,
-        # total_energy_import_kwh=37736.315,
-        # total_energy_import_t1_kwh=24001.234, total_energy_import_t2_kwh=13735.081,
-        # total_energy_import_t3_kwh=None, total_energy_import_t4_kwh=None,
-        # total_energy_export_kwh=11438.238,
-        # total_energy_export_t1_kwh=3195.724, total_energy_export_t2_kwh=8242.514,
-        # total_energy_export_t3_kwh=None, total_energy_export_t4_kwh=None,
-        # active_power_w=760.0,
-        # active_power_l1_w=None, active_power_l2_w=None, active_power_l3_w=None,
-        # active_voltage_v=None,
-        # active_voltage_l1_v=None, active_voltage_l2_v=None, active_voltage_l3_v=None,
-        # active_current_a=None,
-        # active_current_l1_a=None, active_current_l2_a=None, active_current_l3_a=None,
-        # active_apparent_power_va=None,
-        # active_apparent_power_l1_va=None, active_apparent_power_l2_va=None,
-        # active_apparent_power_l3_va=None,
-        # active_reactive_power_var=None,
-        # active_reactive_power_l1_var=None, active_reactive_power_l2_var=None,
-        # active_reactive_power_l3_var=None,
-        # active_power_factor=None,
-        # active_power_factor_l1=None, active_power_factor_l2=None, active_power_factor_l3=None,
-        # active_frequency_hz=None,
-        # voltage_sag_l1_count=None, voltage_sag_l2_count=None, voltage_sag_l3_count=None,
-        # voltage_swell_l1_count=None, voltage_swell_l2_count=None, voltage_swell_l3_count=None,
-        # any_power_fail_count=None, long_power_fail_count=None, active_power_average_w=None,
-        # monthly_power_peak_w=None, monthly_power_peak_timestamp=None,
-        # total_gas_m3=None, gas_timestamp=None, gas_unique_id=None,
-        # active_liter_lpm=None, total_liter_m3=None,
-        # external_devices={})
-
-        self.electra1in = int(telegram.total_energy_import_t1_kwh * 1000)
-        self.electra2in = int(telegram.total_energy_import_t2_kwh * 1000)
-        self.electra1out = int(telegram.total_energy_export_t1_kwh * 1000)
-        self.electra2out = int(telegram.total_energy_export_t2_kwh * 1000)
-        self.tarif = telegram.active_tariff
-        self.powerin = telegram.active_power_w
+        self.electra1in = int(telegram.energy_import_t1_kwh * 1000)
+        self.electra2in = int(telegram.energy_import_t2_kwh * 1000)
+        self.electra1out = int(telegram.energy_export_t1_kwh * 1000)
+        self.electra2out = int(telegram.energy_export_t2_kwh * 1000)
+        self.tarif = telegram.tariff
+        self.powerin = telegram.power_w
         self.powerout = 0.0
         self.swits = 1
         if self.powerin < 0.0:

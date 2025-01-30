@@ -33,14 +33,14 @@ async def async_work():
         print(wiz_dev)
 
         # Get measurements, like energy or water usage
-        wiz_data = await api.data()
+        wiz_data = await api.measurement()
         print("\ndata")
         print(wiz_data)
-        print(wiz_data.total_energy_import_kwh)
+        print(wiz_data.energy_import_kwh)
 
-        wiz_state = await api.state()
-        print("\nstate")
-        print(wiz_state)
+        # wiz_state = await api.state()
+        # print("\nstate")
+        # print(wiz_state)
 
         wiz_system = await api.system()
         print("\nsystem")

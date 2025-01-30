@@ -201,7 +201,7 @@ def get_ip(service: str, filtr: str) -> list[str]:
 
     t0: float = time.time()
     dt: float = 0.0
-    while (dt < 60.0) and not DISCOVERED:
+    while (dt < 10.0) or not DISCOVERED:
         dt = time.time() - t0
     _zc.close()
     LOGGER.info(json.dumps(DISCOVERED, indent=4))
