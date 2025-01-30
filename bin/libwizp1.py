@@ -32,7 +32,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
     def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
         # get a HomeWizard IP
         self.ip = ""
-        deltat = 10
+        deltat: float = 10.0
         while not self.ip and deltat < 300:
             _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
             if _howip:
