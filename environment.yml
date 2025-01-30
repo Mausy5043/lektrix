@@ -14,8 +14,10 @@ dependencies:
 
   # imported deps
   - matplotlib=3.10
-  - numpy=2.2
-  - pandas=2.2
+  # already delivered by mausy5043-common:
+  # - numpy=2.2
+  # - pandas=2.2
+  # - pyarrow=18.1
   # Not on conda channels:
   - pip:
       - gracefulkiller~=0.4
@@ -24,8 +26,6 @@ dependencies:
       - py-solaredge==0.0.4.9
   # legacy: This won't install on anything other than Linux (notably Raspberry Pi):
   # - pyserial=3.5
-  # already delivered by mausy5043-common:
-  # - pyarrow=18.1
   - python-dateutil=2.9
   - pytz=2024.2
   - requests=2.32
