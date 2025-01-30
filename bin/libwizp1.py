@@ -33,14 +33,15 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
         # get a HomeWizard IP
         self.ip = ""
         deltat = 10
-        while not self.ip:
+        while not self.ip and deltat < 300:
             _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
             if _howip:
                 self.ip = _howip[0]
             else:
                 LOGGER.error(f"No HomeWizard P1 found. Retrying in {deltat} seconds.")
                 time.sleep(deltat)
-                deltat *= 1.4142
+                deltat = int(deltat * 14.142) / 10
+
         self.dt_format = constants.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
         # starting values
         self.electra1in = np.nan
