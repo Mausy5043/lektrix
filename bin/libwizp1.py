@@ -78,7 +78,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
                 self.firstcall = False
 
             # Get measurements
-            wiz_data = await _api.data()
+            wiz_data = await _api.measurement()
             LOGGER.debug(wiz_data)
             LOGGER.debug("---")
 
