@@ -37,7 +37,9 @@ dependencies:
   # dev deps
   - jupyterlab
   - libtiff
-#  - pandas-stubs
+  - pandas-stubs
   - pipdeptree
   - pre-commit
   - scipy
+  - types-pytz
+  - types-requests
