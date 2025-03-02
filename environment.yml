@@ -14,10 +14,10 @@ dependencies:
 
   # imported deps
   - matplotlib=3.10
-  # already delivered by mausy5043-common:
-  # - numpy=2.2
-  # - pandas=2.2
-  # - pyarrow=18.1
+  # already delivered by mausy5043-common, no need to specify version here:
+  - numpy
+  - pandas
+
   # Not on conda channels:
   - pip:
       - gracefulkiller~=0.4
