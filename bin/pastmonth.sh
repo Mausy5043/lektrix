@@ -42,10 +42,10 @@ if [ "${MAINTENANCE}" == "-" ]; then
     execute_sql "${db_full_path}" "PRAGMA integrity_check;"
     if [ "${flag_sql_succes=1}" == 0 ]; then
         echo "${db_full_path} copying to backup... "
-        # copy to backup
+        # copy to BACKUP folder
         if command -v rclone &> /dev/null; then
             # shellcheck disable=SC2154
-            rclone copyto -v \
+            rclone copyto v --protondrive-replace-existing-draft=true \
                    "${database_local_root}/${app_name}/${database_filename}" \
                    "${database_remote_root}/backup/${database_filename}"
         fi
@@ -63,7 +63,7 @@ if [ "${MAINTENANCE}" == "-" ]; then
     if command -v rclone &> /dev/null; then
         echo "${db_full_path} syncing... "
         # shellcheck disable=SC2154
-        rclone copyto -v \
+        rclone copyto -v --protondrive-replace-existing-draft=true \
                "${database_local_root}/${app_name}/${database_filename}" \
                "${database_remote_root}/${app_name}/${database_filename}"
     fi
