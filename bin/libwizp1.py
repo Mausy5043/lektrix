@@ -18,7 +18,7 @@ import constants
 import numpy as np
 import pandas as pd
 from homewizard_energy import HomeWizardEnergyV1
-from libzeroconf import discover as zcd
+from mausy5043_common import funzeroconf as zcd
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 

@@ -21,7 +21,7 @@ dependencies:
   # Not on conda channels:
   - pip:
       - gracefulkiller~=0.4
-      - mausy5043-common==2.1.1
+      - mausy5043-common==2.2.1
       # many breaking changes expected
       - python-homewizard-energy==8.3.2
       - py-solaredge==0.0.4.9
@@ -32,7 +32,7 @@ dependencies:
   - requests=2.32
   - sh=2.2
   - tabulate=0.9
-  - zeroconf=0.145.1
+  - zeroconf=0.146.1
 
   # dev deps
   - jupyterlab
