@@ -4,6 +4,7 @@
 -- create a table `production` for SOLAREDGE solar panel monitoring
 -- create a table `charger` for ZAPPI EV charger monitoring
 -- create a table `storage` for *future* home battery monitoring
+-- table `prices` is added in a separate script
 
 DROP TABLE IF EXISTS mains;
 
