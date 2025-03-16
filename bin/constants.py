@@ -197,6 +197,7 @@ WIZ_P1: dict = {
         "tarif": 1,
         "swits": 1,
     },
+    "config": f"{_MYHOME}/.config/lektrix/homewizard/p1.json",
 }
 # fmt: on
 
