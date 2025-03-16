@@ -29,12 +29,14 @@ constants_sh_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 # list of timers provided
 declare -a lektrix_timers=("lektrix.trend.day.timer"
     "lektrix.trend.month.timer"
-    "lektrix.trend.year.timer")
+    "lektrix.trend.year.timer"
+    "lektrix.prices.timer")
   # "lektrix.update.timer" (incl. the .service) is not installed
 # list of services provided
 declare -a lektrix_services=("lektrix.wizp1.service"
     "lektrix.myenergi.service"
-    "lektrix.solaredge.service")
+    "lektrix.solaredge.service"
+    "lektrix.prices.service")
 # Install python3 and develop packages
 # Support for matplotlib & numpy needs to be installed seperately
 # Support for serial port
