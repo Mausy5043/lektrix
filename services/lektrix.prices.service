@@ -1,0 +1,12 @@
+# This service is for daily collection of hourly electricity prices
+
+[Unit]
+Description=collecting electricity prices (service)
+Wants=lektrix.prices.timer
+
+[Service]
+Type=oneshot
+User=pi
+EnvironmentFile=/home/pi/.pyenvpaths
+WorkingDirectory=/home/pi/lektrix
+ExecStart=/home/pi/lektrix/bin/prices.py

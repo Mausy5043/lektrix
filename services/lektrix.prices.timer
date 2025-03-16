@@ -1,0 +1,11 @@
+# This timer is for triggering the daily collection of hourly electricity prices
+
+[Unit]
+Description=collecting electricity prices (timer)
+
+[Timer]
+OnCalendar=*-*-* 16:03
+RandomizedDelaySec=10m
+
+[Install]
+WantedBy=timers.target
