@@ -155,7 +155,7 @@ unstall_lektrix() {
     action_timers rm
     action_services rm
     rm "${APPROOT}/.${app_name}.branch"
-    sudo rm /var/www/state
+    sudo rm /var/www/lektrix
 }
 
 # install the application
@@ -205,7 +205,7 @@ install_lektrix() {
     action_services enable
 
     # install a link to the website on /tmp/....
-    sudo ln -s "${website_dir}" /var/www/state
+    sudo ln -s "${website_dir}" /var/www/lektrix
 
     echo "Installation complete. To start the application use:"
     echo "   lektrix --go"
