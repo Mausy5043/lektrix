@@ -176,7 +176,7 @@ install_lektrix() {
         action_apt_install "${PKG}"
     done
     # install Python3 stuff
-    pyenv virtualenv 3.12 "${app_name}"  # create a virtual environment
+    pyenv virtualenv 3.13 "${app_name}"  # create a virtual environment
     pyenv local "${app_name}"     # set the virtual environment for the project
     python3 -m pip install --upgrade pip setuptools wheel
     python3 -m pip install --upgrade -r requirements.txt
