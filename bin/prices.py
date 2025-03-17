@@ -33,7 +33,7 @@ try:
     response = requests.get(url, timeout=10.0, params=params)
     response.raise_for_status()  # Raise an exception for HTTP errors
     # Parse the JSON data
-    data: list[dict] = response.json()
+    data = response.json()
     # print(json.dumps(data, indent=4))
 except requests.exceptions.RequestException as e:
     print(f"An error occurred: {e}")
