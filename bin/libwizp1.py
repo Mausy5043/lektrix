@@ -169,6 +169,9 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
         return result_data, remain_data
 
 
+# https://api-documentation.homewizard.com/docs/category/api-v2
+
+
 class WizP1_v2(WizP1_v1):
     """Class to interact with the Home Wizard P1-dongle."""
 
