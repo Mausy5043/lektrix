@@ -8,6 +8,7 @@ import configparser
 import json
 import os
 
+import pandas as pd
 import requests
 
 # Read the API key and URL from the INI file
@@ -28,15 +29,33 @@ except (FileNotFoundError, configparser.Error) as e:
 params = {"period": "morgen", "type": "json", "key": api_key}
 # period=jaar&year=2013
 
-data: list[dict] = []
+resp_data: list[dict] = []
 try:
     response = requests.get(url, timeout=10.0, params=params)
     response.raise_for_status()  # Raise an exception for HTTP errors
     # Parse the JSON data
-    data = response.json()
-    # print(json.dumps(data, indent=4))
+    resp_data = response.json()
+    print(json.dumps(resp_data, indent=4))
 except requests.exceptions.RequestException as e:
     print(f"An error occurred: {e}")
 
+data: list[dict] = []
+for item in resp_data:
+    price = float(item['prijs_excl_belastingen'].replace(',', '.'))
+    sample_time = item['datum']
+    sample_epoch = int(pd.Timestamp(sample_time).timestamp())
+    data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
+
 with open(savefile, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=True, indent=4)
+
+# sql_db = m3.SqlDatabase(
+#     database=constants.ZAPPI["database"],
+#     table="charger",
+#     insert=constants.ZAPPI["sql_command"],
+# )
+#
+# for element in data:
+#     sql_db.queue(element)
+#
+# sql_db.insert(method="replace")
