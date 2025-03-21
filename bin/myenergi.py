@@ -83,7 +83,7 @@ def main() -> None:
 
     sql_db = m3.SqlDatabase(
         database=constants.ZAPPI["database"],
-        table="charger",
+        table=constants.ZAPPI["sql_table"],
         insert=constants.ZAPPI["sql_command"],
         debug=DEBUG,
     )

@@ -94,7 +94,7 @@ def main() -> None:
 
     sql_db = m3.SqlDatabase(
         database=constants.SOLAREDGE["database"],
-        table="production",
+        table=constants.SOLAREDGE["sql_table"],
         insert=constants.SOLAREDGE["sql_command"],
         debug=DEBUG,
     )
