@@ -37,7 +37,7 @@ try:
     response.raise_for_status()  # Raise an exception for HTTP errors
     # Parse the JSON data
     resp_data = response.json()
-    print(json.dumps(resp_data, indent=4))
+    # print(json.dumps(resp_data, indent=4))
 except requests.exceptions.RequestException as e:
     print(f"An error occurred: {e}")
 
