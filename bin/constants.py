@@ -197,7 +197,23 @@ WIZ_P1: dict = {
         "tarif": 1,
         "swits": 1,
     },
-    "config": f"{_MYHOME}/.config/lektrix/homewizard/p1.json",
+    "config": f"{_MYHOME}/.config/homewizard/p1.json",
+}
+
+PRICES: dict = {
+    "database": _DATABASE,
+    "sql_table": "prices",
+    "sql_command": "INSERT INTO prices ("
+                   "sample_time, sample_epoch, "
+                   "price"
+                   ");"
+                   "VALUES (?, ?, ?)",
+    "template": {
+        "sample_time": "dd-mmm-yyyy hh:mm:ss",
+        "sample_epoch": 0,
+        "price": 0.0,
+    },
+    "config": f"{_MYHOME}/.config/lektrix/jeroen.json",
 }
 # fmt: on
 
