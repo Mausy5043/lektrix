@@ -213,7 +213,7 @@ PRICES: dict = {
         "sample_epoch": 0,
         "price": 0.0,
     },
-    "config": f"{_MYHOME}/.config/lektrix/jeroen.json",
+    "config": f"{_MYHOME}/.config/lektrix/jeroen.ini",
 }
 # fmt: on
 
