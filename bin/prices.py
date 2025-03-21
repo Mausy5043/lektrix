@@ -16,7 +16,6 @@ from mausy5043_common import libsqlite3 as m3
 # Read the API key and URL from the INI file
 config_file = cs.PRICES["config"]
 config = configparser.ConfigParser()
-
 try:
     # Reading the INI config file
     with open(config_file) as file:
@@ -28,9 +27,9 @@ except (FileNotFoundError, configparser.Error) as e:
     print(f"Error reading config file: {e}")
     exit(1)
 
+# Get the data from the API
 params = {"period": "morgen", "type": "json", "key": api_key}
 # period=jaar&year=2013
-
 resp_data: list[dict] = []
 try:
     response = requests.get(url, timeout=10.0, params=params)
@@ -41,6 +40,7 @@ try:
 except requests.exceptions.RequestException as e:
     print(f"An error occurred: {e}")
 
+# Convert the data for the database
 data: list[dict] = []
 for item in resp_data:
     price = float(item['prijs_excl_belastingen'].replace(',', '.'))
@@ -48,16 +48,17 @@ for item in resp_data:
     sample_epoch = int(pd.Timestamp(sample_time).timestamp())
     data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
 
+# Save the data to a JSON file
 with open(savefile, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=True, indent=4)
 
+# Save the data to the database
 sql_db = m3.SqlDatabase(
     database=cs.PRICES["database"],
     table=cs.PRICES["sql_table"],
     insert=cs.PRICES["sql_command"],
     debug=True,
 )
-
 for element in data:
     sql_db.queue(element)
 
