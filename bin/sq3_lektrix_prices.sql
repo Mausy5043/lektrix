@@ -1,6 +1,6 @@
 #!/usr/bin/env sqlite3
 -- SQLite3 script
--- create a table `prices` for dynamic electricity usage
+-- create a table `prices` to store dynamic electricity prices
 
 DROP TABLE IF EXISTS prices;
 
