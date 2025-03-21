@@ -7,8 +7,8 @@
 import configparser
 import json
 import os
-import constants as cs
 
+import constants as cs
 import pandas as pd
 import requests
 from mausy5043_common import libsqlite3 as m3
