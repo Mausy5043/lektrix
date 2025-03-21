@@ -7,12 +7,14 @@
 import configparser
 import json
 import os
+import constants as cs
 
 import pandas as pd
 import requests
+from mausy5043_common import libsqlite3 as m3
 
 # Read the API key and URL from the INI file
-config_file = os.path.expanduser("~/.config/lektrix/jeroen.conf")
+config_file = cs.PRICES["config"]
 config = configparser.ConfigParser()
 
 try:
@@ -49,13 +51,14 @@ for item in resp_data:
 with open(savefile, 'w', encoding='utf-8') as f:
     json.dump(data, f, ensure_ascii=True, indent=4)
 
-# sql_db = m3.SqlDatabase(
-#     database=constants.ZAPPI["database"],
-#     table="charger",
-#     insert=constants.ZAPPI["sql_command"],
-# )
-#
-# for element in data:
-#     sql_db.queue(element)
-#
-# sql_db.insert(method="replace")
+sql_db = m3.SqlDatabase(
+    database=cs.PRICES["database"],
+    table=cs.PRICES["sql_table"],
+    insert=cs.PRICES["sql_command"],
+    debug=True,
+)
+
+for element in data:
+    sql_db.queue(element)
+
+sql_db.insert(method="replace")
