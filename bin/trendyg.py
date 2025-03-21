@@ -294,7 +294,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    print(f"Trending with Python {sys.version}")
+    print(f"Trending (yg) with Python {sys.version}")
     year_to_graph = int(time.strftime("%Y", time.localtime()))
 
     if OPTION.months == 0:

@@ -36,7 +36,7 @@ TABLE_CHRGR = constants.ZAPPI["sql_table"]
 DEBUG = False
 EDATETIME = "'now'"
 
-# fmt:off
+# fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
 parser.add_argument("--hours", "-hr",
                     type=int,
@@ -54,7 +54,7 @@ parser.add_argument("--years", "-y",
                     type=int,
                     help="number of months of data to use for the graph",
                     )
-parser.add_argument("-e", "--edate",
+parser.add_argument("--edate", "-e",
                     type=str,
                     help="date of last day of the graph (default: now)",
                     )
@@ -68,8 +68,7 @@ OPTION = parser.parse_args()
 
 
 def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
-    """
-    Query the database to fetch the requested data
+    """Query the database to fetch the requested data
 
     Args:
         hours_to_fetch (int): hours of data to retrieve
@@ -366,7 +365,7 @@ def main(opt) -> None:
 
 
 if __name__ == "__main__":
-    print(f"Trending with Python {sys.version}")
+    print(f"Trending (ms) with Python {sys.version}")
     if OPTION.hours == 0:
         OPTION.hours = 80
     if OPTION.days == 0:

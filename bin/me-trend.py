@@ -34,6 +34,8 @@ DATABASE = constants.TREND["database"]
 TABLE_MAINS = constants.KAMSTRUP["sql_table"]
 TABLE_PRDCT = constants.SOLAREDGE["sql_table"]
 TABLE_CHRGR = constants.ZAPPI["sql_table"]
+DEBUG = False
+EDATETIME = "'now'"
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
@@ -64,9 +66,6 @@ parser_group.add_argument("--debug",
                           )
 OPTION = parser.parse_args()
 # fmt: on
-
-DEBUG = False
-EDATETIME = "'now'"
 
 
 def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
@@ -251,10 +250,10 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
-        # if DEBUG:
-        #     print(parameter)
-        #     print(data_frame)
-        mjr_ticks = int(len(data_frame.index) / 30)
+        if DEBUG:
+            print(parameter)
+            print(data_frame.to_markdown(floatfmt=".3f"))
+        mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
             mjr_ticks = 1
         ticklabels = [""] * len(data_frame.index)
@@ -311,7 +310,6 @@ def main(opt) -> None:
     """
     This is the main loop
     """
-    print(f"Trending with Python {sys.version}")
     if opt.hours:
         plot_graph(
             constants.TREND["hour_graph_v2"],
@@ -345,6 +343,7 @@ def main(opt) -> None:
 
 
 if __name__ == "__main__":
+    print(f"Trending (me) with Python {sys.version}")
     if OPTION.hours == 0:
         OPTION.hours = 80
     if OPTION.days == 0:
