@@ -287,6 +287,7 @@ if __name__ == "__main__":
         # ATTENTION: the calculation of average prices depends on there being a
         # whole number of days in the period
         edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
+        EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
         sdate = dt.now().replace(hour=0, minute=0, second=0, microsecond=0)
         # - dttd(hours=dt.now().hour - 1)
         # )
