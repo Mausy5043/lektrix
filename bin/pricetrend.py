@@ -20,6 +20,7 @@ import constants as cs
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import pandas as pd
+import numpy as np
 
 DATABASE = cs.PRICES["database"]
 TABLE_PRICE = cs.PRICES["sql_table"]
@@ -145,8 +146,11 @@ def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
         day_avg = davg_df.iloc[row]['price']
         _l += [day_avg] * 24
     df['avg_price'] = _l
-    df['low'] = df['price'].where(df['price'] < df['avg_price'])
-    df['high'] = df['price'].where(df['price'] > df['avg_price'])
+    df['past'] = np.where(df['sample_time'] < dt.now(), df['price'], np.nan)
+    df['low'] = np.where(df['price'] <= df['avg_price'], df['price'], np.nan)
+    df['low'] = np.where(df['past'].notna(), np.nan, df['low'])
+    df['high'] = np.where(df['price'] > df['avg_price'], df['price'], np.nan)
+    df['high'] = np.where(df['past'].notna(), np.nan, df['high'])
 
     # drop sample_time separately!
     df.drop("sample_time", axis=1, inplace=True, errors="ignore")
@@ -217,7 +221,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 stacked=True,
                 width=0.9,
                 figsize=(fig_x, fig_y),
-                color=["red", "seagreen"],
+                color=["red", "seagreen", "orange"],
             )
             # linewidth and alpha need to be set separately
             for _, a in enumerate(ax1.lines):
