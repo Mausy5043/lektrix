@@ -7,6 +7,7 @@
 import configparser
 import json
 import os
+import sys
 
 import constants as cs
 import pandas as pd
@@ -20,17 +21,28 @@ try:
     # Reading the INI config file
     with open(config_file) as file:
         config.read_file(file)
-    api_key: str = config.get("API", "key")
-    url: str = config.get("API", "url")
-    savefile: str = os.path.expanduser(config.get("API", "saveto"))
-except (FileNotFoundError, configparser.Error) as e:
-    print(f"Error reading config file: {e}")
-    exit(1)
+    api_key: str = config.get("API", "key", fallback="")
+    url: str = config.get("API", "url", fallback="")
+    savefile: str = os.path.expanduser(
+        config.get(
+            "API",
+            "saveto",
+        )
+    )
+    if not api_key or not url:
+        print("API key or URL missing in the configuration.")
+        sys.exit(1)
+except FileNotFoundError:
+    print(f"Config file not found: {config_file}")
+    sys.exit(1)
+except configparser.Error as e:
+    print(f"Error processing config file: {e}")
+    sys.exit(1)
+
 
 # Get the data from the API
 params = {"period": "morgen", "type": "json", "key": api_key}
 # period=jaar&year=2013
-resp_data: list[dict] = []
 try:
     response = requests.get(url, timeout=10.0, params=params)
     response.raise_for_status()  # Raise an exception for HTTP errors
@@ -39,14 +51,18 @@ try:
     # print(json.dumps(resp_data, indent=4))
 except requests.exceptions.RequestException as e:
     print(f"An error occurred: {e}")
+    resp_data = []
 
 # Convert the data for the database
-data: list[dict] = []
+data: list = []
 for item in resp_data:
-    price = float(item['prijs_excl_belastingen'].replace(',', '.'))
-    sample_time = item['datum']
-    sample_epoch = int(pd.Timestamp(sample_time).timestamp())
-    data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
+    try:
+        sample_time = item['datum']
+        price = float(item['prijs_excl_belastingen'].replace(',', '.'))
+        sample_epoch = int(pd.Timestamp(sample_time).timestamp())
+        data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
+    except (KeyError, ValueError, TypeError) as e:
+        print(f"Error processing item: {item}, error: {e}")
 
 # Save the data to a JSON file
 with open(savefile, 'w', encoding='utf-8') as f:
