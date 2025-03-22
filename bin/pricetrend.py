@@ -289,18 +289,23 @@ if __name__ == "__main__":
         edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
         EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
         sdate = dt.now().replace(hour=0, minute=0, second=0, microsecond=0)
-        # - dttd(hours=dt.now().hour - 1)
-        # )
-        EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
         OPTION.hours = (edate - sdate).total_seconds() / 3600
     if OPTION.hours == 0:
-        OPTION.hours = 80
-    if OPTION.days == 0:
-        OPTION.days = 80
-    if OPTION.months == 0:
-        OPTION.months = 6 * 12 + dt.now().month
-    if OPTION.years == 0:
-        OPTION.years = 10
+        edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
+        EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
+        OPTION.hours = 8 * 24
+    # if OPTION.days == 0:
+    #     edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
+    #     EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
+    #     OPTION.days = 80
+    # if OPTION.months == 0:
+    #     edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
+    #     EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
+    #     OPTION.months = 6 * 12 + dt.now().month
+    # if OPTION.years == 0:
+    #     edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
+    #     EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
+    #     OPTION.years = 10
     if OPTION.edate:
         print("NOT NOW")
         EDATETIME = f"'{OPTION.edate}'"
