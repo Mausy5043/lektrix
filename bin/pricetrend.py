@@ -188,7 +188,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
     Returns: nothing
     """
     if locatorformat is None:
-        locatorformat = ["hour", "%d-%m %Hh"]
+        # locatorformat = ["hour", "%d-%m %Hh"]
+        locatorformat = ["hour", "%Hh"]
     if DEBUG:
         print("\n\n*** PLOTTING ***")
     for parameter in data_dict:
@@ -258,7 +259,7 @@ def main(opt) -> None:
             output_file=cs.PRICES["hour_graph"],
             data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation="H"),
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            locatorformat=["hour", "%d-%m %Hh"],
+            locatorformat=["hour", "%Hh"],
         )
     if opt.days:
         plot_graph(
