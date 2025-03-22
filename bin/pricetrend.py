@@ -29,9 +29,9 @@ EDATETIME = "'now'"
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
 parser.add_argument("--twoday", "-t",
-                          action="store_true",
-                          help="graph for the last two days"
-                     )
+                    action="store_true",
+                    help="graph for the last two days"
+                    )
 parser.add_argument("--hours", "-hr",
                     type=int,
                     help="create hour-trend for last <HOURS> hours",
@@ -69,7 +69,7 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
         aggregation (str): pandas resample rule
 
     Returns:
-        dict with dataframes containing mains and production data
+        dict with dataframe containing the data
     """
     if DEBUG:
         print(f"\nRequest {hours_to_fetch} hours of pricing data")
@@ -100,7 +100,7 @@ def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
         print("\n*** fetching PRICING data ***")
 
     where_condition = (
-        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
+        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch} hours')"
         f" AND sample_time <= datetime({EDATETIME}, '+1 hours') )"
     )
     group_condition = ""
@@ -133,12 +133,25 @@ def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
                 raise TimeoutError("Database seems locked.") from exc
 
     if DEBUG:
-        print("o  database pricing data")
-        print(df.to_markdown(floatfmt=".3f"))
+        print("\no  database pricing data")
+        print(df.to_markdown(floatfmt=".5f"))
 
     # Pre-processing
+    # daily averages
+    davg_df = df.groupby(pd.Grouper(freq='D', key='sample_time')).mean()
+    # print(davg_df.to_markdown(floatfmt=".5f"))
+    _l: list = []
+    for row in range(len(davg_df)):
+        day_avg = davg_df.iloc[row]['price']
+        _l += [day_avg] * 24
+    df['avg_price'] = _l
+    df['low'] = df['price'].where(df['price'] < df['avg_price'])
+    df['high'] = df['price'].where(df['price'] > df['avg_price'])
+
     # drop sample_time separately!
     df.drop("sample_time", axis=1, inplace=True, errors="ignore")
+
+    df.drop(["avg_price", "price"], axis=1, inplace=True, errors="ignore")
 
     for c in df.columns:
         if c not in ["sample_time"]:
@@ -146,8 +159,13 @@ def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     df.index = pd.to_datetime(df.index, unit="s")  # noqa
 
     if DEBUG:
-        print("o  database pricing data pre-processed")
-        print(df.to_markdown(floatfmt=".3f"))
+        print("\no  database pricing data pre-processed")
+        print(df.to_markdown(floatfmt=".5f"))
+    return df
+
+
+def compute_avg_val(df):
+    df['average'] = df['price'].mean()
     return df
 
 
@@ -199,7 +217,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 stacked=True,
                 width=0.9,
                 figsize=(fig_x, fig_y),
-                color=["blue", "red", "seagreen", "lightgreen", "salmon"],
+                color=["red", "seagreen"],
             )
             # linewidth and alpha need to be set separately
             for _, a in enumerate(ax1.lines):
@@ -266,10 +284,12 @@ def main(opt) -> None:
 if __name__ == "__main__":
     print(f"Trending (price) with Python {sys.version}")
     if OPTION.twoday:
+        # ATTENTION: the calculation of average prices depends on there being a
+        # whole number of days in the period
         edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
-        sdate = dt.now().replace(minute=0, second=0, microsecond=0) - dttd(
-            hours=dt.now().hour - 1
-        )
+        sdate = dt.now().replace(hour=0, minute=0, second=0, microsecond=0)
+        # - dttd(hours=dt.now().hour - 1)
+        # )
         EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
         OPTION.hours = (edate - sdate).total_seconds() / 3600
     if OPTION.hours == 0:
