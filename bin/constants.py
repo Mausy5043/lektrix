@@ -214,6 +214,12 @@ PRICES: dict = {
         "price": 0.0,
     },
     "config": f"{_MYHOME}/.config/lektrix/jeroen.ini",
+    "website": _WEBSITE,
+    "twoday_graph": f"{_WEBSITE}/price_twodays",
+    "hour_graph": f"{_WEBSITE}/price_pasthours",
+    "day_graph": f"{_WEBSITE}/price_pastdays",
+    "month_graph": f"{_WEBSITE}/price_pastmonths",
+    "year_graph": f"{_WEBSITE}/price_pastyears",
 }
 # fmt: on
 
