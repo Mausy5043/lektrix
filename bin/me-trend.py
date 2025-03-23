@@ -83,28 +83,38 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     df_chrg = fetch_data_charger(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
     # rename rows and perform calculations
-    # EVnet := h1b(+)
-    # EVsol := h1d(+)
+    # EVtotal := h1b(+) + h1d(+)
+    # SOLtotal := gen(-) + gep(+)
+    # P1total := imp(+) + exp(-)
+    # EVsol := min[ EVtotal, SOLtotal ] # not: h1d(+)
+    # EVnet := EVtotal - EVsol  # not: h1b(+)
     # import := imp(+) - EVnet
     # export := exp(-)
-    # EB := gep(+) + export - EVsol
+    # EB := gep(+) + gen(-) - EVsol
 
-    # imported and used for EV
-    df_chrg["EVnet"] = df_chrg["h1b"]
+    # (temp) total EV usage
+    df_chrg["EVtotal"] = df_chrg["h1b"] + df_chrg["h1d"]
+    # (temp) total SOLAR
+    df_chrg["SOLtotal"] = df_chrg["gen"] + df_chrg["gep"]
+    # (temp) total P1
+    df_chrg["P1total"] = df_chrg["imp"] + df_chrg["exp"]
+    #
     # solar used for EV
-    df_chrg["EVsol"] = df_chrg["h1d"]
+    df_chrg["EVsol"] = np.minimum(df_chrg["EVtotal"], df_chrg["SOLtotal"])
+    # imported and used for EV
+    df_chrg["EVnet"] = df_chrg["EVtotal"] - df_chrg["EVsol"]
     # compensate for import diverted to EV ...
     df_chrg["import"] = df_chrg["imp"] - df_chrg["EVnet"]
     # ... and/or import
     df_chrg["export"] = df_chrg["exp"]
     # compensate for solar diverted to EV ...
-    df_chrg["EB"] = df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
+    # df_chrg["EB"] = df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
+    df_chrg["EB"] = df_chrg["SOLtotal"] - df_chrg["EVsol"]
     # ... and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
     # 'gen' is energy consumed by solar (operational power to converter) mainly at night.
-    # NOTE: 'gen' is currently disregarded
     df_chrg.drop(
-        ["h1b", "h1d", "gen", "imp", "exp", "gep"],
+        ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
         axis=1,
         inplace=True,
         errors="ignore",
