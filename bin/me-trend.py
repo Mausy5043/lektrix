@@ -91,28 +91,33 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     # import := imp(+) - EVnet
     # export := exp(-)
     # EB := gep(+) + gen(-) - EVsol
+    # 'gen' is energy consumed by solar (operational power to converter) mainly at night.
 
     # (temp) total EV usage
     df_chrg["EVtotal"] = df_chrg["h1b"] + df_chrg["h1d"]
     # (temp) total SOLAR
     df_chrg["SOLtotal"] = df_chrg["gen"] + df_chrg["gep"]
     # (temp) total P1
-    df_chrg["P1total"] = df_chrg["imp"] + df_chrg["exp"]
+    df_chrg["P1total"] = df_chrg["imp"]
     #
+    df_chrg["export"] = df_chrg["exp"]
+    solbalance = df_chrg["SOLtotal"] + df_chrg["exp"]
     # solar used for EV
-    df_chrg["EVsol"] = np.minimum(df_chrg["EVtotal"], df_chrg["SOLtotal"])
+    df_chrg["EVsol"] = np.minimum(df_chrg["EVtotal"], solbalance)
     # imported and used for EV
     df_chrg["EVnet"] = df_chrg["EVtotal"] - df_chrg["EVsol"]
     # compensate for import diverted to EV ...
     df_chrg["import"] = df_chrg["imp"] - df_chrg["EVnet"]
     # ... and/or import
-    df_chrg["export"] = df_chrg["exp"]
     # compensate for solar diverted to EV ...
     # df_chrg["EB"] = df_chrg["gep"] + df_chrg["export"] - df_chrg["EVsol"]
-    df_chrg["EB"] = df_chrg["SOLtotal"] - df_chrg["EVsol"]
+    df_chrg["EB"] = df_chrg["SOLtotal"] - df_chrg["EVsol"] + df_chrg["export"]
     # ... and/or export ('export' is negative!)
     df_chrg["EB"][df_chrg["EB"] < 0] = 0
-    # 'gen' is energy consumed by solar (operational power to converter) mainly at night.
+    if DEBUG:
+        print("o  database charger processed data")
+        print(df_chrg.to_markdown(floatfmt=".3f"))
+
     df_chrg.drop(
         ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
         axis=1,
@@ -201,7 +206,7 @@ def fetch_data_charger(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     df["h1b"] += leak["h1d-gep"]
 
     if DEBUG:
-        print("o  database charger data")
+        print("o  database charger dataset")
         print(df.to_markdown(floatfmt=".3f"))
 
     # Pre-processing
