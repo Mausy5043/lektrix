@@ -33,6 +33,8 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
     def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
         # get a HomeWizard IP
         self.ip = ""
+        self.service = "_hwenergy"
+        self.api_version = "v2"
         self.get_ip()
 
         self.dt_format = cs.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
@@ -62,14 +64,16 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
             _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
             if _howip:
                 self.ip = _howip[0]
-                LOGGER.info(f"HomeWizard watermeter found at IP: {self.ip}")
+                LOGGER.info(f"HomeWizard P1-meter found at IP: {self.ip}")
             else:
-                LOGGER.error(f"No HomeWizard P1/v1 found. Retrying in {deltat} seconds.")
+                LOGGER.error(
+                    f"No HomeWizard P1/{self.api_version} found. Retrying in {deltat} seconds."
+                )
                 time.sleep(deltat)
                 deltat = int(deltat * 14.142) / 10
 
     async def get_telegram(self):
-        """Fetch a telegram from the P1 port.
+        """Fetch a telegram from the P1 dongle.
 
         Returns:
             (bool): valid telegram received True or False
@@ -177,10 +181,14 @@ class WizP1_v2(WizP1_v1):
 
     def __init__(self, debug: bool = False) -> None:
         super().__init__(debug)
+        self.service = "_homewizard"
+        self.api_version = "v2"
         self.get_ip()
+
         p1cfg_file = cs.WIZ_P1["config"]
         try:
-            p1cfg = json.loads(p1cfg_file)
+            with open(p1cfg_file, "r") as _f:
+                p1cfg = json.load(_f)
         except json.decoder.JSONDecodeError:
             LOGGER.error(f"Error reading {p1cfg_file}.")
             sys.exit(1)
@@ -193,25 +201,13 @@ class WizP1_v2(WizP1_v1):
             LOGGER.error(f"Error reading info from {p1cfg_file}.")
             sys.exit(1)
 
-    def get_ip(self):
-        deltat: float = 10.0
-        while not self.ip and deltat < 300:
-            _howip = zcd.get_ip(service="_homewizard", filtr="HWE-P1")
-            if _howip:
-                self.ip = _howip[0]
-                LOGGER.info(f"HomeWizard P1-meter found at IP: {self.ip}")
-            else:
-                LOGGER.error(f"No HomeWizard P1/v2 found. Retrying in {deltat} seconds.")
-                time.sleep(deltat)
-                deltat = int(deltat * 14.142) / 10
-
     async def get_telegram(self):
-        """Fetch a telegram from the serialport.
+        """Fetch a telegram from the P1 dongle.
 
         Returns:
             (bool): valid telegram received True or False
         """
-        async with HomeWizardEnergyV2(host=self.ip) as _api:
+        async with HomeWizardEnergyV2(host=self.ip, token=self.token) as _api:
             if self.debug and self.firstcall:
                 # Get device information, like firmware version
                 wiz_dev = await _api.device()
