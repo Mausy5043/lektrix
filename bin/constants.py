@@ -125,6 +125,7 @@ SOLAREDGE: dict = {
         "site_id": 0,
         "energy": 0,
     },
+    "config": f"{_MYHOME}/.config/solaredge/account.ini",
 }
 
 ZAPPI: dict = {
@@ -170,6 +171,7 @@ ZAPPI: dict = {
         "frq": 0,
     },
     "template_keys_to_drop": ["yr", "mon", "dom", "hr", "min"],
+    "config": f"{_MYHOME}/.config/myenergi/account.ini",
 }
 
 WIZ_P1: dict = {

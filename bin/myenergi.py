@@ -76,7 +76,7 @@ def main() -> None:
     LOGGER.info(f"Running on Python {sys.version}")
     set_led("ev", "orange")
     killer = gk.GracefulKiller()
-    api_keys_file = f"{os.environ['HOME']}/.config/myenergi/account.ini"
+    api_keys_file = constants.ZAPPI["config"]
     API_ZP = zl.Myenergi(api_keys_file, DEBUG)
 
     sql_db = m3.SqlDatabase(
