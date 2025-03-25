@@ -19,8 +19,8 @@ from datetime import timedelta as dttd
 import constants as cs
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 DATABASE = cs.PRICES["database"]
 TABLE_PRICE = cs.PRICES["sql_table"]
