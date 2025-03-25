@@ -186,6 +186,9 @@ class WizP1_v2(WizP1_v1):
             sys.exit(1)
         try:
             self.token = p1cfg["token"]
+            self.user = p1cfg["user"]
+            self.name = p1cfg["name"]
+            self.id = p1cfg["id"]
         except KeyError:
             LOGGER.error(f"Error reading info from {p1cfg_file}.")
             sys.exit(1)
