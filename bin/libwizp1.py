@@ -69,7 +69,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
                 deltat = int(deltat * 14.142) / 10
 
     async def get_telegram(self):
-        """Fetch a telegram from the serialport.
+        """Fetch a telegram from the P1 port.
 
         Returns:
             (bool): valid telegram received True or False
@@ -187,7 +187,7 @@ class WizP1_v2(WizP1_v1):
         try:
             self.token = p1cfg["token"]
         except KeyError:
-            LOGGER.error(f"Error reading token from {p1cfg_file}.")
+            LOGGER.error(f"Error reading info from {p1cfg_file}.")
             sys.exit(1)
 
     def get_ip(self):
@@ -196,7 +196,7 @@ class WizP1_v2(WizP1_v1):
             _howip = zcd.get_ip(service="_homewizard", filtr="HWE-P1")
             if _howip:
                 self.ip = _howip[0]
-                LOGGER.info(f"HomeWizard watermeter found at IP: {self.ip}")
+                LOGGER.info(f"HomeWizard P1-meter found at IP: {self.ip}")
             else:
                 LOGGER.error(f"No HomeWizard P1/v2 found. Retrying in {deltat} seconds.")
                 time.sleep(deltat)
