@@ -27,7 +27,7 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 # https://api-documentation.homewizard.com/docs/category/api-v1
 
 
-class WizP1_v1:  # pylint: disable=too-many-instance-attributes
+class WizP1_V1:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the Home Wizard P1-dongle."""
 
     def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
@@ -176,7 +176,7 @@ class WizP1_v1:  # pylint: disable=too-many-instance-attributes
 # https://api-documentation.homewizard.com/docs/category/api-v2
 
 
-class WizP1_v2(WizP1_v1):
+class WizP1_V2(WizP1_V1):
     """Class to interact with the Home Wizard P1-dongle."""
 
     def __init__(self, debug: bool = False) -> None:

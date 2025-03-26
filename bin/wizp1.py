@@ -67,8 +67,7 @@ def main() -> None:
     LOGGER.info(f"Running on Python {sys.version}")
     set_led("mains", "orange")
     killer = gk.GracefulKiller()
-    API_P1 = p1.WizP1_v2(debug=DEBUG)
-
+    API_P1 = p1.WizP1_V2(debug=DEBUG)
     sql_db = m3.SqlDatabase(
         database=constants.WIZ_P1["database"],
         table=constants.WIZ_P1["sql_table"],
