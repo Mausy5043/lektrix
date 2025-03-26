@@ -34,7 +34,7 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
         # get a HomeWizard IP
         self.ip = ""
         self.service = "_hwenergy"
-        self.api_version = "v2"
+        self.api_version = "v1"
         self.get_ip()
 
         self.dt_format = cs.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
