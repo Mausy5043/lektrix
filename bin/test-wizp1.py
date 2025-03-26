@@ -43,17 +43,17 @@ async def async_work():
         await api1.identify()
 
         wiz_host = api1.host  # call function
-        print("\nhost")
+        print("\nhost (v1)")
         print(wiz_host, api1.host)  # function return-value and class parameter should be same
 
         # Get device information, like firmware version
         wiz_dev = await api1.device()
-        print("\ndevice")
+        print("\ndevice (v1)")
         print(wiz_dev)
 
         # Get measurements, like energy or water usage
         wiz_data = await api1.measurement()
-        print("\ndata")
+        print("\ndata (v1)")
         print(wiz_data)
         print(wiz_data.energy_import_kwh)
 
@@ -62,7 +62,7 @@ async def async_work():
         # print(wiz_state)
 
         wiz_system = await api1.system()
-        print("\nsystem")
+        print("\nsystem (v1)")
         print(wiz_system)
 
     async with HomeWizardEnergyV2(host=IP_ADDRESS, token=TOKEN) as api2:
@@ -70,17 +70,17 @@ async def async_work():
         await api2.identify()
 
         wiz_host = api2.host  # call function
-        print("\nhost")
+        print("\nhost (v2)")
         print(wiz_host, api2.host)  # function return-value and class parameter should be same
 
         # Get device information, like firmware version
         wiz_dev = await api2.device()
-        print("\ndevice")
+        print("\ndevice (v2)")
         print(wiz_dev)
 
         # Get measurements, like energy or water usage
         wiz_data = await api2.measurement()
-        print("\ndata")
+        print("\ndata (v2)")
         print(wiz_data)
         print(wiz_data.energy_import_kwh)
 
@@ -89,7 +89,7 @@ async def async_work():
         # print(wiz_state)
 
         wiz_system = await api2.system()
-        print("\nsystem")
+        print("\nsystem (v2)")
         print(wiz_system)
 
 
