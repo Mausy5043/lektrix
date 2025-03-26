@@ -6,17 +6,16 @@
 
 
 import asyncio
-
-from homewizard_energy import HomeWizardEnergyV1, HomeWizardEnergyV2
-from mausy5043_common import funzeroconf as zcd
-import constants as cs
 import json
 import sys
 
+import constants as cs
+from homewizard_energy import HomeWizardEnergyV1, HomeWizardEnergyV2
+from mausy5043_common import funzeroconf as zcd
 
 p1cfg_file = cs.WIZ_P1["config"]
 try:
-    with open(p1cfg_file, "r") as _f:
+    with open(p1cfg_file) as _f:
         p1cfg = json.load(_f)
 except json.decoder.JSONDecodeError:
     print(f"Error reading {p1cfg_file}")

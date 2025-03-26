@@ -186,7 +186,7 @@ class WizP1_V2(WizP1_V1):
 
         p1cfg_file = cs.WIZ_P1["config"]
         try:
-            with open(p1cfg_file, "r") as _f:
+            with open(p1cfg_file) as _f:
                 p1cfg = json.load(_f)
         except json.decoder.JSONDecodeError:
             LOGGER.error(f"Error reading {p1cfg_file}.")
