@@ -183,7 +183,6 @@ class WizP1_V2(WizP1_V1):
         super().__init__(debug)
         self.service = "_homewizard"
         self.api_version = "v2"
-        self.get_ip()
 
         p1cfg_file = cs.WIZ_P1["config"]
         try:
@@ -200,6 +199,8 @@ class WizP1_V2(WizP1_V1):
         except KeyError:
             LOGGER.error(f"Error reading info from {p1cfg_file}.")
             sys.exit(1)
+
+        self.get_ip()
 
     async def get_telegram(self):
         """Fetch a telegram from the P1 dongle.
