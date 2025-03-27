@@ -35,7 +35,6 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
         self.ip = ""
         self.service = "_hwenergy"
         self.api_version = "v1"
-        self.get_ip()
 
         self.dt_format = cs.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
         # starting values
@@ -199,8 +198,6 @@ class WizP1_V2(WizP1_V1):
         except KeyError:
             LOGGER.error(f"Error reading info from {p1cfg_file}.")
             sys.exit(1)
-
-        self.get_ip()
 
     async def get_telegram(self):
         """Fetch a telegram from the P1 dongle.
