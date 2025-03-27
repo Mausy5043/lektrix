@@ -61,7 +61,7 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
     def get_ip(self):
         deltat: float = 10.0
         while not self.ip and deltat < 300:
-            _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
+            _howip = zcd.get_ip(service=self.service, filtr="HWE-P1")
             if _howip:
                 self.ip = _howip[0]
                 LOGGER.info(f"HomeWizard P1/{self.api_version} found at IP: {self.ip}")
