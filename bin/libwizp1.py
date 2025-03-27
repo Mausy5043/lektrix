@@ -64,7 +64,7 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
             _howip = zcd.get_ip(service="_hwenergy", filtr="HWE-P1")
             if _howip:
                 self.ip = _howip[0]
-                LOGGER.info(f"HomeWizard P1-meter found at IP: {self.ip}")
+                LOGGER.info(f"HomeWizard P1/{self.api_version} found at IP: {self.ip}")
             else:
                 LOGGER.error(
                     f"No HomeWizard P1/{self.api_version} found. Retrying in {deltat} seconds."
