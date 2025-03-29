@@ -45,7 +45,7 @@ skips = []
 
 [tool.black]
 line-length = 98
-target-version = ["py39", "py310", "py311", "py312", "py313"]
+target-version = ["py312", "py313"]
 
 [tool.isort]
 profile = "black"
