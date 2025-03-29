@@ -22,10 +22,7 @@ from mausy5043_common import funhomewizard as hwz
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
 
-# https://api-documentation.homewizard.com/docs/category/api-v1
-
-
-class WizP1_V1:  # pylint: disable=too-many-instance-attributes
+class WizP1:
     """Class to interact with the Home Wizard P1-dongle."""
 
     def __init__(self, debug: bool = False) -> None:
