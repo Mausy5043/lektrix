@@ -1,0 +1,18 @@
+# This service is for starting the Home Wizard kWh-meter telemetry reader
+
+[Unit]
+Description=kWh-meter (Home Wizard) telemetry service
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+EnvironmentFile=/home/pi/.pyenvpaths
+WorkingDirectory=/home/pi/lektrix
+ExecStart=/home/pi/lektrix/bin/wizkwh.py --start
+# stand back for about 1 minute to allow for meter to recover
+RestartSec=70s
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
