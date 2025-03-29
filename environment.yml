@@ -1,6 +1,6 @@
 # when changing this file also consider `pyproject.toml` and `requirements.txt`
 # Usage:
-# conda -v env update --file environment.yml; pre-commit run --all-files; pycheck
+# conda -v env update --file=environment.yml; pre-commit run --all-files; pycheck
 
 name: lektrix
 
