@@ -108,7 +108,8 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
             "swits": self.swits,
         }
 
-    def compact_data(self, data) -> tuple:
+    @staticmethod
+    def compact_data(data) -> tuple:
         """
         Compact the ten-second data into 15-minute data
 
