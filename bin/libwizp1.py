@@ -4,9 +4,7 @@
 # Copyright (C) 2024  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
-# https://api-documentation.homewizard.com/docs/category/api-v1
-
-"""Common functions for use with the Home Wizard P1 electricity meter dongle using the API/v1"""
+"""Common functions for use with the Home Wizard P1 electricity meter dongle."""
 
 # import asyncio
 import datetime as dt
