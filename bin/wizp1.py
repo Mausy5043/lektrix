@@ -10,7 +10,6 @@ Store the data in a SQLite3 database.
 """
 
 import argparse
-import asyncio
 import logging.handlers
 import os
 import shutil
@@ -68,7 +67,6 @@ def main() -> None:
     set_led("mains", "orange")
     killer = gk.GracefulKiller()
     API_P1 = p1.WizP1(debug=DEBUG)
-    API_P1.get_ip()
     sql_db = m3.SqlDatabase(
         database=cs.WIZ_P1["database"],
         table=cs.WIZ_P1["sql_table"],
@@ -86,7 +84,7 @@ def main() -> None:
             start_time = time.time()
             try:
                 LOGGER.debug("\n...requesting telegram")
-                asyncio.run(API_P1.get_telegram())
+                API_P1.get_telegram()
                 set_led("mains", "green")
             except Exception:  # noqa
                 set_led("mains", "red")
