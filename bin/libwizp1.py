@@ -13,13 +13,11 @@ import datetime as dt
 import json
 import logging
 import sys
-import time
 
 import constants as cs
 import numpy as np
 import pandas as pd
-from homewizard_energy import HomeWizardEnergyV1, HomeWizardEnergyV2
-from mausy5043_common import funzeroconf as zcd
+from mausy5043_common import funhomewizard as hwz
 
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -30,13 +28,9 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 class WizP1_V1:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the Home Wizard P1-dongle."""
 
-    def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
-        # get a HomeWizard IP
-        self.ip = ""
-        self.service = "_hwenergy"
-        self.api_version = "v1"
-
-        self.dt_format = cs.DT_FORMAT  # "%Y-%m-%d %H:%M:%S"
+    def __init__(self, debug: bool = False) -> None:
+        self.debug: bool = debug
+        self.dt_format = cs.DT_FORMAT
         # starting values
         self.electra1in = np.nan
         self.electra2in = np.nan
@@ -48,8 +42,7 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
         self.swits = 0
         self.list_data: list = []
 
-        self.debug: bool = debug
-        self.firstcall = True
+        # set-up logging
         if debug:
             if len(LOGGER.handlers) == 0:
                 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
@@ -57,40 +50,24 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
             LOGGER.debug("Debugging on.")
             self.telegram: list = []
 
-    def get_ip(self):
-        deltat: float = 10.0
-        while not self.ip and deltat < 300:
-            _howip = zcd.get_ip(service=self.service, filtr="HWE-P1")
-            if _howip:
-                self.ip = _howip[0]
-                LOGGER.info(f"HomeWizard P1/{self.api_version} found at IP: {self.ip}")
-            else:
-                LOGGER.error(
-                    f"No HomeWizard P1/{self.api_version} found. Retrying in {deltat} seconds."
-                )
-                time.sleep(deltat)
-                deltat = int(deltat * 14.142) / 10
+        # process config file
+        with open(cs.WIZ_P1["config"], encoding="utf-8") as _json_file:
+            _cfg = json.load(_json_file)
+        self.serial: str = _cfg["serial"]
+        self.token: str = _cfg["token"]
 
-    async def get_telegram(self):
-        """Fetch a telegram from the P1 dongle.
+        self.hwe = hwz.MyHomeWizard(serial=self.serial, token=self.token, debug=self.debug)
+        self.hwe.connect()
+
+    def get_telegram(self):
+        """Fetch data from the device.
 
         Returns:
-            (bool): valid telegram received True or False
+            Nothing
         """
-        async with HomeWizardEnergyV1(host=self.ip) as _api:
-            if self.debug and self.firstcall:
-                # Get device information, like firmware version
-                wiz_dev = await _api.device()
-                LOGGER.debug(wiz_dev)
-                LOGGER.debug("")
-                self.firstcall = False
+        _wiz_data = self.hwe.get_measurement()
 
-            # Get measurements
-            wiz_data = await _api.measurement()
-            LOGGER.debug(wiz_data)
-            LOGGER.debug("---")
-
-        self.list_data.append(self._translate_telegram(wiz_data))
+        self.list_data.append(self._translate_telegram(_wiz_data))
         LOGGER.debug(self.list_data)
         LOGGER.debug("*-*")
 
@@ -170,54 +147,3 @@ class WizP1_V1:  # pylint: disable=too-many-instance-attributes
         LOGGER.debug(f"Result: {result_data}")
         LOGGER.debug(f"Remain: {remain_data}\n")
         return result_data, remain_data
-
-
-# https://api-documentation.homewizard.com/docs/category/api-v2
-
-
-class WizP1_V2(WizP1_V1):
-    """Class to interact with the Home Wizard P1-dongle."""
-
-    def __init__(self, debug: bool = False) -> None:
-        super().__init__(debug)
-        self.service = "_homewizard"
-        self.api_version = "v2"
-
-        p1cfg_file = cs.WIZ_P1["config"]
-        try:
-            with open(p1cfg_file) as _f:
-                p1cfg = json.load(_f)
-        except json.decoder.JSONDecodeError:
-            LOGGER.error(f"Error reading {p1cfg_file}.")
-            sys.exit(1)
-        try:
-            self.token = p1cfg["token"]
-            self.user = p1cfg["user"]
-            self.name = p1cfg["name"]
-            self.id = p1cfg["id"]
-        except KeyError:
-            LOGGER.error(f"Error reading info from {p1cfg_file}.")
-            sys.exit(1)
-
-    async def get_telegram(self):
-        """Fetch a telegram from the P1 dongle.
-
-        Returns:
-            (bool): valid telegram received True or False
-        """
-        async with HomeWizardEnergyV2(host=self.ip, token=self.token) as _api:
-            if self.debug and self.firstcall:
-                # Get device information, like firmware version
-                wiz_dev = await _api.device()
-                LOGGER.debug(wiz_dev)
-                LOGGER.debug("")
-                self.firstcall = False
-
-            # Get measurements
-            wiz_data = await _api.measurement()
-            LOGGER.debug(wiz_data)
-            LOGGER.debug("---")
-
-        self.list_data.append(self._translate_telegram(wiz_data))
-        LOGGER.debug(self.list_data)
-        LOGGER.debug("*-*")
