@@ -202,6 +202,37 @@ WIZ_P1: dict = {
     "config": f"{_MYHOME}/.config/homewizard/p1.json",
 }
 
+WIZ_KWH: dict = {
+    "database": _DATABASE,
+    "sql_table": "charger",
+    "sql_command": "INSERT INTO charger ("
+                   "sample_time, sample_epoch, site_id,"
+                   "exp, gen, gep, imp, h1b, h1d,"
+                   "v1, frq"
+                   ");"
+                   "VALUES (?, ?, ?,"
+                   "?, ?, ?, ?, ?, ?,"
+                   "?, ?"
+                   ")",
+    "report_interval": 900,
+    "samplespercycle": 15,
+    "delay": 0,
+    "template": {
+        "sample_time": "yyyy-mm-dd hh:mm:ss",
+        "sample_epoch": 0,
+        "site_id": 4.1,
+        "exp": 0,
+        "gen": 0,
+        "gep": 0,
+        "imp": 0,
+        "h1b": 0,
+        "h1d": 0,
+        "v1": 0,
+        "frq": 0,
+    },
+    "config": f"{_MYHOME}/.config/homewizard/kwh.json",
+}
+
 PRICES: dict = {
     "database": _DATABASE,
     "sql_table": "prices",
