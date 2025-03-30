@@ -97,9 +97,9 @@ class WizkWh:
         self.ev_elec_in = int(_ev.energy_import_kwh * 1000)
         self.pv_elec_in = int(_pv.energy_import_kwh * 1000)
         self.p1_elec_in = int(_p1.energy_import_kwh * 1000)
-        self.ev_elec_out = int(_ev.energy_export_kwh * 1000)
-        self.pv_elec_out = int(_pv.energy_export_kwh * 1000)
-        self.p1_elec_out = int(_p1.energy_export_kwh * 1000)
+        self.ev_elec_out = int(_ev.energy_export_kwh * -1000)
+        self.pv_elec_out = int(_pv.energy_export_kwh * -1000)
+        self.p1_elec_out = int(_p1.energy_export_kwh * -1000)
         self.ev_voltage = int(_ev.active_voltage_v * 10)
         self.pv_voltage = int(_pv.active_voltage_v * 10)
         # self.p1_voltage = int(_p1.active_voltage_v * 10)  # not available op KAMSTRUP
