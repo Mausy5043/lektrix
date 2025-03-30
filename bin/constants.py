@@ -206,36 +206,8 @@ WIZ_KWH: dict = {
     "database": _DATABASE,
     "sql_table": "mains",
     "sql_command": "INSERT INTO mains ("
-                   "sample_time, sample_epoch, "
-                   "T1in, T2in, powerin, "
-                   "T1out, T2out, powerout, "
-                   "tarif, swits"
-                   ");"
-                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    "report_interval": 900,
-    "samplespercycle": 15,
-    "delay": 0,
-    "template": {
-        "sample_time": "dd-mmm-yyyy hh:mm:ss",
-        "sample_epoch": 0,
-        "T1in": 0,
-        "T2in": 0,
-        "powerin": 0,
-        "T1out": 0,
-        "T2out": 0,
-        "powerout": 0,
-        "tarif": 1,
-        "swits": 1,
-    },
-    "config": f"{_MYHOME}/.config/homewizard/p1.json",
-}
-
-WIZ_KWH: dict = {
-    "database": _DATABASE,
-    "sql_table": "___",
-    "sql_command": "INSERT INTO charger ("
                    "sample_time, sample_epoch, site_id,"
-                   "exp, imp, gen, gep, h1b, h1d, evn, evp,"
+                   "exp, imp, gen, gep, evn, evp,"
                    "v1, frq, pf"
                    ");"
                    "VALUES (?, ?, ?,"
@@ -248,18 +220,15 @@ WIZ_KWH: dict = {
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": 4.1,
+        "site_id": 4.2,
         "exp": 0,
         "imp": 0,
         "gen": 0,
         "gep": 0,
-        "h1b": 0,
-        "h1d": 0,
         "evn": 0,
         "evp": 0,
         "v1": 0,
         "frq": 0,
-        "pf": 0,
     },
     "config": f"{_MYHOME}/.config/homewizard/kwh.json",
 }
