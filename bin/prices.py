@@ -35,8 +35,8 @@ try:
 except FileNotFoundError:
     print(f"Config file not found: {config_file}")
     sys.exit(1)
-except configparser.Error as e:
-    print(f"Error processing config file: {e}")
+except configparser.Error as her:
+    print(f"Error processing config file: {her}")
     sys.exit(1)
 
 
@@ -49,8 +49,8 @@ try:
     # Parse the JSON data
     resp_data = response.json()
     # print(json.dumps(resp_data, indent=4))
-except requests.exceptions.RequestException as e:
-    print(f"An error occurred: {e}")
+except requests.exceptions.RequestException as her:
+    print(f"An error occurred: {her}")
     resp_data = []
 
 # Convert the data for the database
@@ -61,12 +61,12 @@ for item in resp_data:
         price = float(item['prijs_excl_belastingen'].replace(',', '.'))
         sample_epoch = int(pd.Timestamp(sample_time).timestamp())
         data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
-    except (KeyError, ValueError, TypeError) as e:
-        print(f"Error processing item: {item}, error: {e}")
+    except (KeyError, ValueError, TypeError) as her:
+        print(f"Error processing item: {item}, error: {her}")
 
 # Save the data to a JSON file
-with open(savefile, 'w', encoding='utf-8') as f:
-    json.dump(data, f, ensure_ascii=True, indent=4)
+with open(savefile, 'w', encoding='utf-8') as _f:
+    json.dump(data, _f, ensure_ascii=True, indent=4)
 
 # Save the data to the database
 sql_db = m3.SqlDatabase(
