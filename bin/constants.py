@@ -80,32 +80,32 @@ TREND: dict = {
     "yg_gauge_v2": f"{_WEBSITE}/lex_gauge",
 }
 
-KAMSTRUP: dict = {
-    "database": _DATABASE,
-    "sql_table": "mains",
-    "sql_command": "INSERT INTO mains ("
-                   "sample_time, sample_epoch, "
-                   "T1in, T2in, powerin, "
-                   "T1out, T2out, powerout, "
-                   "tarif, swits"
-                   ");"
-                   "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-    "report_interval": 900,
-    "samplespercycle": 88,  # meter runs at 1 telegram every ~10s
-    "delay": 0,
-    "template": {
-        "sample_time": "dd-mmm-yyyy hh:mm:ss",
-        "sample_epoch": 0,
-        "T1in": 0,
-        "T2in": 0,
-        "powerin": 0,
-        "T1out": 0,
-        "T2out": 0,
-        "powerout": 0,
-        "tarif": 1,
-        "swits": 1,
-    },
-}
+# KAMSTRUP: dict = {
+#     "database": _DATABASE,
+#     "sql_table": "mains",
+#     "sql_command": "INSERT INTO mains ("
+#                    "sample_time, sample_epoch, "
+#                    "T1in, T2in, powerin, "
+#                    "T1out, T2out, powerout, "
+#                    "tarif, swits"
+#                    ");"
+#                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+#     "report_interval": 900,
+#     "samplespercycle": 88,  # meter runs at 1 telegram every ~10s
+#     "delay": 0,
+#     "template": {
+#         "sample_time": "dd-mmm-yyyy hh:mm:ss",
+#         "sample_epoch": 0,
+#         "T1in": 0,
+#         "T2in": 0,
+#         "powerin": 0,
+#         "T1out": 0,
+#         "T2out": 0,
+#         "powerout": 0,
+#         "tarif": 1,
+#         "swits": 1,
+#     },
+# }
 
 SOLAREDGE: dict = {
     "database": _DATABASE,
@@ -128,53 +128,81 @@ SOLAREDGE: dict = {
     "config": f"{_MYHOME}/.config/solaredge/account.ini",
 }
 
-ZAPPI: dict = {
-    "database": _DATABASE,
-    "sql_table": "charger",
-    "sql_command": "INSERT INTO charger ("
-                   "sample_time, sample_epoch, site_id,"
-                   "exp, gen, gep, imp, h1b, h1d,"
-                   "v1, frq"
-                   ");"
-                   "VALUES (?, ?, ?,"
-                   "?, ?, ?, ?, ?, ?,"
-                   "?, ?"
-                   ")",
-    "report_interval": int(60 * 60 * 24 / 365 * 10),
-    "samplespercycle": 1,
-    "delay": 180,
-    "director": "https://director.myenergi.net",
-    "requests_timeout": 30,
-    "template": {
-        "sample_time": "yyyy-mm-dd hh:mm:ss",
-        "sample_epoch": 0,
-        "site_id": 4.1,
-        "hr": 0,
-        "min": 0,
-        # 'dow': "Mon",
-        "dom": 1,
-        "mon": 8,
-        "yr": 2021,
-        "exp": 0,
-        "gen": 0,
-        "gep": 0,
-        "imp": 0,
-        "h1b": 0,
-        "h1d": 0,
-        "v1": 0,
-        # 'pect1': 0,
-        # 'pect2': 0,
-        # 'pect3': 0,
-        # 'nect1': 0,
-        # 'nect2': 0,
-        # 'nect3': 0,
-        "frq": 0,
-    },
-    "template_keys_to_drop": ["yr", "mon", "dom", "hr", "min"],
-    "config": f"{_MYHOME}/.config/myenergi/account.ini",
-}
+# ZAPPI: dict = {
+#     "database": _DATABASE,
+#     "sql_table": "charger",
+#     "sql_command": "INSERT INTO charger ("
+#                    "sample_time, sample_epoch, site_id,"
+#                    "exp, gen, gep, imp, h1b, h1d,"
+#                    "v1, frq"
+#                    ");"
+#                    "VALUES (?, ?, ?,"
+#                    "?, ?, ?, ?, ?, ?,"
+#                    "?, ?"
+#                    ")",
+#     "report_interval": int(60 * 60 * 24 / 365 * 10),
+#     "samplespercycle": 1,
+#     "delay": 180,
+#     "director": "https://director.myenergi.net",
+#     "requests_timeout": 30,
+#     "template": {
+#         "sample_time": "yyyy-mm-dd hh:mm:ss",
+#         "sample_epoch": 0,
+#         "site_id": 4.1,
+#         "hr": 0,
+#         "min": 0,
+#         # 'dow': "Mon",
+#         "dom": 1,
+#         "mon": 8,
+#         "yr": 2021,
+#         "exp": 0,
+#         "gen": 0,
+#         "gep": 0,
+#         "imp": 0,
+#         "h1b": 0,
+#         "h1d": 0,
+#         "v1": 0,
+#         # 'pect1': 0,
+#         # 'pect2': 0,
+#         # 'pect3': 0,
+#         # 'nect1': 0,
+#         # 'nect2': 0,
+#         # 'nect3': 0,
+#         "frq": 0,
+#     },
+#     "template_keys_to_drop": ["yr", "mon", "dom", "hr", "min"],
+#     "config": f"{_MYHOME}/.config/myenergi/account.ini",
+# }
 
-WIZ_P1: dict = {
+# WIZ_P1: dict = {
+#     "database": _DATABASE,
+#     "sql_table": "mains",
+#     "sql_command": "INSERT INTO mains ("
+#                    "sample_time, sample_epoch, "
+#                    "T1in, T2in, powerin, "
+#                    "T1out, T2out, powerout, "
+#                    "tarif, swits"
+#                    ");"
+#                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+#     "report_interval": 900,
+#     "samplespercycle": 15,
+#     "delay": 0,
+#     "template": {
+#         "sample_time": "dd-mmm-yyyy hh:mm:ss",
+#         "sample_epoch": 0,
+#         "T1in": 0,
+#         "T2in": 0,
+#         "powerin": 0,
+#         "T1out": 0,
+#         "T2out": 0,
+#         "powerout": 0,
+#         "tarif": 1,
+#         "swits": 1,
+#     },
+#     "config": f"{_MYHOME}/.config/homewizard/p1.json",
+# }
+
+WIZ_KWH: dict = {
     "database": _DATABASE,
     "sql_table": "mains",
     "sql_command": "INSERT INTO mains ("
