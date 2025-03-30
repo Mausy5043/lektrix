@@ -92,20 +92,20 @@ class WizkWh:
         self.pv_elec_out = int(_pv.energy_export_kwh * 1000)
         # self.ev_power_in = _ev.active_power_w
         # self.pv_power_in = _pv.active_power_w
-        self.ev_voltage = _ev.active_voltage_v
-        self.pv_voltage = _pv.active_voltage_v
-        self.ev_freq = _ev.active_frequency_hz
-        self.pv_freq = _pv.active_frequency_hz
-        self.ev_pf = _ev.active_power_factor
-        self.pv_pf = _pv.active_power_factor
+        self.ev_voltage = int(_ev.active_voltage_v * 10)
+        self.pv_voltage = int(_pv.active_voltage_v * 10)
+        self.ev_freq = int(_ev.active_frequency_hz * 10)
+        self.pv_freq = int(_pv.active_frequency_hz * 10)
+        self.ev_pf = int(_ev.active_power_factor * 1000)
+        self.pv_pf = int(_pv.active_power_factor * 1000)
         # self.ev_power_out = 0.0
         # self.pv_power_out = 0.0
-        # if self.ev_power_in < 0.0:
         #     self.ev_power_out = self.ev_power_in
         #     self.ev_power_in = 0.0
         # if self.pv_power_in < 0.0:
         #     self.pv_power_out = self.pv_power_in
         #     self.pv_power_in = 0.0
+        # if self.ev_power_in < 0.0:
 
         idx_dt: dt.datetime = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
