@@ -86,9 +86,11 @@ def main() -> None:
             try:
                 LOGGER.debug("\n...requesting telegram")
                 API_KWH.get_telegram()
+                set_led("p1", "green")
                 set_led("ev", "green")
                 set_led("pv", "green")
             except Exception:  # noqa
+                set_led("p1", "red")
                 set_led("ev", "red")
                 set_led("pv", "red")
                 LOGGER.critical("Unexpected error while trying to do some work!")
@@ -106,6 +108,7 @@ def main() -> None:
                         LOGGER.debug(f"{element}")  # is already logged by sql_db.queue()
                         sql_db.queue(element)
                 except Exception:  # noqa
+                    set_led("p1", "red")
                     set_led("ev", "red")
                     set_led("pv", "red")
                     LOGGER.critical("Unexpected error while trying to queue the data")
@@ -115,6 +118,7 @@ def main() -> None:
                     LOGGER.debug("\n...inserting data")
                     sql_db.insert(method="replace")
                 except Exception:  # noqa
+                    set_led("p1", "red")
                     set_led("ev", "red")
                     set_led("pv", "red")
                     LOGGER.critical(
