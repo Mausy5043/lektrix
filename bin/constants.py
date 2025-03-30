@@ -214,8 +214,8 @@ WIZ_KWH: dict = {
                    "?, ?, ?, ?, ?, ?, ?, ?,"
                    "?, ?, ?"
                    ")",
-    "report_interval": 900,
-    "samplespercycle": 15,
+    "report_interval": 300,
+    "samplespercycle": 10,
     "delay": 0,
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
