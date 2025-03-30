@@ -204,7 +204,7 @@ WIZ_P1: dict = {
 
 WIZ_KWH: dict = {
     "database": _DATABASE,
-    "sql_table": "charger",
+    "sql_table": "___",
     "sql_command": "INSERT INTO charger ("
                    "sample_time, sample_epoch, site_id,"
                    "exp, imp, gen, gep, h1b, h1d, evn, evp,"
