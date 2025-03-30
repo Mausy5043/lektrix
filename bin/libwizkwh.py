@@ -102,11 +102,13 @@ class WizkWh:
         self.p1_elec_out = int(_p1.energy_export_kwh * -1000)
         self.ev_voltage = int(_ev.active_voltage_v * 10)
         self.pv_voltage = int(_pv.active_voltage_v * 10)
-        # self.p1_voltage = int(_p1.active_voltage_v * 10)  # not available op KAMSTRUP
+        # not available on P1-dongle w/ KAMSTRUP
+        # self.p1_voltage = int(_p1.active_voltage_v * 10)
         self.home_voltage = int((self.ev_voltage + self.pv_voltage) / 2)
         self.ev_freq = int(_ev.active_frequency_hz * 10)
         self.pv_freq = int(_pv.active_frequency_hz * 10)
-        # self.p1_freq = int(_p1.active_frequency_hz * 10)  # not available op KAMSTRUP
+        # not available on P1-dongle w/ KAMSTRUP
+        # self.p1_freq = int(_p1.active_frequency_hz * 10)
         self.home_freq = int((self.ev_freq + self.pv_freq) / 2)
 
         idx_dt: dt.datetime = dt.datetime.now()
