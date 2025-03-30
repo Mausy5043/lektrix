@@ -207,12 +207,12 @@ WIZ_KWH: dict = {
     "sql_table": "charger",
     "sql_command": "INSERT INTO charger ("
                    "sample_time, sample_epoch, site_id,"
-                   "exp, gen, gep, imp, h1b, h1d,"
-                   "v1, frq"
+                   "exp, imp, gen, gep, h1b, h1d, evn, evp,"
+                   "v1, frq, pf"
                    ");"
                    "VALUES (?, ?, ?,"
-                   "?, ?, ?, ?, ?, ?,"
-                   "?, ?"
+                   "?, ?, ?, ?, ?, ?, ?, ?,"
+                   "?, ?, ?"
                    ")",
     "report_interval": 900,
     "samplespercycle": 15,
@@ -222,13 +222,16 @@ WIZ_KWH: dict = {
         "sample_epoch": 0,
         "site_id": 4.1,
         "exp": 0,
+        "imp": 0,
         "gen": 0,
         "gep": 0,
-        "imp": 0,
         "h1b": 0,
         "h1d": 0,
+        "evn": 0,
+        "evp": 0,
         "v1": 0,
         "frq": 0,
+        "pf": 0,
     },
     "config": f"{_MYHOME}/.config/homewizard/kwh.json",
 }
