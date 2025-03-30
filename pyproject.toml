@@ -65,10 +65,15 @@ ignore = [
     # line break before binary: is against policy.
     "W503",
     ]
+exclude = [
+    "legacy/",
+    ".local/"
+]
 
 [tool.mypy]
 exclude = [
-    "legacy"
+    "legacy/",
+    ".local/"
 ]
 # ignore_errors = true
 strict = false
