@@ -33,11 +33,9 @@ declare -a lektrix_timers=("lektrix.trend.day.timer"
     "lektrix.prices.timer")
   # "lektrix.update.timer" (incl. the .service) is not installed
 # list of services provided
-declare -a lektrix_services=("lektrix.wizp1.service"
-    "lektrix.myenergi.service"
+declare -a lektrix_services=("lektrix.wizkwh.service"
     "lektrix.solaredge.service"
     "lektrix.prices.service")
-    #     "lektrix.wizkwh.service"
 # Install python3 and develop packages
 # Support for matplotlib & numpy needs to be installed seperately
 # SQLite3 support (incl python3)
@@ -45,10 +43,11 @@ declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "pyth
     "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
     "sqlite3")
 # placeholders for trendgraphs to make website work regardless of the state of the graphs.
-declare -a lektrix_graphs=('lex_pastdays_mains.png'
-    'lex_pastdays_production.png'
-    'lex_pasthours_mains.png'
+declare -a lektrix_graphs=('lex_pasthours_mains.png'
     'lex_pasthours_production.png'
+    'price_pasthours_prices.png'
+    'lex_pastdays_mains.png'
+    'lex_pastdays_production.png'
     'lex_pastmonths_mains.png'
     'lex_pastmonths_production.png'
     'lex_pastyears_mains.png'
