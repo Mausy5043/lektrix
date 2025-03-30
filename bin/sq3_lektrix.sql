@@ -57,13 +57,16 @@ CREATE TABLE charger (
     sample_epoch    integer,
     site_id         text,
     exp             integer,
+    imp             integer,
     gen             integer,
     gep             integer,
-    imp             integer,
     h1b             integer,
     h1d             integer,
+    evn             integer,
+    evp             integer,
     v1              integer,
-    frq             integer
+    frq             integer,
+    pf              integer
     );
 
 CREATE INDEX idx_chrg_site ON charger(site_id);
