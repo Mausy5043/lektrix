@@ -18,7 +18,7 @@ host_name=$(hostname)
 # construct database paths
 database_local_root="/srv/rmt/_databases"
 database_remote_root="remote:raspi/_databases"
-database_filename="lektrix.sqlite3"
+database_filename="lektrix.v2.sqlite3"
 db_full_path="${database_local_root}/${app_name}/${database_filename}"
 # website_dir="/tmp/${app_name}/site"
 website_dir="/run/${app_name}/site"

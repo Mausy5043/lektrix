@@ -7,7 +7,7 @@ import pytz
 from sh import CommandNotFound, git  # type: ignore[import-untyped]
 
 _MYHOME: str = os.environ["HOME"]
-_DATABASE_FILENAME: str = "lektrix.sqlite3"
+_DATABASE_FILENAME: str = "lektrix.v2.sqlite3"
 _DATABASE: str = f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}"
 _HERE_list: list[str] = os.path.realpath(__file__).split("/")
 # ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
