@@ -72,12 +72,6 @@ TREND: dict = {
     "year_graph": f"{_WEBSITE}/lex_pastyears",
     "yg_vs_month": f"{_WEBSITE}/lex_vs_month",
     "yg_gauge": f"{_WEBSITE}/lex_gauge",
-    "hour_graph_v2": f"{_WEBSITE}/lex_pasthours",
-    "day_graph_v2": f"{_WEBSITE}/lex_pastdays",
-    "month_graph_v2": f"{_WEBSITE}/lex_pastmonths",
-    "year_graph_v2": f"{_WEBSITE}/lex_pastyears",
-    "yg_vs_month_v2": f"{_WEBSITE}/lex_vs_month",
-    "yg_gauge_v2": f"{_WEBSITE}/lex_gauge",
 }
 
 # KAMSTRUP: dict = {
