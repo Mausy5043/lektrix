@@ -192,11 +192,7 @@ def main() -> None:
                 )
                 dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
                 if dati > dt.datetime.today():
-                    LOGGER.debug(
-                        f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
-                        syslog.LOG_WARNING,
-                        DEBUG,
-                    )
+                    LOGGER.debug(f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.")
                     dati = dt.datetime.today()
                 start_dt = dati
                 LOGGER.warning(
