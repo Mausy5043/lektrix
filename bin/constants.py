@@ -249,7 +249,7 @@ PRICES: dict = {
         "sample_epoch": 0,
         "price": 0.0,
     },
-    "config": f"{_MYHOME}/.config/lektrix/jeroen.ini",
+    "config": f"{_MYHOME}/.config/tibber/account.ini",
     "website": _WEBSITE,
     "twoday_graph": f"{_WEBSITE}/price_twodays",
     "hour_graph": f"{_WEBSITE}/price_pasthours",
