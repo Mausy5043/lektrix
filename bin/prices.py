@@ -93,7 +93,7 @@ resp_data = unpeel(now_data, "today") + unpeel(nxt_data, "tomorrow")
 data: list = []
 for item in resp_data:
     try:
-        sample_time = item['startsAt'].split(".")[0]
+        sample_time = item['startsAt'].split(".")[0].replace("T", " ")
         price = float(item['total'])
         sample_epoch = int(pd.Timestamp(sample_time).timestamp())
         data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
