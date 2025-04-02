@@ -14,6 +14,40 @@ import pandas as pd
 import requests
 from mausy5043_common import libsqlite3 as m3
 
+requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
+
+
+def req_post(
+    _url: str,
+    _headers: dict[str, str],
+    _payload: dict[str, str],
+) -> dict[str, str]:
+    """Make a POST request to the given URL with the specified headers and payload."""
+    try:
+        response = requests.post(
+            _url,
+            headers=_headers,
+            json=_payload,
+            timeout=30.0,
+            verify=False,  # nosec B501
+        )
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        return response.json()
+    except requests.exceptions.RequestException as her:
+        print(f"An error occurred: {her}")
+        return {}
+
+
+def unpeel(
+    _data: dict[str, str],
+    _key: str,
+) -> list:
+    """Unpeel the data from the given key."""
+    _l1 = _data["data"]["viewer"]["homes"]
+    _l2 = _l1[0]["currentSubscription"]["priceInfo"][_key]
+    return _l2
+
+
 # Read the API key and URL from the INI file
 config_file = cs.PRICES["config"]
 config = configparser.ConfigParser()
@@ -22,14 +56,11 @@ try:
     with open(config_file) as file:
         config.read_file(file)
     api_key: str = config.get("API", "key", fallback="")
-    url: str = config.get("API", "url", fallback="")
-    savefile: str = os.path.expanduser(
-        config.get(
-            "API",
-            "saveto",
-        )
-    )
-    if not api_key or not url:
+    api_url: str = config.get("API", "url", fallback="")
+    savefile: str = os.path.expanduser(config.get("API", "saveto"))
+    qry_now: str = config.get("API", "qry_now", fallback="")
+    qry_nxt: str = config.get("API", "qry_nxt", fallback="")
+    if not api_key or not api_url:
         print("API key or URL missing in the configuration.")
         sys.exit(1)
 except FileNotFoundError:
@@ -40,25 +71,30 @@ except configparser.Error as her:
     sys.exit(1)
 
 
-# Get the data from the API
-params = {"period": "morgen", "type": "json", "key": api_key}
-# period=jaar&year=2013
-try:
-    response = requests.get(url, timeout=10.0, params=params)
-    response.raise_for_status()  # Raise an exception for HTTP errors
-    # Parse the JSON data
-    resp_data = response.json()
-    # print(json.dumps(resp_data, indent=4))
-except requests.exceptions.RequestException as her:
-    print(f"An error occurred: {her}")
-    resp_data = []
+# Get the today's data from the API
+headers_post = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
+payload = {"query": qry_now}
+now_data = req_post(
+    api_url,
+    headers_post,
+    payload,
+)
 
+# Get the tomorrow's data from the API
+payload = {"query": qry_nxt}
+nxt_data = req_post(
+    api_url,
+    headers_post,
+    payload,
+)
+
+resp_data = unpeel(now_data, "today") + unpeel(nxt_data, "tomorrow")
 # Convert the data for the database
 data: list = []
 for item in resp_data:
     try:
-        sample_time = item['datum']
-        price = float(item['prijs_excl_belastingen'].replace(',', '.'))
+        sample_time = item['startsAt'].split(".")[0]
+        price = float(item['total'])
         sample_epoch = int(pd.Timestamp(sample_time).timestamp())
         data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
     except (KeyError, ValueError, TypeError) as her:
@@ -67,6 +103,7 @@ for item in resp_data:
 # Save the data to a JSON file
 with open(savefile, 'w', encoding='utf-8') as _f:
     json.dump(data, _f, ensure_ascii=True, indent=4)
+# print(json.dumps(data, indent=4))
 
 # Save the data to the database
 sql_db = m3.SqlDatabase(
