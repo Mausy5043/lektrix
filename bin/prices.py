@@ -41,18 +41,32 @@ except configparser.Error as her:
 
 
 # Get the data from the API
+
+params = {"period": "vandaag", "type": "json", "key": api_key}
+# period=jaar&year=2013
+try:
+    response = requests.get(url, timeout=10.0, params=params)
+    response.raise_for_status()  # Raise an exception for HTTP errors
+    # Parse the JSON data
+    now_data = response.json()
+    # print(json.dumps(resp_data, indent=4))
+except requests.exceptions.RequestException as her:
+    print(f"An error occurred: {her}")
+    now_data = []
+
 params = {"period": "morgen", "type": "json", "key": api_key}
 # period=jaar&year=2013
 try:
     response = requests.get(url, timeout=10.0, params=params)
     response.raise_for_status()  # Raise an exception for HTTP errors
     # Parse the JSON data
-    resp_data = response.json()
+    nxt_data = response.json()
     # print(json.dumps(resp_data, indent=4))
 except requests.exceptions.RequestException as her:
     print(f"An error occurred: {her}")
-    resp_data = []
+    nxt_data = []
 
+resp_data = now_data + nxt_data
 # Convert the data for the database
 data: list = []
 for item in resp_data:
