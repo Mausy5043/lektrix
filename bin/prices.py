@@ -70,7 +70,6 @@ except configparser.Error as her:
     print(f"Error processing config file: {her}")
     sys.exit(1)
 
-
 # Get the today's data from the API
 headers_post = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
 payload = {"query": qry_now}

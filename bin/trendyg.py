@@ -12,7 +12,6 @@ import time
 from datetime import datetime as dt
 
 import constants as cs
-
 import libdbqueries as kl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -38,6 +37,8 @@ parser.add_argument("--print", "-p",
                     help="Output data to stdout."
                     )
 OPTION = parser.parse_args()
+
+
 # fmt: on
 
 

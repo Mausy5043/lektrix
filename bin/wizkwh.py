@@ -57,6 +57,8 @@ MYAPP = HERE[-3]  # lektrix
 MYROOT = "/".join(HERE[0:-3])  # /home/pi
 APPROOT = "/".join(HERE[0:-2])  # /home/pi/lektrix
 NODE = os.uname()[1]  # rbelec
+
+
 # fmt: on
 
 

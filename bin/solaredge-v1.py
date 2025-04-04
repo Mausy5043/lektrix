@@ -65,6 +65,7 @@ APPROOT: str = "/".join(HERE[0:-2])
 # host_name :
 NODE: str = os.uname()[1]
 
+
 # example values:
 # HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge-v1.py']
 # MYID: 'solaredge-v1.py

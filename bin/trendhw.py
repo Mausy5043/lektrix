@@ -29,7 +29,6 @@ import pandas as pd
 #   df = df.resample(f"{aggregation}", label=lbl).sum()
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-
 DATABASE = cs.TREND["database"]
 TABLE_MAINS = cs.WIZ_KWH["sql_table"]
 TABLE_PRDCT = cs.SOLAREDGE["sql_table"]
@@ -64,6 +63,8 @@ parser_group.add_argument("--debug",
                           help="start in debugging mode"
                           )
 OPTION = parser.parse_args()
+
+
 # fmt: on
 
 
