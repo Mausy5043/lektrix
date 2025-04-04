@@ -16,11 +16,10 @@ import libdbqueries as kl
 import matplotlib.pyplot as plt
 import numpy as np
 
-DATABASE = cs.TREND["database"]
-TABLE_MAINS = cs.KAMSTRUP["sql_table"]
-TABLE_PRDCT = cs.SOLAREDGE["sql_table"]
-TABLE_CHRGR = cs.ZAPPI["sql_table"]
-DEBUG = False
+DATABASE: str = cs.TREND["database"]
+TABLE_MAINS: str = cs.WIZ_KWH["sql_table"]
+TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
+DEBUG: bool = False
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create trendgraph or gauge")

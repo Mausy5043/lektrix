@@ -29,11 +29,11 @@ import pandas as pd
 #   df = df.resample(f"{aggregation}", label=lbl).sum()
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-DATABASE = cs.TREND["database"]
-TABLE_MAINS = cs.WIZ_KWH["sql_table"]
-TABLE_PRDCT = cs.SOLAREDGE["sql_table"]
-DEBUG = False
-EDATETIME = "'now'"
+DATABASE: str = cs.TREND["database"]
+TABLE_MAINS: str = cs.WIZ_KWH["sql_table"]
+TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
+DEBUG: bool = False
+EDATETIME: str = "'now'"
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")

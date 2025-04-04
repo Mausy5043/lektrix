@@ -17,11 +17,10 @@ import constants as cs
 import pandas as pd
 
 DATABASE: str = cs.TREND["database"]
-TABLE_MAINS: str = cs.KAMSTRUP["sql_table"]
+TABLE_MAINS: str = cs.WIZ_KWH["sql_table"]
 TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
-TABLE_CHRGR: str = cs.ZAPPI["sql_table"]
 DEBUG: bool = False
-EDATETIME = "'now'"
+EDATETIME: str = "'now'"
 
 # fmt:off
 parser = argparse.ArgumentParser(description="Create a report")
