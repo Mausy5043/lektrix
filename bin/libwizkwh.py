@@ -56,6 +56,8 @@ class WizkWh:
         self.p1_serial: str = _cfg["P1"]["serial"]
         self.p1_token: str = _cfg["P1"]["token"]
 
+        # NB: mausy5043_common displays device info.
+        # connect to the Home Wizard devices
         self.ev_hwe = hwz.MyHomeWizard(
             serial=self.ev_serial, token=self.ev_token, debug=self.debug
         )
