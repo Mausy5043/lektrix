@@ -11,17 +11,16 @@ import sys
 import time
 from datetime import datetime as dt
 
-import constants
+import constants as cs
 
-# noinspection PyUnresolvedReferences
 import libdbqueries as kl
 import matplotlib.pyplot as plt
 import numpy as np
 
-DATABASE = constants.TREND["database"]
-TABLE_MAINS = constants.KAMSTRUP["sql_table"]
-TABLE_PRDCT = constants.SOLAREDGE["sql_table"]
-TABLE_CHRGR = constants.ZAPPI["sql_table"]
+DATABASE = cs.TREND["database"]
+TABLE_MAINS = cs.KAMSTRUP["sql_table"]
+TABLE_PRDCT = cs.SOLAREDGE["sql_table"]
+TABLE_CHRGR = cs.ZAPPI["sql_table"]
 DEBUG = False
 
 # fmt: off
@@ -279,14 +278,14 @@ def main() -> None:
 
     if OPTION.months:
         plot_graph(
-            constants.TREND["yg_vs_month"],
+            cs.TREND["yg_vs_month"],
             fetch_last_months(OPTION.months),
             f"Stroomverbruik/levering per maand afgelopen jaren "
             f"({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
         )
     if OPTION.gauge:
         plot_graph(
-            constants.TREND["yg_gauge"],
+            cs.TREND["yg_gauge"],
             fetch_last_year(OPTION.gauge),
             f"Salderingsbalans over {OPTION.gauge} ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             gauge=True,
