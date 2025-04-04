@@ -80,7 +80,7 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     """
     if DEBUG:
         print(f"\nRequest {hours_to_fetch} hours of data from charger")
-    df_grid = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     if DEBUG:
         print("\nRequest data from production")
     df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
@@ -96,31 +96,31 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     #
 
     # (temp) total EV usage
-    df_grid["EVtotal"] = df_grid["evp"] + df_grid["evn"]
+    df_mains["EVtotal"] = df_mains["evp"] + df_mains["evn"]
     # (temp) total SOLAR
-    df_grid["SOLtotal"] = df_grid["gen"] + df_grid["gep"]
+    df_mains["SOLtotal"] = df_mains["gen"] + df_mains["gep"]
     # (temp) total P1
-    df_grid["P1total"] = df_grid["imp"]
+    df_mains["P1total"] = df_mains["imp"]
     #
-    df_grid["export"] = df_grid["exp"]
-    solbalance = df_grid["SOLtotal"] + df_grid["exp"]
+    df_mains["export"] = df_mains["exp"]
+    solbalance = df_mains["SOLtotal"] + df_mains["exp"]
     # solar used for EV
-    df_grid["EVsol"] = np.minimum(df_grid["EVtotal"], solbalance)
+    df_mains["EVsol"] = np.minimum(df_mains["EVtotal"], solbalance)
     # imported and used for EV
-    df_grid["EVnet"] = df_grid["EVtotal"] - df_grid["EVsol"]
+    df_mains["EVnet"] = df_mains["EVtotal"] - df_mains["EVsol"]
     # compensate for import diverted to EV ...
-    df_grid["import"] = df_grid["imp"] - df_grid["EVnet"]
+    df_mains["import"] = df_mains["imp"] - df_mains["EVnet"]
     # ... and/or import
     # compensate for solar diverted to EV ...
-    # df_grid["EB"] = df_grid["gep"] + df_grid["export"] - df_grid["EVsol"]
-    df_grid["EB"] = df_grid["SOLtotal"] - df_grid["EVsol"] + df_grid["export"]
+    # df_mains["EB"] = df_mains["gep"] + df_mains["export"] - df_mains["EVsol"]
+    df_mains["EB"] = df_mains["SOLtotal"] - df_mains["EVsol"] + df_mains["export"]
     # ... and/or export ('export' is negative!)
-    df_grid["EB"][df_grid["EB"] < 0] = 0
+    df_mains["EB"][df_mains["EB"] < 0] = 0
     if DEBUG:
         print("o  database charger processed data")
-        print(df_grid.to_markdown(floatfmt=".3f"))
+        print(df_mains.to_markdown(floatfmt=".3f"))
 
-    df_grid.drop(
+    df_mains.drop(
         ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
         axis=1,
         inplace=True,
@@ -129,16 +129,16 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
 
     # put columns in the right order for plotting
     categories = ["export", "import", "EB", "EVsol", "EVnet"]
-    df_grid.columns = pd.CategoricalIndex(
-        df_grid.columns.values, ordered=True, categories=categories
+    df_mains.columns = pd.CategoricalIndex(
+        df_mains.columns.values, ordered=True, categories=categories
     )
-    df_grid = df_grid.sort_index(axis=1)
+    df_mains = df_mains.sort_index(axis=1)
     if DEBUG:
         print("\n\n ** CHARGER data for plotting  **")
-        print(df_grid.to_markdown(floatfmt=".3f"))
+        print(df_mains.to_markdown(floatfmt=".3f"))
 
     data_dict = {}
-    data_dict["charger"] = df_grid
+    data_dict["charger"] = df_mains
     return data_dict
 
 
