@@ -69,7 +69,7 @@ OPTION = parser.parse_args()
 # fmt: on
 
 
-def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
+def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
     """Query the database to fetch the requested data
 
     Args:
