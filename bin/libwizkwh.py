@@ -143,7 +143,7 @@ class WizkWh:
         }
 
     @staticmethod
-    def compact_data(data) -> tuple:
+    def compact_data(data: list[dict]) -> tuple:
         """
         Compact the ten-second data into 15-minute data
 
