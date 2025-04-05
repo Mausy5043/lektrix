@@ -119,7 +119,7 @@ class WizkWh:
         return {
             "sample_time": idx_dt.strftime(self.dt_format),
             "sample_epoch": epoch,
-            "site_id": "4.2",  # 4.1 used for myenergi data
+            "site_id": cs.WIZ_KWH["templates"]["site_id"],
             "exp": self.p1_elec_out,  # exported to grid
             "imp": self.p1_elec_in,  # imported from grid to home
             "gen": self.pv_elec_out,  # consumed by PV (feeding to battery)
