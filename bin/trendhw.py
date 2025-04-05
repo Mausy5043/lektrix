@@ -32,6 +32,7 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 DATABASE: str = cs.TREND["database"]
 TABLE_MAINS: str = cs.WIZ_KWH["sql_table"]
 TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
+TABLE_PRICE: str = cs.PRICES["sql_table"]
 DEBUG: bool = False
 EDATETIME: str = "'now'"
 
@@ -83,7 +84,10 @@ def fetch_data(hours_to_fetch=48, aggregation="W") -> dict:
     df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
     if DEBUG:
         print("\nRequest data from production")
-    df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    # df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    if DEBUG:
+        print("\nRequest price data")
+    df_pris = fetch_data_prices(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
 
     # rename rows and perform calculations
     # exp: exported to grid
@@ -271,6 +275,64 @@ def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
 
     if DEBUG:
         print("o  database production data pre-processed")
+        print(df.to_markdown(floatfmt=".3f"))
+    return df
+
+
+def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
+    """
+    Query the database to fetch the requested data
+
+    Args:
+        hours_to_fetch (int):      number of hours of data to fetch
+        aggregation (str):         pandas resample rule
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+    if DEBUG:
+        print("\n*** fetching PRICES data ***")
+
+    where_condition = (
+        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
+        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
+    )
+    s3_query: str = (
+        f"SELECT * "  # nosec B608
+        f"FROM {TABLE_PRICE} "
+        f"WHERE {where_condition}"
+    )
+    if DEBUG:
+        print(s3_query)
+
+    # Get the data
+    with s3.connect(DATABASE) as con:
+        df = pd.read_sql_query(
+            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
+        )
+    if DEBUG:
+        print("o  database price data")
+        print(df)
+
+    # Pre-processing
+    # drop sample_time separately!
+    df.drop("sample_time", axis=1, inplace=True, errors="ignore")
+
+    for c in df.columns:
+        if c not in ["sample_time"]:
+            df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    df.index = pd.to_datetime(df.index, unit="s")  # noqa
+
+    # resample to monotonic timeline
+    lbl = "right"
+    if aggregation == "D":
+        lbl = "left"
+    if aggregation != "H":
+        df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
+
+    if DEBUG:
+        print("o  database price data pre-processed")
         print(df.to_markdown(floatfmt=".3f"))
     return df
 
