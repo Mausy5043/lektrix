@@ -153,7 +153,7 @@ if __name__ == "__main__":
         print(OPTION)
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-        LOGGER.level = logging.DEBUG
+        LOGGER.setLevel(logging.DEBUG)
         LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 

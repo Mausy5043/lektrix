@@ -42,7 +42,7 @@ class WizkWh:
         if debug:
             if len(LOGGER.handlers) == 0:
                 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-            LOGGER.level = logging.DEBUG
+            LOGGER.setLevel(logging.DEBUG)
             LOGGER.debug("Debugging on.")
             self.telegram: list = []
 
