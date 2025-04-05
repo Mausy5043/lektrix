@@ -162,24 +162,20 @@ class WizkWh:
 
         df = pd.DataFrame(data)
         # for correct cost calculation sample_time must be in the correct hour.
-        # sample_time reflects the time of the start of the next sample, but it should reflect the end of itself.
-        # so we will steal 1 second from "sample_time" to make it the end of the sample.
-        # df["st_0"] = df["sample_time"]
+        # sample_time reflects the time of the start of the next sample, but it
+        # should reflect the end of its period.
+        # so we will steal 5 seconds from "sample_time" to make it look like it
+        # was taken at the end of the period.
         df["st_0"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)
-        # df["sample_time"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)
-        df["st-1"] = df["st_0"] - pd.Timedelta(seconds=5)
-        # df["sample_time"] = df["sample_time"] - pd.Timedelta(seconds=1)
-        df["sample_time"] = df["st-1"]
-        #
+        df["st-5"] = df["st_0"] - pd.Timedelta(seconds=5)
+        df["sample_time"] = df["st-5"]
         df = df.set_index("sample_time")
-        # df.index = pd.to_datetime(df.index, format=cs.DT_FORMAT, utc=False)
-
-        # resample to monotonic timeline
+        # resample to monotonic timeline, use label=left to get the correct timeperiod
         resample_time = f"{cs.WIZ_KWH["report_interval"] / 60}min"
-        df_out = df.resample(resample_time, label="right").max()
-        df_mean = df.resample(resample_time, label="right").mean()
+        df_out = df.resample(resample_time, label="left").max()
+        df_mean = df.resample(resample_time, label="left").mean()
 
-        # recreate column 'sample_time' that was lost to the index
+        # recreate column 'sample_time' that was lost when setting the index
         df_out["sample_time"] = df.index.to_frame(name="sample_time")
         df_out["sample_time"] = df["sample_time"].apply(_convert_time_to_text)
 
@@ -189,13 +185,13 @@ class WizkWh:
         df_out["v1"] = df_mean["v1"].astype(int)
         df_out["frq"] = df_mean["frq"].astype(int)
 
-        # convert all other fields to int
-        df.drop(["st_1", "st_2"], axis=1, inplace=True, errors="ignore")
+        # drop the temporary columns
+        df.drop(["st_0", "st-5"], axis=1, inplace=True, errors="ignore")
 
-        # recalculate 'sample_epoch'
+        # recalculate 'sample_epoch' from the new 'sample_time'
         df_out["sample_epoch"] = df["sample_time"].apply(_convert_time_to_epoch)
         result_data: list[dict] = df_out.to_dict("records")
-
+        # ignore samples that seem to be in the future
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]
         remain_data: list[dict] = df.to_dict("records")
 
