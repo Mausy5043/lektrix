@@ -1,0 +1,13 @@
+# This timer is for triggering updates of the repository clone
+
+[Unit]
+Description=daily lektrix update
+# Update on boot
+Requires=lektrix.update.service
+
+[Timer]
+OnCalendar=*-*-* 04:00
+RandomizedDelaySec=3m
+
+[Install]
+WantedBy=timers.target

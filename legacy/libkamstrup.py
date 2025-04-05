@@ -54,7 +54,7 @@ class Kamstrup:  # pylint: disable=too-many-instance-attributes
         if debug:
             if len(LOGGER.handlers) == 0:
                 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-            LOGGER.setLevel(logging.DEBUG)
+            LOGGER.level = logging.DEBUG
             LOGGER.debug("Debugging on.")
             self.telegram: list = []
 
