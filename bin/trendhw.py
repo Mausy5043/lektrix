@@ -102,9 +102,9 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
     # (temp) total EV usage
     df_mains["EVtotal"] = df_mains["evp"] + df_mains["evn"]
     # (temp) total SOLAR
-    df_mains["SOLtotal"] = df_mains["gen"] + df_mains["gep"]
+    df_mains["PVtotal"] = df_mains["gen"] + df_mains["gep"]
     # (temp) total P1
-    df_mains["P1total"] = df_mains["imp"]
+    df_mains["P1total"] = df_mains["imp"] + df_mains["exp"]
     #
     df_mains["export"] = df_mains["exp"]
     solbalance = df_mains["SOLtotal"] + df_mains["exp"]
