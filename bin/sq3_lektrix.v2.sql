@@ -9,6 +9,7 @@
 -- Track production and consumption of the home, EV and PV/Battery
 -- --------------------------------------------------------
 
+DROP TABLE IF EXISTS charger;
 DROP TABLE IF EXISTS mains;
 
 CREATE TABLE mains (
@@ -28,32 +29,34 @@ CREATE TABLE mains (
 CREATE INDEX idx_mains_site ON mains(site_id);
 CREATE INDEX idx_mains_epoch ON mains(sample_epoch);
 -- SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
+INSERT INTO mains (sample_time, sample_epoch, site_id, exp, imp, gen, gep, evn, evp, v1, frq)
+       VALUES ('2025-04-09 09:00:00', 1744182000, '4.2', 0, 0, 0, 0, 0, 0, 0, 0)
 
 -- --------------------------------------------------------
 -- Track PV production
 -- --------------------------------------------------------
 
-DROP TABLE IF EXISTS production;
-
--- energy is cumulative power generated in Wh
-
-CREATE TABLE production (
-  sample_time   datetime NOT NULL PRIMARY KEY,
-  sample_epoch  integer,
-  site_id       integer,
-  energy        integer
-  );
-
+--DROP TABLE IF EXISTS production;
+--
+---- energy is cumulative power generated in Wh
+--
+--CREATE TABLE production (
+--  sample_time   datetime NOT NULL PRIMARY KEY,
+--  sample_epoch  integer,
+--  site_id       integer,
+--  energy        integer
+--  );
+--
 CREATE INDEX idx_prod_site ON production(site_id);
 CREATE INDEX idx_prod_epoch ON production(sample_epoch);
-
--- Set a starting value and add first two datapoints (not available in SolarEdge DB)
-INSERT INTO production (sample_time, sample_epoch, site_id, energy)
-       VALUES ('2020-02-20 09:08:22', 1582186102, 1508443, 0);
-INSERT INTO production (sample_time, sample_epoch, site_id, energy)
-       VALUES ('2020-02-21 23:30:00', 1582324200, 1508443, 510);
-INSERT INTO production (sample_time, sample_epoch, site_id, energy)
-       VALUES ('2020-02-22 09:30:00', 1582360200, 1508443, 641);
+--
+---- Set a starting value and add first two datapoints (not available in SolarEdge DB)
+--INSERT INTO production (sample_time, sample_epoch, site_id, energy)
+--       VALUES ('2020-02-20 09:08:22', 1582186102, 1508443, 0);
+--INSERT INTO production (sample_time, sample_epoch, site_id, energy)
+--       VALUES ('2020-02-21 23:30:00', 1582324200, 1508443, 510);
+--INSERT INTO production (sample_time, sample_epoch, site_id, energy)
+--       VALUES ('2020-02-22 09:30:00', 1582360200, 1508443, 641);
 
 -- --------------------------------------------------------
 -- Track dynamic electricity prices
