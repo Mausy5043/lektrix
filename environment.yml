@@ -21,7 +21,7 @@ dependencies:
   # Not on conda channels:
   - pip:
       - gracefulkiller~=0.4
-      - mausy5043-common>=2.2.5
+      - mausy5043-common>=2.2.7
       - py-solaredge==0.0.4.9
   # legacy: This won't install on anything other than Linux (notably Raspberry Pi):
   # - pyserial=3.5
