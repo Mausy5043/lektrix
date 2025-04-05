@@ -125,7 +125,7 @@ class WizP1:
         df = df.set_index("sample_time")
         df.index = pd.to_datetime(df.index, format=cs.DT_FORMAT, utc=False)
         # resample to monotonic timeline
-        df_out = df.resample("15min", label="right").max()
+        df_out = df.resample("15min", label="left").max()
         # df_mean = df.resample("15min", label="right").mean()
 
         df_out["powerin"] = df_out["powerin"].astype(int)
