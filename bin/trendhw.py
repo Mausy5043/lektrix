@@ -106,8 +106,10 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
     # (temp) total P1
     df_mains["P1total"] = df_mains["imp"] + df_mains["exp"]
     #
-    df_mains["export"] = df_mains["exp"]
-    solbalance = df_mains["SOLtotal"] + df_mains["exp"]
+    df_mains["own"] = (
+        df_mains["exp"] + df_mains["gen"] + df_mains["gep"] + df_mains["evn"] + df_mains["evp"]
+    )
+    solbalance = df_mains["PVtotal"] + df_mains["exp"]
     # solar used for EV
     df_mains["EVsol"] = np.minimum(df_mains["EVtotal"], solbalance)
     # imported and used for EV
