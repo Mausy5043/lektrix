@@ -197,7 +197,7 @@ class WizkWh:
         result_data: list[dict] = df_out.to_dict("records")
 
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]
-        remain_data: list[dict] = df.to_dict("records")  # type: ignore[arg-type]
+        remain_data: list[dict] = df.to_dict("records")
 
         LOGGER.debug(f"Result: {json.dumps(result_data, indent=2)}\n")
         LOGGER.debug(f"Remain: {json.dumps(remain_data, indent=2)}\n")
