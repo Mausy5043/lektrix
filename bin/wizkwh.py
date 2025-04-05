@@ -14,6 +14,7 @@ import logging.handlers
 import os
 import shutil
 import sys
+import syslog
 import time
 import traceback
 
@@ -57,8 +58,6 @@ MYAPP = HERE[-3]  # lektrix
 MYROOT = "/".join(HERE[0:-3])  # /home/pi
 APPROOT = "/".join(HERE[0:-2])  # /home/pi/lektrix
 NODE = os.uname()[1]  # rbelec
-
-
 # fmt: on
 
 
@@ -70,14 +69,14 @@ def main() -> None:
     killer = gk.GracefulKiller()
     API_KWH = kwh.WizkWh(debug=DEBUG)
     sql_db = m3.SqlDatabase(
-        database=cs.WIZ_KWH["database"],
-        table=cs.WIZ_KWH["sql_table"],
-        insert=cs.WIZ_KWH["sql_command"],
+        database=cs.WIZ_P1["database"],
+        table=cs.WIZ_P1["sql_table"],
+        insert=cs.WIZ_P1["sql_command"],
         debug=DEBUG,
     )
 
-    report_interval = int(cs.WIZ_KWH["report_interval"])
-    sample_interval = report_interval / int(cs.WIZ_KWH["samplespercycle"])
+    report_interval = int(cs.WIZ_P1["report_interval"])
+    sample_interval = report_interval / int(cs.WIZ_P1["samplespercycle"])
 
     next_time = time.time()
     rprt_time = time.time() + (report_interval - (time.time() % report_interval))
@@ -87,11 +86,9 @@ def main() -> None:
             try:
                 LOGGER.debug("\n...requesting telegram")
                 API_KWH.get_telegram()
-                set_led("p1", "green")
                 set_led("ev", "green")
                 set_led("pv", "green")
             except Exception:  # noqa
-                set_led("p1", "red")
                 set_led("ev", "red")
                 set_led("pv", "red")
                 LOGGER.critical("Unexpected error while trying to do some work!")
@@ -109,7 +106,6 @@ def main() -> None:
                         LOGGER.debug(f"{element}")  # is already logged by sql_db.queue()
                         sql_db.queue(element)
                 except Exception:  # noqa
-                    set_led("p1", "red")
                     set_led("ev", "red")
                     set_led("pv", "red")
                     LOGGER.critical("Unexpected error while trying to queue the data")
@@ -119,7 +115,6 @@ def main() -> None:
                     LOGGER.debug("\n...inserting data")
                     sql_db.insert(method="replace")
                 except Exception:  # noqa
-                    set_led("p1", "red")
                     set_led("ev", "red")
                     set_led("pv", "red")
                     LOGGER.critical(
@@ -148,12 +143,18 @@ def set_led(dev, colour) -> None:
 
 
 if __name__ == "__main__":
+    # initialise logging
+    syslog.openlog(
+        ident=f'{MYAPP}.{MYID.split(".")[0]}',
+        facility=syslog.LOG_LOCAL0,
+    )
+
     if OPTION.debug:
         DEBUG = True
         print(OPTION)
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-        LOGGER.setLevel(logging.DEBUG)
+        LOGGER.level = logging.DEBUG
         LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 

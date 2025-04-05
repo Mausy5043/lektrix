@@ -62,8 +62,11 @@ CREATE TABLE charger (
     gep             integer,
     h1b             integer,
     h1d             integer,
+    evn             integer,
+    evp             integer,
     v1              integer,
     frq             integer,
+    pf              integer
     );
 
 CREATE INDEX idx_chrg_site ON charger(site_id);

@@ -15,7 +15,7 @@ dependencies = [
     "pandas",
     "py-solaredge==0.0.4.9",
     "python-dateutil~=2.9",
-    "pytz~=2025.2",
+    "pytz~=2025.1",
     "requests~=2.32",
     "sh~=2.2",
     "tabulate~=0.9",
@@ -65,15 +65,10 @@ ignore = [
     # line break before binary: is against policy.
     "W503",
     ]
-exclude = [
-    "legacy/",
-    ".local/"
-]
 
 [tool.mypy]
 exclude = [
-    "legacy/",
-    ".local/"
+    "legacy"
 ]
 # ignore_errors = true
 strict = false
