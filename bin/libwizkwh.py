@@ -167,7 +167,7 @@ class WizkWh:
         # df["st_0"] = df["sample_time"]
         df["st_0"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)
         # df["sample_time"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)
-        df["st-1"] = df["st_0"] - pd.Timedelta(seconds=1)
+        df["st-1"] = df["st_0"] - pd.Timedelta(seconds=5)
         # df["sample_time"] = df["sample_time"] - pd.Timedelta(seconds=1)
         df["sample_time"] = df["st-1"]
         #
