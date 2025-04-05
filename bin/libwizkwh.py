@@ -47,14 +47,26 @@ class WizkWh:
             self.telegram: list = []
 
         # process config file
-        with open(cs.WIZ_KWH["config"], encoding="utf-8") as _json_file:
-            _cfg = json.load(_json_file)
-        self.ev_serial: str = _cfg["EV"]["serial"]
-        self.ev_token: str = _cfg["EV"]["token"]
-        self.pv_serial: str = _cfg["PV"]["serial"]
-        self.pv_token: str = _cfg["PV"]["token"]
-        self.p1_serial: str = _cfg["P1"]["serial"]
-        self.p1_token: str = _cfg["P1"]["token"]
+        try:
+            with open(cs.WIZ_KWH["config"], encoding="utf-8") as _json_file:
+                _cfg = json.load(_json_file)
+        except FileNotFoundError:
+            LOGGER.error("Config file not found.")
+            sys.exit(1)
+        except json.JSONDecodeError:
+            LOGGER.error("Error decoding JSON config file.")
+            sys.exit(1)
+        try:
+            self.ev_serial: str = _cfg["EV"]["serial"]
+            self.ev_token: str = _cfg["EV"]["token"]
+            self.pv_serial: str = _cfg["PV"]["serial"]
+            self.pv_token: str = _cfg["PV"]["token"]
+            self.p1_serial: str = _cfg["P1"]["serial"]
+            self.p1_token: str = _cfg["P1"]["token"]
+        except KeyError as her:
+            LOGGER.error(f"KeyError: {her}")
+            LOGGER.error("Please check the config file.")
+            sys.exit(1)
 
         # NB: mausy5043_common displays device info.
         # connect to the Home Wizard devices
