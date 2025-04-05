@@ -23,8 +23,6 @@ dependencies:
       - gracefulkiller~=0.4
       - mausy5043-common>=2.2.7
       - py-solaredge==0.0.4.9
-  # legacy: This won't install on anything other than Linux (notably Raspberry Pi):
-  # - pyserial=3.5
   - python-dateutil=2.9
   - pytz=2025.2
   - requests=2.32
