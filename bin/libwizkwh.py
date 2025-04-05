@@ -118,12 +118,12 @@ class WizkWh:
         self.pv_voltage = int(_pv.active_voltage_v * 10)
         # not available on P1-dongle w/ KAMSTRUP
         # self.p1_voltage = int(_p1.active_voltage_v * 10)
-        self.home_voltage = int((self.ev_voltage + self.pv_voltage) / 2)
+        self.home_voltage = int(np.nanmean([self.ev_voltage, self.pv_voltage]) * 10) / 10
         self.ev_freq = int(_ev.active_frequency_hz * 10)
         self.pv_freq = int(_pv.active_frequency_hz * 10)
         # not available on P1-dongle w/ KAMSTRUP
         # self.p1_freq = int(_p1.active_frequency_hz * 10)
-        self.home_freq = int((self.ev_freq + self.pv_freq) / 2)
+        self.home_freq = int(np.nanmean([self.ev_freq, self.pv_freq]) * 10) / 10
 
         idx_dt: dt.datetime = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
