@@ -13,15 +13,14 @@ import argparse
 import sqlite3 as s3
 from datetime import datetime as dt
 
-import constants
+import constants as cs
 import pandas as pd
 
-DATABASE: str = constants.TREND["database"]
-TABLE_MAINS: str = constants.KAMSTRUP["sql_table"]
-TABLE_PRDCT: str = constants.SOLAREDGE["sql_table"]
-TABLE_CHRGR: str = constants.ZAPPI["sql_table"]
+DATABASE: str = cs.TREND["database"]
+TABLE_MAINS: str = cs.WIZ_KWH["sql_table"]
+TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
 DEBUG: bool = False
-EDATETIME = "'now'"
+EDATETIME: str = "'now'"
 
 # fmt:off
 parser = argparse.ArgumentParser(description="Create a report")
@@ -51,6 +50,8 @@ parser_group.add_argument("--debug",
                           help="start in debugging mode"
                           )
 OPTION = parser.parse_args()
+
+
 # fmt: on
 
 

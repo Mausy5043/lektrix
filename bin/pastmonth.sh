@@ -69,8 +69,6 @@ if [ "${MAINTENANCE}" == "-" ]; then
     fi
 fi
 
-./ms-trend.py --days 0
-./me-trend.py --days 0
-# ./lg-trend.py --days 0
+./trendhw.py --days 0
 
 popd >/dev/null || exit

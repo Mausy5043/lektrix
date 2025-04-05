@@ -3,7 +3,6 @@
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 
 pushd "${HERE}" >/dev/null || exit 1
-    ./ms-trend.py --hours 0
-    ./me-trend.py --hours 0
-    ./pricetrend.py --twoday
+    ./trendhw.py --hours 0
+    ./trendprice.py --twoday
 popd >/dev/null || exit

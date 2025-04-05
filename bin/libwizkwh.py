@@ -42,26 +42,46 @@ class WizkWh:
         if debug:
             if len(LOGGER.handlers) == 0:
                 LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-            LOGGER.level = logging.DEBUG
+            LOGGER.setLevel(logging.DEBUG)
             LOGGER.debug("Debugging on.")
             self.telegram: list = []
 
         # process config file
-        with open(cs.WIZ_KWH["config"], encoding="utf-8") as _json_file:
-            _cfg = json.load(_json_file)
-        self.ev_serial: str = _cfg["EV"]["serial"]
-        self.ev_token: str = _cfg["EV"]["token"]
-        self.pv_serial: str = _cfg["PV"]["serial"]
-        self.pv_token: str = _cfg["PV"]["token"]
+        try:
+            with open(cs.WIZ_KWH["config"], encoding="utf-8") as _json_file:
+                _cfg = json.load(_json_file)
+        except FileNotFoundError:
+            LOGGER.error("Config file not found.")
+            sys.exit(1)
+        except json.JSONDecodeError:
+            LOGGER.error("Error decoding JSON config file.")
+            sys.exit(1)
+        try:
+            self.ev_serial: str = _cfg["EV"]["serial"]
+            self.ev_token: str = _cfg["EV"]["token"]
+            self.pv_serial: str = _cfg["PV"]["serial"]
+            self.pv_token: str = _cfg["PV"]["token"]
+            self.p1_serial: str = _cfg["P1"]["serial"]
+            self.p1_token: str = _cfg["P1"]["token"]
+        except KeyError as her:
+            LOGGER.error(f"KeyError: {her}")
+            LOGGER.error("Please check the config file.")
+            sys.exit(1)
 
+        # NB: mausy5043_common displays device info.
+        # connect to the Home Wizard devices
         self.ev_hwe = hwz.MyHomeWizard(
             serial=self.ev_serial, token=self.ev_token, debug=self.debug
         )
         self.pv_hwe = hwz.MyHomeWizard(
             serial=self.pv_serial, token=self.pv_token, debug=self.debug
         )
+        self.p1_hwe = hwz.MyHomeWizard(
+            serial=self.p1_serial, token=self.p1_token, debug=self.debug
+        )
         self.ev_hwe.connect()
         self.pv_hwe.connect()
+        self.p1_hwe.connect()
 
     def get_telegram(self):
         """Fetch data from the devices.
@@ -71,8 +91,9 @@ class WizkWh:
         """
         _ev_data = self.ev_hwe.get_measurement()
         _pv_data = self.pv_hwe.get_measurement()
+        _p1_data = self.p1_hwe.get_measurement()
 
-        self.list_data.append(self._translate_telegram([_ev_data, _pv_data]))
+        self.list_data.append(self._translate_telegram([_ev_data, _pv_data, _p1_data]))
         LOGGER.debug(self.list_data)
         LOGGER.debug("*-*")
 
@@ -86,26 +107,23 @@ class WizkWh:
         """
         _ev = telegram[0]
         _pv = telegram[1]
+        _p1 = telegram[2]
         self.ev_elec_in = int(_ev.energy_import_kwh * 1000)
         self.pv_elec_in = int(_pv.energy_import_kwh * 1000)
-        self.ev_elec_out = int(_ev.energy_export_kwh * 1000)
-        self.pv_elec_out = int(_pv.energy_export_kwh * 1000)
-        # self.ev_power_in = _ev.active_power_w
-        # self.pv_power_in = _pv.active_power_w
+        self.p1_elec_in = int(_p1.energy_import_kwh * 1000)
+        self.ev_elec_out = int(_ev.energy_export_kwh * -1000)
+        self.pv_elec_out = int(_pv.energy_export_kwh * -1000)
+        self.p1_elec_out = int(_p1.energy_export_kwh * -1000)
         self.ev_voltage = int(_ev.active_voltage_v * 10)
         self.pv_voltage = int(_pv.active_voltage_v * 10)
+        # not available on P1-dongle w/ KAMSTRUP
+        # self.p1_voltage = int(_p1.active_voltage_v * 10)
+        self.home_voltage = int(np.nanmean([self.ev_voltage, self.pv_voltage]) * 10) / 10
         self.ev_freq = int(_ev.active_frequency_hz * 10)
         self.pv_freq = int(_pv.active_frequency_hz * 10)
-        self.ev_pf = int(_ev.active_power_factor * 1000)
-        self.pv_pf = int(_pv.active_power_factor * 1000)
-        # self.ev_power_out = 0.0
-        # self.pv_power_out = 0.0
-        #     self.ev_power_out = self.ev_power_in
-        #     self.ev_power_in = 0.0
-        # if self.pv_power_in < 0.0:
-        #     self.pv_power_out = self.pv_power_in
-        #     self.pv_power_in = 0.0
-        # if self.ev_power_in < 0.0:
+        # not available on P1-dongle w/ KAMSTRUP
+        # self.p1_freq = int(_p1.active_frequency_hz * 10)
+        self.home_freq = int(np.nanmean([self.ev_freq, self.pv_freq]) * 10) / 10
 
         idx_dt: dt.datetime = dt.datetime.now()
         epoch = int(idx_dt.timestamp())
@@ -113,22 +131,19 @@ class WizkWh:
         return {
             "sample_time": idx_dt.strftime(self.dt_format),
             "sample_epoch": epoch,
-            "site_id": "4.2",  # 4.1 used for myenergi data
-            "exp": 0,  # was: myenergy export (grid-CT)
-            "imp": 0,  # was: myenergy import (grid-CT)
+            "site_id": cs.WIZ_KWH["templates"]["site_id"],
+            "exp": self.p1_elec_out,  # exported to grid
+            "imp": self.p1_elec_in,  # imported from grid to home
             "gen": self.pv_elec_out,  # consumed by PV (feeding to battery)
-            "gep": self.pv_elec_in,  # generated by PV (solar production or from battery)
-            "h1b": 0,  # was: myenergy EV-boost
-            "h1d": 0,  # was: myenergy diverted to EV
+            "gep": self.pv_elec_in,  # generated by PV to home (solar production or from battery)
             "evn": self.ev_elec_out,  # consumed by EV
-            "evp": self.ev_elec_in,  # V2H from EV
-            "v1": self.ev_voltage,
-            "frq": self.ev_freq,
-            "pf": self.ev_pf,
+            "evp": self.ev_elec_in,  # V2H from EV to home
+            "v1": self.home_voltage,  # avg voltage in the home
+            "frq": self.home_freq,  # avg frequency in the home
         }
 
     @staticmethod
-    def compact_data(data) -> tuple:
+    def compact_data(data: list[dict]) -> tuple:
         """
         Compact the ten-second data into 15-minute data
 
@@ -146,28 +161,44 @@ class WizkWh:
             return str(pd.Timestamp(date_to_convert).strftime(cs.DT_FORMAT))
 
         df = pd.DataFrame(data)
+        # for correct cost calculation sample_time must be in the correct hour.
+        # sample_time reflects the time of the start of the next sample, but it should reflect the end of itself.
+        # so we will steal 1 second from "sample_time" to make it the end of the sample.
+        # df["st_0"] = df["sample_time"]
+        df["st_0"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)
+        # df["sample_time"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)
+        df["st-1"] = df["st_0"] - pd.Timedelta(seconds=5)
+        # df["sample_time"] = df["sample_time"] - pd.Timedelta(seconds=1)
+        df["sample_time"] = df["st-1"]
+        #
         df = df.set_index("sample_time")
-        df.index = pd.to_datetime(df.index, format=cs.DT_FORMAT, utc=False)
+        # df.index = pd.to_datetime(df.index, format=cs.DT_FORMAT, utc=False)
 
         # resample to monotonic timeline
-        df_out = df.resample("15min", label="right").max()
-        df_mean = df.resample("15min", label="right").mean()
+        resample_time = f"{cs.WIZ_KWH["report_interval"] / 60}min"
+        df_out = df.resample(resample_time, label="right").max()
+        df_mean = df.resample(resample_time, label="right").mean()
+
         # recreate column 'sample_time' that was lost to the index
         df_out["sample_time"] = df.index.to_frame(name="sample_time")
         df_out["sample_time"] = df["sample_time"].apply(_convert_time_to_text)
+
         # reset 'site_id'
-        df_out["site_id"] = 4.2
-        # fields 'v1' and 'frq' should be averaged so divide them by 15 here:
+        df_out["site_id"] = cs.WIZ_KWH["template"]["site_id"]
+        # fields 'v1' and 'frq' should be averages
         df_out["v1"] = df_mean["v1"].astype(int)
         df_out["frq"] = df_mean["frq"].astype(int)
 
+        # convert all other fields to int
+        df.drop(["st_1", "st_2"], axis=1, inplace=True, errors="ignore")
+
         # recalculate 'sample_epoch'
         df_out["sample_epoch"] = df["sample_time"].apply(_convert_time_to_epoch)
-        result_data = df_out.to_dict("records")  # list of dicts
+        result_data: list[dict] = df_out.to_dict("records")
 
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]
-        remain_data = df.to_dict("records")
+        remain_data: list[dict] = df.to_dict("records")
 
-        LOGGER.debug(f"Result: {result_data}")
-        LOGGER.debug(f"Remain: {remain_data}\n")
+        LOGGER.debug(f"Result: {json.dumps(result_data, indent=2)}\n")
+        LOGGER.debug(f"Remain: {json.dumps(remain_data, indent=2)}\n")
         return result_data, remain_data

@@ -21,7 +21,7 @@ def req_post(
     _url: str,
     _headers: dict[str, str],
     _payload: dict[str, str],
-) -> dict[str, str]:
+) -> dict:
     """Make a POST request to the given URL with the specified headers and payload."""
     try:
         response = requests.post(
@@ -32,20 +32,30 @@ def req_post(
             verify=False,  # nosec B501
         )
         response.raise_for_status()  # Raise an exception for HTTP errors
-        return response.json()
+        return dict(response.json())
     except requests.exceptions.RequestException as her:
         print(f"An error occurred: {her}")
         return {}
 
 
 def unpeel(
-    _data: dict[str, str],
+    _data: dict[str, dict],
     _key: str,
 ) -> list:
     """Unpeel the data from the given key."""
-    _l1 = _data["data"]["viewer"]["homes"]
-    _l2 = _l1[0]["currentSubscription"]["priceInfo"][_key]
-    return _l2
+    _ldata: dict = _data["data"]
+    _lviewer: dict = _ldata["viewer"]
+    _lhomes: list = _lviewer["homes"]
+    _lhome: dict = _lhomes[0]
+    _lcurSub: dict = _lhome["currentSubscription"]
+    _lpriceInfo: dict = _lcurSub["priceInfo"]
+    _lkey: list = _lpriceInfo[_key]
+
+    #
+    # _l1: list = _data["data"]["viewer"]["homes"]
+    # _l2: list = _l1[0]["currentSubscription"]["priceInfo"][_key]
+    # print(_lkey, _l2, _lpriceInfo)
+    return _lkey
 
 
 # Read the API key and URL from the INI file
@@ -70,11 +80,10 @@ except configparser.Error as her:
     print(f"Error processing config file: {her}")
     sys.exit(1)
 
-
 # Get the today's data from the API
-headers_post = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
-payload = {"query": qry_now}
-now_data = req_post(
+headers_post: dict = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
+payload: dict = {"query": qry_now}
+now_data: dict = req_post(
     api_url,
     headers_post,
     payload,
@@ -82,13 +91,13 @@ now_data = req_post(
 
 # Get the tomorrow's data from the API
 payload = {"query": qry_nxt}
-nxt_data = req_post(
+nxt_data: dict = req_post(
     api_url,
     headers_post,
     payload,
 )
 
-resp_data = unpeel(now_data, "today") + unpeel(nxt_data, "tomorrow")
+resp_data: list = unpeel(now_data, "today") + unpeel(nxt_data, "tomorrow")
 # Convert the data for the database
 data: list = []
 for item in resp_data:
@@ -104,6 +113,7 @@ for item in resp_data:
 with open(savefile, 'w', encoding='utf-8') as _f:
     json.dump(data, _f, ensure_ascii=True, indent=4)
 # print(json.dumps(data, indent=4))
+# sys.exit(0)
 
 # Save the data to the database
 sql_db = m3.SqlDatabase(

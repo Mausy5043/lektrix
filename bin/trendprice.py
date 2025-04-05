@@ -22,10 +22,10 @@ import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
 
-DATABASE = cs.PRICES["database"]
-TABLE_PRICE = cs.PRICES["sql_table"]
-DEBUG = False
-EDATETIME = "'now'"
+DATABASE: str = cs.PRICES["database"]
+TABLE_PRICE: str = cs.PRICES["sql_table"]
+DEBUG: bool = False
+EDATETIME: str = "'now'"
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
@@ -59,6 +59,8 @@ parser_group.add_argument("--debug",
                           help="start in debugging mode"
                           )
 OPTION = parser.parse_args()
+
+
 # fmt: on
 
 
