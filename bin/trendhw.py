@@ -62,12 +62,10 @@ parser_group.add_argument("--debug",
                           help="start in debugging mode"
                           )
 OPTION = parser.parse_args()
-
-
 # fmt: on
 
 
-def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -89,20 +87,31 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
         "cols2drop": [],
     }
     if DEBUG:
-        print(f"\nRequest {hours_to_fetch} hours of data from charger")
+        print(f"\nRequest {hours_to_fetch} hours of MAINS data from")
     settings["table"] = TABLE_MAINS
     settings["cols2drop"] = ["site_id", "v1", "frq"]
-    df_mains = dbq.preprocess_mains(dbq.query_for_data(settings=settings), settings)
+    df_mains = dbq.post_process_mains(dbq.query_for_data(settings=settings), settings)
     if DEBUG:
-        print("\nRequest data from production")
+        print(f"\nRequest {hours_to_fetch} hours of PRODUCTION data")
     settings["table"] = TABLE_PRDCT
     settings["cols2drop"] = ["site_id"]
-    df_prod = dbq.preprocess_production(dbq.query_for_data(settings=settings), settings)
+    df_prod = dbq.post_process_production(dbq.query_for_data(settings=settings), settings)
     if DEBUG:
-        print("\nRequest price data")
+        print(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df_pris = dbq.preprocess_prices(dbq.query_for_data(settings=settings), settings)
+    df_pris = dbq.post_process_prices(dbq.query_for_data(settings=settings), settings)
+    # merge the dataframes
+    # join='outer': This is the default option. It performs a union of the indexes,
+    #               including all indexes from all DataFrames.
+    #               Missing values will be filled with NaN.
+    # join='inner': This option performs an intersection of the indexes, including
+    #               only the indexes that are present in all DataFrames. This results
+    #               in a DataFrame that contains only the common indexes.
+    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='outer')
+    if DEBUG:
+        print("o  database concatenated data")
+        print(df.to_markdown(floatfmt=".3f"))
 
     # rename rows and perform calculations
     # exp: exported to grid
@@ -115,35 +124,44 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
     # price: price of energy in the timeperiod
     # own: home usage from PV or V2H := gep + evp + exp
     #
-
     # (temp) total EV usage
-    df_mains["EVtotal"] = df_mains["evp"] + df_mains["evn"]
+    df["EVtotal"] = df["evp"] + df["evn"]
     # (temp) total SOLAR
-    df_mains["PVtotal"] = df_mains["gen"] + df_mains["gep"]
+    df["PVtotal"] = df["gen"] + df["gep"]
     # (temp) total P1
-    df_mains["P1total"] = df_mains["imp"] + df_mains["exp"]
+    df["P1total"] = df["imp"] + df["exp"]
+    # 'own' is the total energy used internally by the home
+    # that is: *not* imported from the grid (was: eigen bedrijf; EB)
+    # NOTE that 'gen' and 'evn' are not used in the calculation of 'own'
+    # because they are diverted from somewhere else (one of the __p values)
+    df["own"] = df["exp"] + df["gep"] + df["evp"]
+    # the 'own' energy avoids the need to import energy from the grid
+    # so the money avoided by 'own' is saved.
+    df["saved_own"] = df["own"] * df["price"]
+    # the 'exp'orted energy is the energy that is not used by the home but sold to the grid.
+    # 2025: for now we assume selling at the hourly price.
+    df['saved_exp'] = df["exp"] * df["price"]
     #
-    df_mains["own"] = (
-        df_mains["exp"] + df_mains["gen"] + df_mains["gep"] + df_mains["evn"] + df_mains["evp"]
-    )
-    solbalance = df_mains["PVtotal"] + df_mains["exp"]
+    #...
+    #
+    solbalance = df["PVtotal"] + df["exp"]
     # solar used for EV
-    df_mains["EVsol"] = np.minimum(df_mains["EVtotal"], solbalance)
+    df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
     # imported and used for EV
-    df_mains["EVnet"] = df_mains["EVtotal"] - df_mains["EVsol"]
+    df["EVnet"] = df["EVtotal"] - df["EVsol"]
     # compensate for import diverted to EV ...
-    df_mains["import"] = df_mains["imp"] - df_mains["EVnet"]
+    df["import"] = df["imp"] - df["EVnet"]
     # ... and/or import
     # compensate for solar diverted to EV ...
-    # df_mains["EB"] = df_mains["gep"] + df_mains["export"] - df_mains["EVsol"]
-    df_mains["EB"] = df_mains["SOLtotal"] - df_mains["EVsol"] + df_mains["export"]
+    # df["EB"] = df["gep"] + df["export"] - df["EVsol"]
+    df["EB"] = df["SOLtotal"] - df["EVsol"] + df["export"]
     # ... and/or export ('export' is negative!)
-    df_mains["EB"][df_mains["EB"] < 0] = 0
+    df["EB"][df["EB"] < 0] = 0
     if DEBUG:
         print("o  database charger processed data")
-        print(df_mains.to_markdown(floatfmt=".3f"))
+        print(df.to_markdown(floatfmt=".3f"))
 
-    df_mains.drop(
+    df.drop(
         ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
         axis=1,
         inplace=True,
@@ -152,28 +170,14 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
 
     # put columns in the right order for plotting
     categories = ["export", "import", "EB", "EVsol", "EVnet"]
-    df_mains.columns = pd.CategoricalIndex(
-        df_mains.columns.values, ordered=True, categories=categories
-    )
-    df_mains = df_mains.sort_index(axis=1)
+    df.columns = pd.CategoricalIndex(df.columns.values, ordered=True, categories=categories)
+    df = df.sort_index(axis=1)
     if DEBUG:
         print("\n\n ** CHARGER data for plotting  **")
-        print(df_mains.to_markdown(floatfmt=".3f"))
+        print(df.to_markdown(floatfmt=".3f"))
 
-    data_dict = {}
-    data_dict["charger"] = df_mains
+    data_dict = {"charger": df}
     return data_dict
-
-
-def remove_nans(frame, col_name, default):
-    """remove NANs from a series"""
-    for idx, tmpr in enumerate(frame[col_name]):
-        if np.isnan(tmpr):
-            if idx == 0:
-                frame.at[idx, col_name] = default
-            else:
-                frame.at[idx, col_name] = frame.at[idx - 1, col_name]
-    return frame
 
 
 def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None) -> None:
