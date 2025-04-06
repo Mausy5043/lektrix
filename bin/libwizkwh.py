@@ -144,14 +144,13 @@ class WizkWh:
 
     @staticmethod
     def compact_data(data: list[dict]) -> tuple:
-        """
-        Compact the ten-second data into 15-minute data
+        """Compact the data into N-minute data (N = report_interval).
 
         Args:
-            data (list): list of dicts containing 10-second data from the electricity meter
+            data (list): list of dicts containing data from the electricity meter
 
         Returns:
-            (list): list of dicts containing compacted 15-minute data
+            (list): list of dicts containing compacted N-minute data
         """
 
         def _convert_time_to_epoch(date_to_convert) -> int:
