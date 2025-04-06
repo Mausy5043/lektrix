@@ -36,17 +36,17 @@ INSERT INTO mains (sample_time, sample_epoch, site_id, exp, imp, gen, gep, evn, 
 -- Track PV production
 -- --------------------------------------------------------
 
---DROP TABLE IF EXISTS production;
---
----- energy is cumulative power generated in Wh
---
---CREATE TABLE production (
---  sample_time   datetime NOT NULL PRIMARY KEY,
---  sample_epoch  integer,
---  site_id       integer,
---  energy        integer
---  );
---
+DROP TABLE IF EXISTS production;
+
+-- energy is cumulative power generated in Wh
+
+CREATE TABLE production (
+  sample_time   datetime NOT NULL PRIMARY KEY,
+  sample_epoch  integer,
+  site_id       integer,
+  energy        integer
+  );
+
 CREATE INDEX idx_prod_site ON production(site_id);
 CREATE INDEX idx_prod_epoch ON production(sample_epoch);
 --
