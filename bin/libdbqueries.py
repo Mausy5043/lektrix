@@ -297,9 +297,9 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         f" ( sample_time >= datetime({edatetime}, '-{hours_to_fetch + 2} hours')"
         f" AND sample_time <= datetime({edatetime}, '+2 hours') )"
     )
+    # we don't use grouping here, as we want to get all data and we'll group
+    # it later during post-processing
     group_condition = ""
-    # if aggregation == 'H':
-    #     group_condition = "GROUP BY strftime('%d %H', sample_time)"
     # make sure the data is sorted by sample_time
     sort_condition = "ORDER BY sample_time ASC"
     # construct the query
@@ -327,18 +327,29 @@ def query_for_data(settings: dict) -> pd.DataFrame:
                 raise TimeoutError("Database seems locked.") from her
     # show the fetched data when debugging
     if debug:
-        print("o  database data")
+        print("o  RAW data")
         print(df.to_markdown(floatfmt=".3f"))
+        print("\n*** preprocessing data ***")
     # finally, drop the column sample_time
     df.drop(labels=["sample_time"], axis=1, inplace=True, errors="ignore")
+    # drop columns we don't need
+    df.drop(labels=settings["cols2drop"], axis=1, inplace=True, errors="ignore")
+    # make everything else numeric
+    for c in df.columns:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    # sample_epoch becomes the index visualized as datetime
+    df.index = pd.to_datetime(df.index, unit="s")
+    if debug:
+        print("o  PRE-processed data")
+        print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
-def preprocess_production(df: pd.DataFrame, settings) -> pd.DataFrame:
-    """
-    Query the database to fetch the requested production data
+def post_process_production(df: pd.DataFrame, settings) -> pd.DataFrame:
+    """Post process the production data.
 
     Args:
+        df (pandas.DataFrame):     data to be processed
         settings (dict):           settings to be used
 
     Returns:
@@ -352,77 +363,55 @@ def preprocess_production(df: pd.DataFrame, settings) -> pd.DataFrame:
     df["solar"] *= 0.001
 
     if debug:
-        print("o  database production data pre-processed")
+        print("o  POST-processed PRODUCTION data")
         print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
-def preprocess_mains(df: pd.DataFrame, settings) -> pd.DataFrame:
-    """Query the database to fetch the requested data
+def post_process_mains(df: pd.DataFrame, settings) -> pd.DataFrame:
+    """Post process the mains data.
 
     Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (str):         pandas resample rule
+        df (pandas.DataFrame):     data to be processed
+        settings (dict):           settings to be used
 
     Returns:
         pandas.DataFrame() with data
     """
     debug = settings["debug"]
-    aggregation = settings["aggregation"]
-    droppings = settings["cols2drop"]
-    if debug:
-        print("\n*** preprocessing data ***")
-    # pre-process the data
-    # drop columns we don't need
-    df.drop(labels=droppings, axis=1, inplace=True, errors="ignore")
-    # make everything else numeric
-    for c in df.columns:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-    df.index = pd.to_datetime(df.index, unit="s")  # noqa
-
     # drop first row as it will usually not contain valid or complete data
     # df = df.iloc[1:, :]
+    # raw data from P1, PV and EV are totalisers and come in Wh stored every 15 minutes.
+    # first we convert the totalisers to differentials
+    df = df.diff()
+    # we sum the data to get the total production for the aggregation period...
+    df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
+    # ...then convert to kWh
+    df["import"] *= 0.001
 
-    if DEBUG:
-        print("o  database charger data pre-processed")
+    if debug:
+        print("o  POST-processed MAINS data")
         print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
-def preprocess_prices(df: pd.DataFrame, settings) -> pd.DataFrame:
-    """
-    Query the database to fetch the requested data
+def post_process_prices(df: pd.DataFrame, settings) -> pd.DataFrame:
+    """Post process the price data.
 
     Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (str):         pandas resample rule
+        df (pandas.DataFrame):     data to be processed
+        settings (dict):           settings to be used
 
     Returns:
         pandas.DataFrame() with data
     """
-
     debug = settings["debug"]
-    aggregation = settings["aggregation"]
-    droppings = settings["cols2drop"]
+    # price data already comes in euro/kWh in hourly periods.
+    if settings["aggregation"] != "H":
+        # we average the price for all other aggregation periods
+        df = df.resample(f"{settings["aggregation"]}", label="left").mean()
+
     if debug:
-        print("\n*** preprocessing data ***")
-    # pre-process the data
-    # drop columns we don't need
-    df.drop(labels=droppings, axis=1, inplace=True, errors="ignore")
-    # make everything else numeric
-    for c in df.columns:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-
-    df.index = pd.to_datetime(df.index, unit="s")  # noqa
-
-    # resample to monotonic timeline
-    lbl = "right"
-    if aggregation == "D":
-        lbl = "left"
-    if aggregation != "H":
-        df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
-
-    if DEBUG:
-        print("o  database price data pre-processed")
+        print("o  POST-processed PRICE data")
         print(df.to_markdown(floatfmt=".3f"))
     return df
