@@ -113,7 +113,7 @@ WIZ_KWH: dict = {
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": 4.2,
+        "site_id": "4.2",     # 4.1 = myenergi zappi; 4.2 = HomeWizard
         "exp": 0,
         "imp": 0,
         "gen": 0,
@@ -131,12 +131,13 @@ PRICES: dict = {
     "sql_table": "prices",
     "sql_command": "INSERT INTO prices ("
                    "sample_time, sample_epoch, "
-                   "price"
+                   "site_id, price"
                    ");"
-                   "VALUES (?, ?, ?)",
+                   "VALUES (?, ?, ?, ?)",
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
+        "site_id": "4.2",     # 4.1 = Pure Energie; 4.2 = Tibber
         "price": 0.0,
     },
     "config": f"{_MYHOME}/.config/tibber/account.ini",

@@ -66,6 +66,7 @@ DROP TABLE IF EXISTS prices;
 CREATE TABLE prices (
   sample_time   datetime NOT NULL PRIMARY KEY,
   sample_epoch  integer,
+  site_id       text,
   price         float
   );
 
