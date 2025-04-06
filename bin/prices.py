@@ -106,11 +106,14 @@ for item in resp_data:
         sample_time = item['startsAt'].split(".")[0].replace("T", " ")
         price = float(item['total'])
         sample_epoch = int(pd.Timestamp(sample_time).timestamp())
-        data.append({"sample_time": sample_time,
-                     "sample_epoch": sample_epoch,
-                     "site_id": site_id,
-                     "price": price,
-                     })
+        data.append(
+            {
+                "sample_time": sample_time,
+                "sample_epoch": sample_epoch,
+                "site_id": site_id,
+                "price": price,
+            }
+        )
     except (KeyError, ValueError, TypeError) as her:
         print(f"Error processing item: {item}, error: {her}")
 
