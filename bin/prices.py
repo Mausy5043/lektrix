@@ -100,12 +100,17 @@ nxt_data: dict = req_post(
 resp_data: list = unpeel(now_data, "today") + unpeel(nxt_data, "tomorrow")
 # Convert the data for the database
 data: list = []
+site_id: str = cs.PRICES["template"]["site_id"]
 for item in resp_data:
     try:
         sample_time = item['startsAt'].split(".")[0].replace("T", " ")
         price = float(item['total'])
         sample_epoch = int(pd.Timestamp(sample_time).timestamp())
-        data.append({"sample_time": sample_time, "sample_epoch": sample_epoch, "price": price})
+        data.append({"sample_time": sample_time,
+                     "sample_epoch": sample_epoch,
+                     "site_id": site_id,
+                     "price": price,
+                     })
     except (KeyError, ValueError, TypeError) as her:
         print(f"Error processing item: {item}, error: {her}")
 
