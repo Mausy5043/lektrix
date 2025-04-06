@@ -44,7 +44,7 @@ CREATE TABLE production (
   sample_time   datetime NOT NULL PRIMARY KEY,
   sample_epoch  integer,
   site_id       integer,
-  solar           integer
+  solar         integer
   );
 
 CREATE INDEX idx_prod_site ON production(site_id);

@@ -345,24 +345,11 @@ def preprocess_production(df: pd.DataFrame, settings) -> pd.DataFrame:
         pandas.DataFrame() with data
     """
     debug = settings["debug"]
-    aggregation = settings["aggregation"]
-    droppings = settings["cols2drop"]
-    if debug:
-        print("\n*** preprocessing data ***")
-    # drop columns we don't need
-    df.drop(labels=droppings, axis=1, inplace=True, errors="ignore")
-    # make everything else numeric
-    for c in df.columns:
-        df[c] = pd.to_numeric(df[c], errors="coerce")
-
-    df.index = pd.to_datetime(df.index, unit="s")  # noqa
-    # resample to monotonic timeline
-    lbl = "right"
-    if aggregation == "D":
-        lbl = "left"
-    df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
-    # convert data fro Wh to kWh
-    df["energy"] *= 0.001
+    # raw production data from SolarEdge comes in Wh per 15 minutes.
+    # we sum the data to get the total production for the aggregation period...
+    df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
+    # ...then convert to kWh
+    df["solar"] *= 0.001
 
     if debug:
         print("o  database production data pre-processed")

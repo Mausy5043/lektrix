@@ -90,7 +90,7 @@ SOLAREDGE: dict = {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
         "sample_epoch": 0,
         "site_id": 0,
-        "energy": 0,
+        "solar": 0,
     },
     "config": f"{_MYHOME}/.config/solaredge/account.ini",
 }
