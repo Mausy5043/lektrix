@@ -10,14 +10,12 @@ Using myenergi data
 
 # pylint: disable=C0413
 import argparse
-import random
-import sqlite3 as s3
 import sys
-import time
 import warnings
 from datetime import datetime as dt
 
 import constants as cs
+import libdbqueries as dbq
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
@@ -79,15 +77,32 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
     Returns:
         dict with dataframes containing mains and production data
     """
+    settings = {
+        "debug": DEBUG,
+        "edatetime": EDATETIME,
+        "table": "",
+        "database": DATABASE,
+        "hours_to_fetch": hours_to_fetch,
+        "aggregation": aggregation,
+        "parse_dates": ["sample_time"],
+        "index_col": "sample_epoch",
+        "cols2drop": [],
+    }
     if DEBUG:
         print(f"\nRequest {hours_to_fetch} hours of data from charger")
-    df_mains = fetch_data_mains(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    settings["table"] = TABLE_MAINS
+    settings["cols2drop"] = ["site_id", "v1", "frq"]
+    df_mains = dbq.preprocess_mains(dbq.query_for_data(settings=settings), settings)
     if DEBUG:
         print("\nRequest data from production")
-    # df_prod = fetch_data_production(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    settings["table"] = TABLE_PRDCT
+    settings["cols2drop"] = ["site_id"]
+    df_prod = dbq.preprocess_production(dbq.query_for_data(settings=settings), settings)
     if DEBUG:
         print("\nRequest price data")
-    df_pris = fetch_data_prices(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    settings["table"] = TABLE_PRICE
+    settings["cols2drop"] = ["site_id"]
+    df_pris = dbq.preprocess_prices(dbq.query_for_data(settings=settings), settings)
 
     # rename rows and perform calculations
     # exp: exported to grid
@@ -146,197 +161,6 @@ def fetch_data(hours_to_fetch=48, aggregation="H") -> dict:
     data_dict = {}
     data_dict["charger"] = df_mains
     return data_dict
-
-
-def fetch_data_mains(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
-    """Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (str):         pandas resample rule
-
-    Returns:
-        pandas.DataFrame() with data
-    """
-    df = pd.DataFrame()
-    if DEBUG:
-        print("\n*** fetching CHARGER data ***")
-
-    where_condition = (
-        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
-        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
-    )
-    group_condition = ""
-    # if aggregation == 'H':
-    #     group_condition = "GROUP BY strftime('%d %H', sample_time)"
-    s3_query: str = (
-        f"SELECT * "  # nosec B608
-        f"FROM {TABLE_MAINS} "
-        f"WHERE {where_condition} {group_condition};"
-    )
-    if DEBUG:
-        print(s3_query)
-
-    # Get the data
-    success = False
-    retries = 5
-    while not success and retries > 0:
-        try:
-            with s3.connect(DATABASE) as con:
-                df = pd.read_sql_query(
-                    s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
-                )
-                success = True
-        except (s3.OperationalError, pd.errors.DatabaseError) as her:
-            if DEBUG:
-                print("Database may be locked. Waiting...")
-            retries -= 1
-            time.sleep(random.randint(30, 60))  # nosec bandit B311
-            if retries == 0:
-                raise TimeoutError("Database seems locked.") from her
-
-    if DEBUG:
-        print("o  database charger dataset")
-        print(df.to_markdown(floatfmt=".3f"))
-
-    # Pre-processing
-    # drop sample_time separately!
-    df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-    df.drop(["site_id", "v1", "frq"], axis=1, inplace=True, errors="ignore")
-
-    for c in df.columns:
-        if c not in ["sample_time"]:
-            df[c] = pd.to_numeric(df[c], errors="coerce")
-    df.index = pd.to_datetime(df.index, unit="s")  # noqa
-
-    # resample to monotonic timeline
-    df = df.resample(f"{aggregation}").sum()
-
-    # drop first row as it will usually not contain valid or complete data
-    # df = df.iloc[1:, :]
-
-    if DEBUG:
-        print("o  database charger data pre-processed")
-        print(df.to_markdown(floatfmt=".3f"))
-    return df
-
-
-def fetch_data_production(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
-    """
-    Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (str):         pandas resample rule
-
-    Returns:
-        pandas.DataFrame() with data
-    """
-    if DEBUG:
-        print("\n*** fetching PRODUCTION data ***")
-
-    where_condition = (
-        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
-        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
-    )
-    s3_query: str = (
-        f"SELECT * "  # nosec B608
-        f"FROM {TABLE_PRDCT} "
-        f"WHERE {where_condition}"
-    )
-    if DEBUG:
-        print(s3_query)
-
-    # Get the data
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
-        )
-    if DEBUG:
-        print("o  database production data")
-        print(df)
-
-    # Pre-processing
-    # drop sample_time separately!
-    df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-    df.drop("site_id", axis=1, inplace=True, errors="ignore")
-
-    for c in df.columns:
-        if c not in ["sample_time"]:
-            df[c] = pd.to_numeric(df[c], errors="coerce")
-
-    df.index = pd.to_datetime(df.index, unit="s")  # noqa
-
-    # resample to monotonic timeline
-    lbl = "right"
-    if aggregation == "D":
-        lbl = "left"
-    df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
-
-    df["energy"] *= 0.001  # -> kWh
-
-    if DEBUG:
-        print("o  database production data pre-processed")
-        print(df.to_markdown(floatfmt=".3f"))
-    return df
-
-
-def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
-    """
-    Query the database to fetch the requested data
-
-    Args:
-        hours_to_fetch (int):      number of hours of data to fetch
-        aggregation (str):         pandas resample rule
-
-    Returns:
-        pandas.DataFrame() with data
-    """
-    if DEBUG:
-        print("\n*** fetching PRICES data ***")
-
-    where_condition = (
-        f" ( sample_time >= datetime({EDATETIME}, '-{hours_to_fetch + 1} hours')"
-        f" AND sample_time <= datetime({EDATETIME}, '+2 hours') )"
-    )
-    s3_query: str = (
-        f"SELECT * "  # nosec B608
-        f"FROM {TABLE_PRICE} "
-        f"WHERE {where_condition}"
-    )
-    if DEBUG:
-        print(s3_query)
-
-    # Get the data
-    with s3.connect(DATABASE) as con:
-        df = pd.read_sql_query(
-            s3_query, con, parse_dates=["sample_time"], index_col="sample_epoch"
-        )
-    if DEBUG:
-        print("o  database price data")
-        print(df)
-
-    # Pre-processing
-    # drop sample_time separately!
-    df.drop("sample_time", axis=1, inplace=True, errors="ignore")
-
-    for c in df.columns:
-        if c not in ["sample_time"]:
-            df[c] = pd.to_numeric(df[c], errors="coerce")
-
-    df.index = pd.to_datetime(df.index, unit="s")  # noqa
-
-    # resample to monotonic timeline
-    lbl = "right"
-    if aggregation == "D":
-        lbl = "left"
-    if aggregation != "H":
-        df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
-
-    if DEBUG:
-        print("o  database price data pre-processed")
-        print(df.to_markdown(floatfmt=".3f"))
-    return df
 
 
 def remove_nans(frame, col_name, default):

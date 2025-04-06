@@ -7,9 +7,21 @@
 """Common functions for use with the KAMSTRUP electricity meter"""
 
 import datetime as dt
+import random
 import sqlite3 as s3
+import time
 
 import numpy as np
+import pandas as pd
+
+default_settings = {
+    "debug": False,
+    "edatetime": "'now'",
+    "table": "",
+    "database": "",
+    "hours_to_fetch": 48,
+    "aggregation": "H",
+}
 
 
 def add_time_line(config: dict) -> dict:
@@ -259,3 +271,171 @@ def build_arrays44(lbls, use_data, expo_data) -> tuple:
         usage[row_idx][col_idx] = data_point[1]
         exprt[row_idx][col_idx] = data_point[2]
     return label_lists, usage, exprt
+
+
+def query_for_data(settings: dict) -> pd.DataFrame:
+    """Query the database to fetch the requested data
+
+    Args
+        settings (dict):           settings to be used
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+    df = pd.DataFrame()
+    debug = settings["debug"]
+    database = settings["database"]
+    edatetime = settings["edatetime"]
+    qry_table = settings["table_prdct"]
+    hours_to_fetch = settings["hours_to_fetch"]
+    parse_dates = settings["parse_dates"]
+    index_col = settings["index_col"]
+
+    # we use a greedy query. Requesting for two hours in the future (for improved
+    # grouping) and two hours in the past to get all data (two hours for UTC vs CEST)
+    where_condition = (
+        f" ( sample_time >= datetime({edatetime}, '-{hours_to_fetch + 2} hours')"
+        f" AND sample_time <= datetime({edatetime}, '+2 hours') )"
+    )
+    group_condition = ""
+    # if aggregation == 'H':
+    #     group_condition = "GROUP BY strftime('%d %H', sample_time)"
+    # make sure the data is sorted by sample_time
+    sort_condition = "ORDER BY sample_time ASC"
+    # construct the query
+    s3_qry: str = (
+        f"SELECT * "  # nosec B608
+        f"FROM {qry_table} "
+        f"WHERE {where_condition} "
+        f"{group_condition} {sort_condition};"
+    )
+    if debug:
+        print(f"  Query > {s3_qry}")
+    # get the data
+    success = False
+    retries = 5
+    while not success and retries > 0:
+        try:
+            with s3.connect(database) as _c:
+                df = pd.read_sql_query(s3_qry, _c, parse_dates=parse_dates, index_col=index_col)
+        except (s3.OperationalError, pd.errors.DatabaseError) as her:
+            if debug:
+                print("Database may be locked. Waiting...")
+            retries -= 1
+            time.sleep(random.randint(30, 60))  # nosec bandit B311
+            if retries == 0:
+                raise TimeoutError("Database seems locked.") from her
+    # show the fetched data when debugging
+    if debug:
+        print("o  database data")
+        print(df.to_markdown(floatfmt=".3f"))
+    # finally, drop the column sample_time
+    df.drop(labels=["sample_time"], axis=1, inplace=True, errors="ignore")
+    return df
+
+
+def preprocess_production(df: pd.DataFrame, settings) -> pd.DataFrame:
+    """
+    Query the database to fetch the requested production data
+
+    Args:
+        settings (dict):           settings to be used
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+    debug = settings["debug"]
+    aggregation = settings["aggregation"]
+    droppings = settings["cols2drop"]
+    if debug:
+        print("\n*** preprocessing data ***")
+    # drop columns we don't need
+    df.drop(labels=droppings, axis=1, inplace=True, errors="ignore")
+    # make everything else numeric
+    for c in df.columns:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    df.index = pd.to_datetime(df.index, unit="s")  # noqa
+    # resample to monotonic timeline
+    lbl = "right"
+    if aggregation == "D":
+        lbl = "left"
+    df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
+    # convert data fro Wh to kWh
+    df["energy"] *= 0.001
+
+    if debug:
+        print("o  database production data pre-processed")
+        print(df.to_markdown(floatfmt=".3f"))
+    return df
+
+
+def preprocess_mains(df: pd.DataFrame, settings) -> pd.DataFrame:
+    """Query the database to fetch the requested data
+
+    Args:
+        hours_to_fetch (int):      number of hours of data to fetch
+        aggregation (str):         pandas resample rule
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+    debug = settings["debug"]
+    aggregation = settings["aggregation"]
+    droppings = settings["cols2drop"]
+    if debug:
+        print("\n*** preprocessing data ***")
+    # pre-process the data
+    # drop columns we don't need
+    df.drop(labels=droppings, axis=1, inplace=True, errors="ignore")
+    # make everything else numeric
+    for c in df.columns:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+    df.index = pd.to_datetime(df.index, unit="s")  # noqa
+
+    # drop first row as it will usually not contain valid or complete data
+    # df = df.iloc[1:, :]
+
+    if DEBUG:
+        print("o  database charger data pre-processed")
+        print(df.to_markdown(floatfmt=".3f"))
+    return df
+
+
+def preprocess_prices(df: pd.DataFrame, settings) -> pd.DataFrame:
+    """
+    Query the database to fetch the requested data
+
+    Args:
+        hours_to_fetch (int):      number of hours of data to fetch
+        aggregation (str):         pandas resample rule
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+
+    debug = settings["debug"]
+    aggregation = settings["aggregation"]
+    droppings = settings["cols2drop"]
+    if debug:
+        print("\n*** preprocessing data ***")
+    # pre-process the data
+    # drop columns we don't need
+    df.drop(labels=droppings, axis=1, inplace=True, errors="ignore")
+    # make everything else numeric
+    for c in df.columns:
+        df[c] = pd.to_numeric(df[c], errors="coerce")
+
+    df.index = pd.to_datetime(df.index, unit="s")  # noqa
+
+    # resample to monotonic timeline
+    lbl = "right"
+    if aggregation == "D":
+        lbl = "left"
+    if aggregation != "H":
+        df = df.resample(f"{aggregation}", label=lbl).sum()  # type: ignore[arg-type]
+
+    if DEBUG:
+        print("o  database price data pre-processed")
+        print(df.to_markdown(floatfmt=".3f"))
+    return df
