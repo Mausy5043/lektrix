@@ -113,7 +113,7 @@ WIZ_KWH: dict = {
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": "4.2",     # 4.1 = myenergi zappi; 4.2 = HomeWizard
+        "site_id": 4.2,     # 4.1 = myenergi zappi; 4.2 = HomeWizard
         "exp": 0,
         "imp": 0,
         "gen": 0,
