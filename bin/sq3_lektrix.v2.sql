@@ -32,7 +32,7 @@ CREATE INDEX idx_mains_site ON mains(site_id);
 CREATE INDEX idx_mains_epoch ON mains(sample_epoch);
 -- SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
 INSERT INTO mains (sample_time, sample_epoch, site_id, exp, imp, gen, gep, evn, evp, v1, frq)
-       VALUES ('2025-04-09 09:00:00', 1744182000, '4.2', 0, 0, 0, 0, 0, 0, 0, 0)
+       VALUES ('2025-04-09 09:00:00', 1744182000, '4.2', 0, 0, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 -- Track PV production
@@ -48,6 +48,8 @@ CREATE TABLE production (
   site_id       integer,
   solar         integer
   );
+
+-- ALTER TABLE production RENAME COLUMN energy TO solar;
 
 CREATE INDEX idx_prod_site ON production(site_id);
 CREATE INDEX idx_prod_epoch ON production(sample_epoch);
