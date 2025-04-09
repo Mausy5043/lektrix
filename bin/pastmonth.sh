@@ -69,6 +69,6 @@ if [ "${MAINTENANCE}" == "-" ]; then
     fi
 fi
 
-./trendhw.py --days 0
+#./trendhw.py --days 0
 
 popd >/dev/null || exit
