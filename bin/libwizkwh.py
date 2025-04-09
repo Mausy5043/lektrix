@@ -194,7 +194,7 @@ class WizkWh:
         df_out["sample_time"] = df_out["sample_time"].apply(_convert_time_to_text)
 
         # recalculate 'sample_epoch' from the new 'sample_time'
-        df_out["sample_epoch"] = df["sample_time"].apply(_convert_time_to_epoch)
+        df_out["sample_epoch"] = df_out["sample_time"].apply(_convert_time_to_epoch)
         result_data: list[dict] = df_out.to_dict("records")
         # ignore samples that seem to be in the future
         df = df[df["sample_epoch"] > np.max(df_out["sample_epoch"])]
