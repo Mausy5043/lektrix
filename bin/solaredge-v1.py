@@ -235,7 +235,7 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
             endDate=end_dt,
             timeUnit="QUARTER_OF_AN_HOUR",
         )
-        data_list = sol_energy["solar"]["values"]
+        data_list = sol_energy["energy"]["values"]
         if DEBUG:
             for item in data_list:
                 LOGGER.debug(f"    : {item}")
