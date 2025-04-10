@@ -14,7 +14,6 @@ import logging.handlers
 import os
 import shutil
 import sys
-import syslog
 import time
 import traceback
 
@@ -143,18 +142,12 @@ def set_led(dev, colour) -> None:
 
 
 if __name__ == "__main__":
-    # initialise logging
-    syslog.openlog(
-        ident=f'{MYAPP}.{MYID.split(".")[0]}',
-        facility=syslog.LOG_LOCAL0,
-    )
-
     if OPTION.debug:
         DEBUG = True
         print(OPTION)
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-        LOGGER.level = logging.DEBUG
+        LOGGER.setLevel(logging.DEBUG)
         LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 
