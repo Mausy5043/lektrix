@@ -274,7 +274,7 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
                 dt.datetime.strptime(date_time, cs.DT_FORMAT).replace(tzinfo=dt.UTC).timestamp()
             )
             result_dict["site_id"] = site_id
-            result_dict["energy"] = int(energy)
+            result_dict["solar"] = int(energy)
             LOGGER.debug(f"    : {date_time} = {energy}")
             result_list.append(result_dict)
     return result_list
