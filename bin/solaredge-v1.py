@@ -21,7 +21,7 @@ import sys
 import time
 import traceback
 
-import constants
+import constants as cs
 import GracefulKiller as gk  # type: ignore[import-untyped]
 import mausy5043_common.libsqlite3 as m3
 from solaredge.api.client import Client  # type: ignore[import-untyped]
@@ -81,7 +81,7 @@ def main() -> None:
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
-    iniconf.read(constants.SOLAREDGE["config"])
+    iniconf.read(cs.SOLAREDGE["config"])
     api_key: str = iniconf.get("account", "api_key")
     sol = Client()
     sol.set_api_key(api_key)
@@ -91,15 +91,15 @@ def main() -> None:
     LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True))
 
     sql_db = m3.SqlDatabase(
-        database=constants.SOLAREDGE["database"],
-        table=constants.SOLAREDGE["sql_table"],
-        insert=constants.SOLAREDGE["sql_command"],
+        database=cs.SOLAREDGE["database"],
+        table=cs.SOLAREDGE["sql_table"],
+        insert=cs.SOLAREDGE["sql_command"],
         debug=DEBUG,
     )
-    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
+    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), cs.DT_FORMAT)
 
-    report_interval = int(constants.SOLAREDGE["report_interval"])
-    sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
+    report_interval = int(cs.SOLAREDGE["report_interval"])
+    sample_interval: float = report_interval / int(cs.SOLAREDGE["samplespercycle"])
     pause_interval: float = 0.0
     next_time: float = pause_interval + local_now()
     lookback_hours = 24
@@ -157,7 +157,7 @@ def main() -> None:
             )
             # fmt: on
             # allow the inverter to update the data on the server.
-            pause_interval += constants.SOLAREDGE["delay"]
+            pause_interval += cs.SOLAREDGE["delay"]
             next_time = (
                 pause_interval + local_now()
             )  # gives the actual time when the next loop should start
@@ -179,7 +179,7 @@ def main() -> None:
             """
 
             new_start_dt: dt.datetime = dt.datetime.strptime(
-                sql_db.latest_datapoint(), constants.DT_FORMAT
+                sql_db.latest_datapoint(), cs.DT_FORMAT
             )
             if new_start_dt <= start_dt:
                 # there is a hole in the data
@@ -275,9 +275,7 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
                 energy = 0.0
             result_dict["sample_time"] = date_time
             result_dict["sample_epoch"] = int(
-                dt.datetime.strptime(date_time, constants.DT_FORMAT)
-                .replace(tzinfo=dt.UTC)
-                .timestamp()
+                dt.datetime.strptime(date_time, cs.DT_FORMAT).replace(tzinfo=dt.UTC).timestamp()
             )
             result_dict["site_id"] = site_id
             result_dict["energy"] = int(energy)
@@ -294,7 +292,7 @@ def set_led(dev, colour) -> None:
     LOGGER.debug(f"{dev} is {colour}")
 
     in_dirfile: str = f"{APPROOT}/www/{colour}.png"
-    out_dirfile: str = f'{constants.TREND["website"]}/{dev}.png'
+    out_dirfile: str = f'{cs.TREND["website"]}/{dev}.png'
     shutil.copy(f"{in_dirfile}", out_dirfile)
 
 
