@@ -9,6 +9,7 @@ Type=simple
 User=pi
 EnvironmentFile=/home/pi/.pyenvpaths
 WorkingDirectory=/home/pi/lektrix
+ExecStartPre=/home/pi/lektrix/lektrix --boot
 ExecStart=/home/pi/lektrix/bin/wizkwh.py --start
 # stand back for about 1 minute to allow for meter to recover
 RestartSec=70s
