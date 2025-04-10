@@ -55,7 +55,7 @@ if [ "${MAINTENANCE}" == "-" ]; then
         PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (3660 * 24 * 3600)" | bc)
         execute_sql "${db_full_path}" "DELETE FROM mains WHERE sample_epoch < ${PURGE_EPOCH};"
         execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
-        execute_sql "${db_full_path}" "DELETE FROM charger WHERE sample_epoch < ${PURGE_EPOCH};"
+        execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
     else
         echo "Database integrity check failed. Skipping backup and vacuuming." >&2
     fi
