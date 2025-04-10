@@ -111,11 +111,19 @@ class WizkWh:
         LOGGER.debug(f"PV:\n{_ev}")
         _p1 = telegram[2]
         LOGGER.debug(f"P1:\n{_ev}")
-        self.ev_elec_in = int(_ev.energy_export_kwh * 1000)        # EV kWH-meter is connected wrong way round
-        self.pv_elec_in = int(_pv.energy_export_kwh * 1000)  # PV kWH-meter is connected wrong way round
+        self.ev_elec_in = int(
+            _ev.energy_export_kwh * 1000
+        )  # EV kWH-meter is connected wrong way round
+        self.pv_elec_in = int(
+            _pv.energy_export_kwh * 1000
+        )  # PV kWH-meter is connected wrong way round
         self.p1_elec_in = int(_p1.energy_import_kwh * 1000)
-        self.ev_elec_out = int(_ev.energy_import_kwh * -1000)        # EV kWH-meter is connected wrong way round
-        self.pv_elec_out = int(_pv.energy_import_kwh * -1000)  # PV kWH-meter is connected wrong way round
+        self.ev_elec_out = int(
+            _ev.energy_import_kwh * -1000
+        )  # EV kWH-meter is connected wrong way round
+        self.pv_elec_out = int(
+            _pv.energy_import_kwh * -1000
+        )  # PV kWH-meter is connected wrong way round
         self.p1_elec_out = int(_p1.energy_export_kwh * -1000)
         self.ev_voltage = _ev.voltage_v
         self.pv_voltage = _pv.voltage_v
@@ -169,10 +177,12 @@ class WizkWh:
         # should reflect the end of its period.
         # so we will steal 5 seconds from "sample_time" to make it look like it
         # was taken at the end of the period.
-        df["sample_time"] = pd.to_datetime(df["sample_time"], format=cs.DT_FORMAT, utc=False)- pd.Timedelta(seconds=5)
+        df["sample_time"] = pd.to_datetime(
+            df["sample_time"], format=cs.DT_FORMAT, utc=False
+        ) - pd.Timedelta(seconds=5)
         LOGGER.debug(f"Timeshifted dataframe:\n{df.to_markdown(floatfmt='.3f')}")
         # drop the temporary columns
-        #df.drop(labels=["st_0", "st-5"], axis=1, inplace=True, errors="ignore")
+        # df.drop(labels=["st_0", "st-5"], axis=1, inplace=True, errors="ignore")
         df = df.set_index("sample_time")
         df.index = pd.to_datetime(df.index, format=cs.DT_FORMAT, utc=False)
 
@@ -190,7 +200,9 @@ class WizkWh:
 
         # recreate column 'sample_time' that was lost to the index
         df_out["sample_time"] = df_out.index.to_frame(name="sample_time")
-        LOGGER.debug(f"recreated column 'sample_time' dataframe:\n{df_out.to_markdown(floatfmt='.3f')}")
+        LOGGER.debug(
+            f"recreated column 'sample_time' dataframe:\n{df_out.to_markdown(floatfmt='.3f')}"
+        )
         df_out["sample_time"] = df_out["sample_time"].apply(_convert_time_to_text)
 
         # recalculate 'sample_epoch' from the new 'sample_time'
