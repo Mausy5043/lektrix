@@ -222,8 +222,8 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
         start_dt = dt.datetime.now()
 
     # request 4 hours back and 1 day ahead
-    back_dt = dt.datetime.strftime(start_dt - dt.timedelta(hours=lookback), constants.D_FORMAT)
-    end_dt = dt.datetime.strftime(start_dt + dt.timedelta(days=1), constants.D_FORMAT)
+    back_dt = dt.datetime.strftime(start_dt - dt.timedelta(hours=lookback), cs.D_FORMAT)
+    end_dt = dt.datetime.strftime(start_dt + dt.timedelta(days=1), cs.D_FORMAT)
     data_list: list[dict] = []
     result_list: list[dict] = []
 
