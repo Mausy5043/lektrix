@@ -14,16 +14,14 @@ import argparse
 import configparser
 import datetime as dt
 import json
-import logging
 import logging.handlers
 import os
 import shutil
 import sys
-import syslog
 import time
 import traceback
 
-import constants
+import constants as cs
 import GracefulKiller as gk  # type: ignore[import-untyped]
 import mausy5043_common.libsqlite3 as m3
 from solaredge.api.client import Client  # type: ignore[import-untyped]
@@ -83,25 +81,25 @@ def main() -> None:
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
-    iniconf.read(constants.SOLAREDGE["config"])
+    iniconf.read(cs.SOLAREDGE["config"])
     api_key: str = iniconf.get("account", "api_key")
     sol = Client()
     sol.set_api_key(api_key)
     sites = sol.sites.get_sites()
     site_id = sites["sites"]["site"][0]["id"]
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
-    LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True))
+    LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True))
 
     sql_db = m3.SqlDatabase(
-        database=constants.SOLAREDGE["database"],
-        table=constants.SOLAREDGE["sql_table"],
-        insert=constants.SOLAREDGE["sql_command"],
+        database=cs.SOLAREDGE["database"],
+        table=cs.SOLAREDGE["sql_table"],
+        insert=cs.SOLAREDGE["sql_command"],
         debug=DEBUG,
     )
-    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), constants.DT_FORMAT)
+    start_dt = dt.datetime.strptime(sql_db.latest_datapoint(), cs.DT_FORMAT)
 
-    report_interval = int(constants.SOLAREDGE["report_interval"])
-    sample_interval: float = report_interval / int(constants.SOLAREDGE["samplespercycle"])
+    report_interval = int(cs.SOLAREDGE["report_interval"])
+    sample_interval: float = report_interval / int(cs.SOLAREDGE["samplespercycle"])
     pause_interval: float = 0.0
     next_time: float = pause_interval + local_now()
     lookback_hours = 24
@@ -159,7 +157,7 @@ def main() -> None:
             )
             # fmt: on
             # allow the inverter to update the data on the server.
-            pause_interval += constants.SOLAREDGE["delay"]
+            pause_interval += cs.SOLAREDGE["delay"]
             next_time = (
                 pause_interval + local_now()
             )  # gives the actual time when the next loop should start
@@ -181,7 +179,7 @@ def main() -> None:
             """
 
             new_start_dt: dt.datetime = dt.datetime.strptime(
-                sql_db.latest_datapoint(), constants.DT_FORMAT
+                sql_db.latest_datapoint(), cs.DT_FORMAT
             )
             if new_start_dt <= start_dt:
                 # there is a hole in the data
@@ -192,11 +190,7 @@ def main() -> None:
                 )
                 dati: dt.datetime = new_start_dt + dt.timedelta(days=lookahead_days)
                 if dati > dt.datetime.today():
-                    LOGGER.debug(
-                        f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.",
-                        syslog.LOG_WARNING,
-                        DEBUG,
-                    )
+                    LOGGER.debug(f"Can't jump to {dati.strftime('%Y-%m-%d')} in the future.")
                     dati = dt.datetime.today()
                 start_dt = dati
                 LOGGER.warning(
@@ -228,8 +222,8 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
         start_dt = dt.datetime.now()
 
     # request 4 hours back and 1 day ahead
-    back_dt = dt.datetime.strftime(start_dt - dt.timedelta(hours=lookback), constants.D_FORMAT)
-    end_dt = dt.datetime.strftime(start_dt + dt.timedelta(days=1), constants.D_FORMAT)
+    back_dt = dt.datetime.strftime(start_dt - dt.timedelta(hours=lookback), cs.D_FORMAT)
+    end_dt = dt.datetime.strftime(start_dt + dt.timedelta(days=1), cs.D_FORMAT)
     data_list: list[dict] = []
     result_list: list[dict] = []
 
@@ -277,12 +271,10 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
                 energy = 0.0
             result_dict["sample_time"] = date_time
             result_dict["sample_epoch"] = int(
-                dt.datetime.strptime(date_time, constants.DT_FORMAT)
-                .replace(tzinfo=dt.UTC)
-                .timestamp()
+                dt.datetime.strptime(date_time, cs.DT_FORMAT).replace(tzinfo=dt.UTC).timestamp()
             )
             result_dict["site_id"] = site_id
-            result_dict["energy"] = int(energy)
+            result_dict["solar"] = int(energy)
             LOGGER.debug(f"    : {date_time} = {energy}")
             result_list.append(result_dict)
     return result_list
@@ -296,20 +288,17 @@ def set_led(dev, colour) -> None:
     LOGGER.debug(f"{dev} is {colour}")
 
     in_dirfile: str = f"{APPROOT}/www/{colour}.png"
-    out_dirfile: str = f'{constants.TREND["website"]}/{dev}.png'
+    out_dirfile: str = f'{cs.TREND["website"]}/{dev}.png'
     shutil.copy(f"{in_dirfile}", out_dirfile)
 
 
 if __name__ == "__main__":
-    # initialise logging
-    syslog.openlog(ident=f'{MYAPP}.{MYID.split(".")[0]}', facility=syslog.LOG_LOCAL0)
-
     if OPTION.debug:
         DEBUG = True
         print(OPTION)
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
-        LOGGER.level = logging.DEBUG
+        LOGGER.setLevel(logging.DEBUG)
         LOGGER.debug("Debug-mode started.")
         print("Use <Ctrl>+C to stop.")
 

@@ -1,6 +1,6 @@
 # when changing this file also consider `pyproject.toml` and `requirements.txt`
 # Usage:
-# conda -v env update --file=environment.yml; pre-commit run --all-files; pycheck
+# conda -v env update --file environment.yml; pre-commit run --all-files; pycheck
 
 name: lektrix
 
@@ -23,14 +23,12 @@ dependencies:
       - gracefulkiller~=0.4
       - mausy5043-common>=2.2.7
       - py-solaredge==0.0.4.9
-  # legacy: This won't install on anything other than Linux (notably Raspberry Pi):
-  # - pyserial=3.5
   - python-dateutil=2.9
-  - pytz=2025.1
+  - pytz=2025.2
   - requests=2.32
   - sh=2.2
   - tabulate=0.9
-  - zeroconf=0.146.1
+  - zeroconf=0.146.3
 
   # dev deps
   - jupyterlab
