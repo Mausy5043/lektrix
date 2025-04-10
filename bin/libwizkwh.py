@@ -105,6 +105,7 @@ class WizkWh:
         Returns:
             (dict): data converted to a dict.
         """
+        # fmt: off
         _ev = telegram[0]
         LOGGER.debug(f"EV:\n{_ev}")
         _pv = telegram[1]
@@ -152,6 +153,7 @@ class WizkWh:
             "v1": self.home_voltage,  # avg voltage in the home
             "frq": self.home_freq,  # avg frequency in the home
         }
+        # fmt: on
 
     @staticmethod
     def compact_data(data: list[dict]) -> tuple:
