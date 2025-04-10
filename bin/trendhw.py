@@ -142,7 +142,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # 2025: for now we assume selling at the hourly price.
     df['saved_exp'] = df["exp"] * df["price"]
     #
-    #...
+    # ...
     #
     solbalance = df["PVtotal"] + df["exp"]
     # solar used for EV
