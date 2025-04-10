@@ -88,7 +88,7 @@ def main() -> None:
     sites = sol.sites.get_sites()
     site_id = sites["sites"]["site"][0]["id"]
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
-    LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=4, sort_keys=True))
+    LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True))
 
     sql_db = m3.SqlDatabase(
         database=cs.SOLAREDGE["database"],
