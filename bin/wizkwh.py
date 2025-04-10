@@ -69,14 +69,14 @@ def main() -> None:
     killer = gk.GracefulKiller()
     API_KWH = kwh.WizkWh(debug=DEBUG)
     sql_db = m3.SqlDatabase(
-        database=cs.WIZ_P1["database"],
-        table=cs.WIZ_P1["sql_table"],
-        insert=cs.WIZ_P1["sql_command"],
+        database=cs.WIZ_KWH["database"],
+        table=cs.WIZ_KWH["sql_table"],
+        insert=cs.WIZ_KWH["sql_command"],
         debug=DEBUG,
     )
 
-    report_interval = int(cs.WIZ_P1["report_interval"])
-    sample_interval = report_interval / int(cs.WIZ_P1["samplespercycle"])
+    report_interval = int(cs.WIZ_KWH["report_interval"])
+    sample_interval = report_interval / int(cs.WIZ_KWH["samplespercycle"])
 
     next_time = time.time()
     rprt_time = time.time() + (report_interval - (time.time() % report_interval))
