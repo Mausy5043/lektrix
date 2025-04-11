@@ -286,7 +286,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     debug = settings["debug"]
     database = settings["database"]
     edatetime = settings["edatetime"]
-    qry_table = settings["table_prdct"]
+    qry_table = settings["table"]
     hours_to_fetch = settings["hours_to_fetch"]
     parse_dates = settings["parse_dates"]
     index_col = settings["index_col"]
@@ -318,10 +318,11 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         try:
             with s3.connect(database) as _c:
                 df = pd.read_sql_query(s3_qry, _c, parse_dates=parse_dates, index_col=index_col)
+                success = True
         except (s3.OperationalError, pd.errors.DatabaseError) as her:
-            if debug:
-                print("Database may be locked. Waiting...")
             retries -= 1
+            if debug:
+                print(f"Database may be locked. Waiting...(pass {5-retries})")
             time.sleep(random.randint(30, 60))  # nosec bandit B311
             if retries == 0:
                 raise TimeoutError("Database seems locked.") from her
