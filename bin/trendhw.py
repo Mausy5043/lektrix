@@ -146,15 +146,18 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # 2025: for now we assume selling at the hourly price.
     df['saved_exp'] = df["exp"] * df["price"]
     #
-    # ...
+    # PV data for plotting
     #
     pv_balance = df[["gep", "solar"]].copy()
     pv_balance["solar"][df["gep"]<df["solar"]] = df["solar"] - df["gep"]
     pv_balance.rename(columns={"gep": "levering", "solar": "opslag"}, inplace=True)
-
-    if DEBUG:
-        print("\n\n ** PV data for plotting  **")
-        print(pv_balance.to_markdown(floatfmt=".3f"))
+    # if DEBUG:
+    #     print("\n\n ** PV data for plotting  **")
+    #     print(pv_balance.to_markdown(floatfmt=".3f"))
+    #
+    # MAINS data for plotting
+    #
+    p1_balance = df[["exp", "imp", "own"]].copy()
     # solar used for EV
     #df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
     # imported and used for EV
@@ -167,9 +170,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #df["EB"] = df["PVtotal"] - df["EVsol"] + df["exp"]
     # ... and/or export ('export' is negative!)
     #df["EB"][df["EB"] < 0] = 0
-    if DEBUG:
-        print("o  database charger processed data")
-        print(df.to_markdown(floatfmt=".3f"))
+    # if DEBUG:
+    #     print("o  database charger processed data")
+    #     print(df.to_markdown(floatfmt=".3f"))
 
     df.drop(
         ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
@@ -182,11 +185,12 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     categories = ["export", "import", "EB", "EVsol", "EVnet"]
     df.columns = pd.CategoricalIndex(df.columns.values, ordered=True, categories=categories)
     df = df.sort_index(axis=1)
-    if DEBUG:
-        print("\n\n ** CHARGER data for plotting  **")
-        print(df.to_markdown(floatfmt=".3f"))
+    # if DEBUG:
+    #     print("\n\n ** CHARGER data for plotting  **")
+    #     print(df.to_markdown(floatfmt=".3f"))
 
-    data_dict = {"PV": pv_balance}
+    data_dict = {"PV": pv_balance,
+                 "HOME": p1_balance}
 
     return data_dict
 
