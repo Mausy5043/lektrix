@@ -346,7 +346,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     return df
 
 
-def post_process_production(df: pd.DataFrame, settings) -> pd.DataFrame:
+def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
     """Post process the production data.
 
     Args:
@@ -360,6 +360,9 @@ def post_process_production(df: pd.DataFrame, settings) -> pd.DataFrame:
     # raw production data from SolarEdge comes in Wh per 15 minutes.
     # we sum the data to get the total production for the aggregation period...
     df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
+    # drop first row (1st hour) as it will usually not contain complete data...
+    # ...and drop the last rows to match the size of the mains data
+    df = df.iloc[1:trim_rows+1, :]
     # ...then convert to kWh
     df["solar"] *= 0.001
 
@@ -369,7 +372,7 @@ def post_process_production(df: pd.DataFrame, settings) -> pd.DataFrame:
     return df
 
 
-def post_process_mains(df: pd.DataFrame, settings) -> pd.DataFrame:
+def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     """Post process the mains data.
 
     Args:
@@ -380,15 +383,15 @@ def post_process_mains(df: pd.DataFrame, settings) -> pd.DataFrame:
         pandas.DataFrame() with data
     """
     debug = settings["debug"]
-    # drop first row as it will usually not contain valid or complete data
-    # df = df.iloc[1:, :]
     # raw data from P1, PV and EV are totalisers and come in Wh stored every 15 minutes.
     # first we convert the totalisers to differentials
     df = df.diff()
     # we sum the data to get the total production for the aggregation period...
     df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
+    # drop first row (1st hour) as it will usually not contain complete data
+    df = df.iloc[1:, :]
     # ...then convert to kWh
-    df["import"] *= 0.001
+    df *= 0.001
 
     if debug:
         print("o  POST-processed MAINS data")
@@ -396,7 +399,7 @@ def post_process_mains(df: pd.DataFrame, settings) -> pd.DataFrame:
     return df
 
 
-def post_process_prices(df: pd.DataFrame, settings) -> pd.DataFrame:
+def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
     """Post process the price data.
 
     Args:
@@ -411,6 +414,9 @@ def post_process_prices(df: pd.DataFrame, settings) -> pd.DataFrame:
     if settings["aggregation"] != "H":
         # we average the price for all other aggregation periods
         df = df.resample(f"{settings["aggregation"]}", label="left").mean()
+    # drop first row (1st hour) as it will usually not contain complete data...
+    # ...and drop the last rows to match the size of the mains data
+    df = df.iloc[:trim_rows, :]
 
     if debug:
         print("o  POST-processed PRICE data")
