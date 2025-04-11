@@ -322,7 +322,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         except (s3.OperationalError, pd.errors.DatabaseError) as her:
             retries -= 1
             if debug:
-                print(f"Database may be locked. Waiting...(pass {5-retries})")
+                print(f"Database may be locked. Waiting...(pass {5 - retries})")
             time.sleep(random.randint(30, 60))  # nosec bandit B311
             if retries == 0:
                 raise TimeoutError("Database seems locked.") from her
