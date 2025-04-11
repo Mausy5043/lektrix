@@ -113,8 +113,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #               in a DataFrame that contains only the common indexes.
     df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='outer')
     if DEBUG:
-        print("o  database concatenated data")
+        print("\n\no  database concatenated data")
         print(df.to_markdown(floatfmt=".3f"))
+        print("\n======\n\n")
 
     # rename rows and perform calculations
     # exp: exported to grid
@@ -147,19 +148,25 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #
     # ...
     #
-    solbalance = df["PVtotal"] + df["exp"]
+    pv_balance = df[["gep", "solar"]].copy()
+    pv_balance["solar"][df["gep"]<df["solar"]] = df["solar"] - df["gep"]
+    pv_balance.rename(columns={"gep": "levering", "solar": "opslag"}, inplace=True)
+
+    if DEBUG:
+        print("\n\n ** PV data for plotting  **")
+        print(pv_balance.to_markdown(floatfmt=".3f"))
     # solar used for EV
-    df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
+    #df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
     # imported and used for EV
-    df["EVnet"] = df["EVtotal"] - df["EVsol"]
+    #df["EVnet"] = df["EVtotal"] - df["EVsol"]
     # compensate for import diverted to EV ...
-    df["import"] = df["imp"] - df["EVnet"]
+    #df["import"] = df["imp"] - df["EVnet"]
     # ... and/or import
     # compensate for solar diverted to EV ...
     # df["EB"] = df["gep"] + df["export"] - df["EVsol"]
-    df["EB"] = df["SOLtotal"] - df["EVsol"] + df["export"]
+    #df["EB"] = df["PVtotal"] - df["EVsol"] + df["exp"]
     # ... and/or export ('export' is negative!)
-    df["EB"][df["EB"] < 0] = 0
+    #df["EB"][df["EB"] < 0] = 0
     if DEBUG:
         print("o  database charger processed data")
         print(df.to_markdown(floatfmt=".3f"))
@@ -179,7 +186,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         print("\n\n ** CHARGER data for plotting  **")
         print(df.to_markdown(floatfmt=".3f"))
 
-    data_dict = {"charger": df}
+    data_dict = {"PV": pv_balance}
+
     return data_dict
 
 
