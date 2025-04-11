@@ -111,7 +111,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # join='inner': This option performs an intersection of the indexes, including
     #               only the indexes that are present in all DataFrames. This results
     #               in a DataFrame that contains only the common indexes.
-    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='outer')
+    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='inner')
     if DEBUG:
         print("\n\no  database concatenated data")
         print(df.to_markdown(floatfmt=".3f"))

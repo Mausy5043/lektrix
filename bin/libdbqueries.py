@@ -362,7 +362,7 @@ def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) ->
     df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
     # drop first row (1st hour) as it will usually not contain complete data...
     # ...and drop the last rows to match the size of the mains data
-    df = df.iloc[1:trim_rows+1, :]
+    # df = df.iloc[1:trim_rows+1, :]
     # ...then convert to kWh
     df["solar"] *= 0.001
 
@@ -416,7 +416,7 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
         df = df.resample(f"{settings["aggregation"]}", label="left").mean()
     # drop first row (1st hour) as it will usually not contain complete data...
     # ...and drop the last rows to match the size of the mains data
-    df = df.iloc[:trim_rows, :]
+    # df = df.iloc[:trim_rows, :]
 
     if debug:
         print("o  POST-processed PRICE data")
