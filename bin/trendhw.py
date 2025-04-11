@@ -18,7 +18,6 @@ import constants as cs
 import libdbqueries as dbq
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import numpy as np
 import pandas as pd
 
 # FutureWarning: The default value of numeric_only in DataFrameGroupBy.sum is deprecated.
@@ -97,13 +96,17 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         print(f"\nRequest {hours_to_fetch} hours of PRODUCTION data")
     settings["table"] = TABLE_PRDCT
     settings["cols2drop"] = ["site_id"]
-    df_prod = dbq.post_process_production(dbq.query_for_data(settings=settings), settings, df_mains_len)
+    df_prod = dbq.post_process_production(
+        dbq.query_for_data(settings=settings), settings, df_mains_len
+    )
 
     if DEBUG:
         print(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df_pris = dbq.post_process_prices(dbq.query_for_data(settings=settings), settings, df_mains_len)
+    df_pris = dbq.post_process_prices(
+        dbq.query_for_data(settings=settings), settings, df_mains_len
+    )
     # merge the dataframes
     # join='outer': This is the default option. It performs a union of the indexes,
     #               including all indexes from all DataFrames.
@@ -149,7 +152,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # PV data for plotting
     #
     pv_balance = df[["gep", "solar"]].copy()
-    pv_balance["solar"][df["gep"]<df["solar"]] = df["solar"] - df["gep"]
+    pv_balance["solar"][df["gep"] < df["solar"]] = df["solar"] - df["gep"]
     pv_balance.rename(columns={"gep": "levering", "solar": "opslag"}, inplace=True)
     # if DEBUG:
     #     print("\n\n ** PV data for plotting  **")
@@ -159,17 +162,17 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #
     p1_balance = df[["exp", "imp", "own"]].copy()
     # solar used for EV
-    #df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
+    # df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
     # imported and used for EV
-    #df["EVnet"] = df["EVtotal"] - df["EVsol"]
+    # df["EVnet"] = df["EVtotal"] - df["EVsol"]
     # compensate for import diverted to EV ...
-    #df["import"] = df["imp"] - df["EVnet"]
+    # df["import"] = df["imp"] - df["EVnet"]
     # ... and/or import
     # compensate for solar diverted to EV ...
     # df["EB"] = df["gep"] + df["export"] - df["EVsol"]
-    #df["EB"] = df["PVtotal"] - df["EVsol"] + df["exp"]
+    # df["EB"] = df["PVtotal"] - df["EVsol"] + df["exp"]
     # ... and/or export ('export' is negative!)
-    #df["EB"][df["EB"] < 0] = 0
+    # df["EB"][df["EB"] < 0] = 0
     # if DEBUG:
     #     print("o  database charger processed data")
     #     print(df.to_markdown(floatfmt=".3f"))
@@ -189,8 +192,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #     print("\n\n ** CHARGER data for plotting  **")
     #     print(df.to_markdown(floatfmt=".3f"))
 
-    data_dict = {"PV": pv_balance,
-                 "HOME": p1_balance}
+    data_dict = {"PV": pv_balance, "HOME": p1_balance}
 
     return data_dict
 
