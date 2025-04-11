@@ -91,16 +91,19 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     settings["table"] = TABLE_MAINS
     settings["cols2drop"] = ["site_id", "v1", "frq"]
     df_mains = dbq.post_process_mains(dbq.query_for_data(settings=settings), settings)
+    df_mains_len = df_mains.shape[0]
+
     if DEBUG:
         print(f"\nRequest {hours_to_fetch} hours of PRODUCTION data")
     settings["table"] = TABLE_PRDCT
     settings["cols2drop"] = ["site_id"]
-    df_prod = dbq.post_process_production(dbq.query_for_data(settings=settings), settings)
+    df_prod = dbq.post_process_production(dbq.query_for_data(settings=settings), settings, df_mains_len)
+
     if DEBUG:
         print(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df_pris = dbq.post_process_prices(dbq.query_for_data(settings=settings), settings)
+    df_pris = dbq.post_process_prices(dbq.query_for_data(settings=settings), settings, df_mains_len)
     # merge the dataframes
     # join='outer': This is the default option. It performs a union of the indexes,
     #               including all indexes from all DataFrames.
