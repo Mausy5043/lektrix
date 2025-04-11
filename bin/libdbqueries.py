@@ -327,10 +327,10 @@ def query_for_data(settings: dict) -> pd.DataFrame:
             if retries == 0:
                 raise TimeoutError("Database seems locked.") from her
     # show the fetched data when debugging
-    if debug:
-        print("o  RAW data")
-        print(df.to_markdown(floatfmt=".3f"))
-        print("\n*** preprocessing data ***")
+    # if debug:
+    #     print("o  RAW data")
+    #     print(df.to_markdown(floatfmt=".3f"))
+    #     print("\n*** preprocessing data ***")
     # finally, drop the column sample_time
     df.drop(labels=["sample_time"], axis=1, inplace=True, errors="ignore")
     # drop columns we don't need
@@ -340,9 +340,9 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     # sample_epoch becomes the index visualized as datetime
     df.index = pd.to_datetime(df.index, unit="s")
-    if debug:
-        print("o  PRE-processed data")
-        print(df.to_markdown(floatfmt=".3f"))
+    # if debug:
+    #     print("o  PRE-processed data")
+    #     print(df.to_markdown(floatfmt=".3f"))
     return df
 
 
