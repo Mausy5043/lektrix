@@ -359,7 +359,7 @@ def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) ->
     debug = settings["debug"]
     # raw production data from SolarEdge comes in Wh per 15 minutes.
     # we sum the data to get the total production for the aggregation period...
-    df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
+    df = df.resample(rule=f"{settings["aggregation"]}").sum()
     # drop first row (1st hour) as it will usually not contain complete data...
     # ...and drop the last rows to match the size of the mains data
     # df = df.iloc[1:trim_rows+1, :]
@@ -387,7 +387,7 @@ def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     # first we convert the totalisers to differentials
     df = df.diff()
     # we sum the data to get the total production for the aggregation period...
-    df = df.resample(rule=f"{settings["aggregation"]}", label="left").sum()
+    df = df.resample(rule=f"{settings["aggregation"]}").sum()
     # drop first row (1st hour) as it will usually not contain complete data
     df = df.iloc[1:, :]
     # ...then convert to kWh
@@ -413,7 +413,7 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
     # price data already comes in euro/kWh in hourly periods.
     if settings["aggregation"] != "H":
         # we average the price for all other aggregation periods
-        df = df.resample(f"{settings["aggregation"]}", label="left").mean()
+        df = df.resample(f"{settings["aggregation"]}").mean()
     # drop first row (1st hour) as it will usually not contain complete data...
     # ...and drop the last rows to match the size of the mains data
     # df = df.iloc[:trim_rows, :]
