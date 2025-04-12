@@ -312,7 +312,7 @@ def main(opt) -> None:
     if opt.months:
         plot_graph(
             cs.TREND["month_graph"],
-            fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="M"),
+            fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="ME"),
             plot_title=f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=True,
             locatorformat=["month", "%Y-%m"],
