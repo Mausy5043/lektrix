@@ -207,7 +207,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
 
-    print(f"\n\nAvoided costs    : {df_euro['own'].sum():.2f} euro")
+    print(f"\nAvoided costs    : {df_euro['own'].sum():.2f} euro")
     print(f"Exported earnings: {df_euro['export'].sum():.2f} euro")
 
     return data_dict
