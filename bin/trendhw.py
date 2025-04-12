@@ -200,15 +200,20 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         print("\n\n ** ALL data  **")
         print(df.to_markdown(floatfmt=".3f"))
 
-    df_euro = df[["saved_own", "saved_exp"]].copy()
+    df_euro = df[["saved_own", "saved_exp", "price"]].copy()
     df_euro["saved_own"] = df_euro["saved_own"].abs()
     df_euro["saved_exp"] = df_euro["saved_exp"].abs()
-    df_euro.rename(columns={"saved_own": "own", "saved_exp": "export"}, inplace=True)
+    df_euro["price"] = df_euro["price"] * df["gen"]
+    df_euro.rename(columns={"saved_own": "own", "saved_exp": "export", "price": "dyn.inkoop"}, inplace=True)
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
-
-    print(f"\nAvoided costs    : {df_euro['own'].sum():.2f} euro")
-    print(f"Exported earnings: {df_euro['export'].sum():.2f} euro")
+    _own = df_euro["own"].sum()
+    _exp = df_euro["export"].sum()
+    _ink = df_euro["dyn.inkoop"].sum()
+    print(f"\nAvoided costs    : {_own:+.5f} euro")
+    print(f"Exported earnings: {_exp:+.5f} euro")
+    print(f"Buy unbalance    : {_ink:+.5f} euro")
+    print(f"Total            : {_own + _exp - _ink:+.5f} euro")
 
     return data_dict
 
