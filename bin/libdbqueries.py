@@ -420,5 +420,5 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
 
     if debug:
         print("o  POST-processed PRICE data")
-        print(df.to_markdown(floatfmt=".3f"))
+        print(df.to_markdown(floatfmt=".5f"))
     return df
