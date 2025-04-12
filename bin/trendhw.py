@@ -297,7 +297,7 @@ def main(opt) -> None:
         plot_graph(
             cs.TREND["hour_graph"],
             fetch_data(hours_to_fetch=opt.hours, aggregation="H"),
-            plot_title=" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=False,
             locatorformat=["hour", "%d-%m %Hh"],
         )
