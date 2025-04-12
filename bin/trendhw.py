@@ -332,11 +332,11 @@ if __name__ == "__main__":
     if OPTION.hours == 0:
         OPTION.hours = 80
     if OPTION.days == 0:
-        OPTION.days = 80
+        OPTION.days = 10  # 80
     if OPTION.months == 0:
-        OPTION.months = 6 * 12 + dt.now().month
+        OPTION.months = 2  # 6 * 12 + dt.now().month
     if OPTION.years == 0:
-        OPTION.years = 10
+        OPTION.years = 1  # 10
     if OPTION.edate:
         print("NOT NOW")
         EDATETIME = f"'{OPTION.edate}'"
