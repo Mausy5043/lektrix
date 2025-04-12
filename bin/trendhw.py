@@ -154,7 +154,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     pv_balance = df[["gep", "solar", "gen"]].copy()
     pv_balance["solar"][df["gep"] < df["solar"]] = df["solar"] - df["gep"]
     pv_balance["solar"] *= -1
-    pv_balance.rename(columns={"gep": "levering", "solar": "opslag", "gen": "laden"}, inplace=True)
+    pv_balance.rename(
+        columns={"gep": "levering", "solar": "opslag", "gen": "laden"}, inplace=True
+    )
     # if DEBUG:
     #     print("\n\n ** PV data for plotting  **")
     #     print(pv_balance.to_markdown(floatfmt=".3f"))
@@ -259,7 +261,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 stacked=True,
                 width=0.9,
                 figsize=(fig_x, fig_y),
-                color=["blue",  "seagreen","red", "lightgreen", "salmon"],
+                color=["blue", "seagreen", "red", "lightgreen", "salmon"],
             )
             # linewidth and alpha need to be set separately
             for _, a in enumerate(ax1.lines):
@@ -295,29 +297,31 @@ def main(opt) -> None:
         plot_graph(
             cs.TREND["hour_graph"],
             fetch_data(hours_to_fetch=opt.hours, aggregation="H"),
-            f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            plot_title=" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            show_data=False,
             locatorformat=["hour", "%d-%m %Hh"],
         )
     if opt.days:
         plot_graph(
             cs.TREND["day_graph"],
             fetch_data(hours_to_fetch=opt.days * 24, aggregation="D"),
-            f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            show_data=False,
             locatorformat=["day", "%Y-%m-%d"],
         )
     if opt.months:
         plot_graph(
             cs.TREND["month_graph"],
             fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="M"),
-            f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=False,
+            plot_title=f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            show_data=True,
             locatorformat=["month", "%Y-%m"],
         )
     if opt.years:
         plot_graph(
             cs.TREND["year_graph"],
             fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="A"),
-            f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            plot_title=f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=True,
             locatorformat=["year", "%Y"],
         )
