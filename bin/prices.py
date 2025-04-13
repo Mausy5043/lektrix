@@ -18,11 +18,14 @@ from mausy5043_common import libsqlite3 as m3
 requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
-parser.add_argument("--debug",
-                          action="store_true",
-                          help="start in debugging mode"
-                          )
+parser.add_argument(
+    name_or_flags="--debug",
+    action="store_true",
+    help="start in debugging mode"
+)
 OPTION = parser.parse_args()
+
+
 # fmt: on
 
 
