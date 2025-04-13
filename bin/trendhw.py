@@ -10,9 +10,11 @@ Using myenergi data
 
 # pylint: disable=C0413
 import argparse
+import platform
 import sys
 import warnings
 from datetime import datetime as dt
+import logging.handlers
 
 import constants as cs
 import libdbqueries as dbq
@@ -32,6 +34,22 @@ TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
 TABLE_PRICE: str = cs.PRICES["sql_table"]
 DEBUG: bool = False
 EDATETIME: str = "'now'"
+
+sys_log = "/dev/log"
+if platform.system() == "Darwin":
+    sys_log = "/var/run/syslog"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.handlers.SysLogHandler(
+            address=sys_log,
+            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+        )
+    ],
+)
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
@@ -85,23 +103,20 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         "index_col": "sample_epoch",
         "cols2drop": [],
     }
-    if DEBUG:
-        print(f"\nRequest {hours_to_fetch} hours of MAINS data from")
+    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of MAINS data from")
     settings["table"] = TABLE_MAINS
     settings["cols2drop"] = ["site_id", "v1", "frq"]
     df_mains = dbq.post_process_mains(dbq.query_for_data(settings=settings), settings)
     df_mains_len = df_mains.shape[0]
 
-    if DEBUG:
-        print(f"\nRequest {hours_to_fetch} hours of PRODUCTION data")
+    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of PRODUCTION data")
     settings["table"] = TABLE_PRDCT
     settings["cols2drop"] = ["site_id"]
     df_prod = dbq.post_process_production(
         dbq.query_for_data(settings=settings), settings, df_mains_len
     )
 
-    if DEBUG:
-        print(f"\nRequest {hours_to_fetch} hours of price data")
+    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
     df_pris = dbq.post_process_prices(
@@ -115,10 +130,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #               only the indexes that are present in all DataFrames. This results
     #               in a DataFrame that contains only the common indexes.
     df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='inner')
-    if DEBUG:
-        print("\n\no  database concatenated data")
-        print(df.to_markdown(floatfmt=".3f"))
-        print("\n======\n\n")
+    LOGGER.debug("\n\no  database concatenated data")
+    LOGGER.debug(df.to_markdown(floatfmt=".3f"))
+    LOGGER.debug("\n======\n\n")
 
     # rename rows and perform calculations
     # exp: exported to grid
@@ -144,7 +158,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df["own"] = df["exp"] + df["gep"] + df["evp"]
     # any negative 'own' is set to zero, because there are no other generators in the home.
     # Print rows where 'own' is less than 0
-    print(df.loc[df["own"] < 0])
+    LOGGER.warning(df.loc[df["own"] < 0])
     # Set 'own' values less than 0 to 0
     df.loc[df["own"] < 0, "own"] = 0
     # the 'own' energy avoids the need to import energy from the grid
@@ -162,9 +176,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     pv_balance.rename(
         columns={"gep": "levering", "solar": "opslag", "gen": "laden"}, inplace=True
     )
-    # if DEBUG:
-    #     print("\n\n ** PV data for plotting  **")
-    #     print(pv_balance.to_markdown(floatfmt=".3f"))
+    # LOGGER.debug("\n\n ** PV data for plotting  **")
+    # LOGGER.debug(pv_balance.to_markdown(floatfmt=".3f"))
     #
     # MAINS data for plotting
     #
@@ -186,9 +199,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # df["EB"] = df["PVtotal"] - df["EVsol"] + df["exp"]
     # ... and/or export ('export' is negative!)
     # df["EB"][df["EB"] < 0] = 0
-    # if DEBUG:
-    #     print("o  database charger processed data")
-    #     print(df.to_markdown(floatfmt=".3f"))
+    # LOGGER.debug("o  database charger processed data")
+    # LOGGER.debug(df.to_markdown(floatfmt=".3f"))
 
     # df.drop(
     #     ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
@@ -201,9 +213,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # categories = ["export", "import", "EB", "EVsol", "EVnet"]
     # df.columns = pd.CategoricalIndex(df.columns.values, ordered=True, categories=categories)
     df = df.sort_index(axis=1)
-    if DEBUG:
-        print("\n\n ** ALL data  **")
-        print(df.to_markdown(floatfmt=".3f"))
+    LOGGER.debug("\n\n ** ALL data  **")
+    LOGGER.debug(df.to_markdown(floatfmt=".3f"))
 
     df_euro = df[["saved_own", "saved_exp", "price"]].copy()
     df_euro["saved_own"] = df_euro["saved_own"].abs()
@@ -215,7 +226,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     _own = df_euro["own"].sum()
     _exp = df_euro["export"].sum()
     _ink = df_euro["dyn.inkoop"].sum()
-    print(f"\nAvoided costs    : {_own:+.5f} euro")
+    LOGGER.info(f"\nAvoided costs    : {_own:+.5f} euro")
     print(f"Exported earnings: {_exp:+.5f} euro")
     print(f"Buy unbalance    : {_ink:+.5f} euro")
     print(f"Total            : {_own + _exp - _ink:+.5f} euro")
@@ -239,13 +250,11 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
     """
     if locatorformat is None:
         locatorformat = ["hour", "%d-%m %Hh"]
-    if DEBUG:
-        print("\n\n*** PLOTTING ***")
+    LOGGER.debug("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
-        if DEBUG:
-            print(parameter)
-            print(data_frame.to_markdown(floatfmt=".3f"))
+        LOGGER.debug(parameter)
+        LOGGER.debug(data_frame.to_markdown(floatfmt=".3f"))
         mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
             mjr_ticks = 1
@@ -253,11 +262,9 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
         ticklabels[::mjr_ticks] = [
             item.strftime(locatorformat[1]) for item in data_frame.index[::mjr_ticks]
         ]
-        if DEBUG:
-            print(ticklabels)
+        LOGGER.debug(ticklabels)
         if len(data_frame.index) == 0:
-            if DEBUG:
-                print("No data.")
+            LOGGER.debug("No data.")
         else:
             fig_x = 20
             fig_y = 7.5
@@ -295,8 +302,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             plt.title(f"{parameter} {plot_title}")
             plt.tight_layout()
             plt.savefig(fname=f"{output_file}_{parameter}.png", format="png")
-            if DEBUG:
-                print(f" --> {output_file}_{parameter}.png\n")
+            LOGGER.debug(f" --> {output_file}_{parameter}.png\n")
 
 
 def main(opt) -> None:
@@ -353,6 +359,9 @@ if __name__ == "__main__":
 
     if OPTION.debug:
         print(OPTION)
+        if len(LOGGER.handlers) == 0:
+            LOGGER.addHandler(logging.StreamHandler(sys.stdout))
+        LOGGER.setLevel(logging.DEBUG)
         DEBUG = True
         print("DEBUG-mode started")
     main(OPTION)
