@@ -4,11 +4,11 @@
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
+import argparse
 import configparser
 import json
 import os
 import sys
-import argparse
 
 import constants as cs
 import pandas as pd
@@ -24,6 +24,7 @@ parser.add_argument("--debug",
                           )
 OPTION = parser.parse_args()
 # fmt: on
+
 
 def req_post(
     _url: str,

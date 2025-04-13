@@ -10,11 +10,11 @@ Using myenergi data
 
 # pylint: disable=C0413
 import argparse
+import logging.handlers
 import platform
 import sys
 import warnings
 from datetime import datetime as dt
-import logging.handlers
 
 import constants as cs
 import libdbqueries as dbq
@@ -220,7 +220,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df_euro["saved_own"] = df_euro["saved_own"].abs()
     df_euro["saved_exp"] = df_euro["saved_exp"].abs()
     df_euro["price"] = df_euro["price"] * df["gen"]
-    df_euro.rename(columns={"saved_own": "own", "saved_exp": "export", "price": "dyn.inkoop"}, inplace=True)
+    df_euro.rename(
+        columns={"saved_own": "own", "saved_exp": "export", "price": "dyn.inkoop"}, inplace=True
+    )
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
     _own = df_euro["own"].sum()
