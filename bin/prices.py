@@ -19,7 +19,7 @@ requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
 parser.add_argument(
-    name_or_flags="--debug",
+    "--debug",
     action="store_true",
     help="start in debugging mode"
 )
