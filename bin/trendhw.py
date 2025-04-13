@@ -142,6 +142,11 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # NOTE that 'gen' and 'evn' are not used in the calculation of 'own'
     # because they are diverted from somewhere else (one of the __p values)
     df["own"] = df["exp"] + df["gep"] + df["evp"]
+    # any negative 'own' is set to zero, because there are no other generators in the home.
+    # Print rows where 'own' is less than 0
+    print(df.loc[df["own"] < 0])
+    # Set 'own' values less than 0 to 0
+    df.loc[df["own"] < 0, "own"] = 0
     # the 'own' energy avoids the need to import energy from the grid
     # so the money avoided by 'own' is saved.
     df["saved_own"] = df["own"] * df["price"]
