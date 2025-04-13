@@ -8,6 +8,7 @@ import configparser
 import json
 import os
 import sys
+import argparse
 
 import constants as cs
 import pandas as pd
@@ -15,7 +16,14 @@ import requests
 from mausy5043_common import libsqlite3 as m3
 
 requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
-
+# fmt: off
+parser = argparse.ArgumentParser(description="Create a trendgraph")
+parser.add_argument("--debug",
+                          action="store_true",
+                          help="start in debugging mode"
+                          )
+OPTION = parser.parse_args()
+# fmt: on
 
 def req_post(
     _url: str,
@@ -88,6 +96,8 @@ now_data: dict = req_post(
     headers_post,
     payload,
 )
+if OPTION.debug:
+    print(json.dumps(now_data, indent=1))
 
 # Get the tomorrow's data from the API
 payload = {"query": qry_nxt}
@@ -96,6 +106,8 @@ nxt_data: dict = req_post(
     headers_post,
     payload,
 )
+if OPTION.debug:
+    print(json.dumps(nxt_data, indent=1))
 
 resp_data: list = unpeel(now_data, "today") + unpeel(nxt_data, "tomorrow")
 # Convert the data for the database
@@ -122,14 +134,15 @@ with open(savefile, 'w', encoding='utf-8') as _f:
     json.dump(data, _f, ensure_ascii=True, indent=4)
 # print(json.dumps(data, indent=4))
 
-# Save the data to the database
-sql_db = m3.SqlDatabase(
-    database=cs.PRICES["database"],
-    table=cs.PRICES["sql_table"],
-    insert=cs.PRICES["sql_command"],
-    debug=True,
-)
-for element in data:
-    sql_db.queue(element)
+if not OPTION.debug:
+    # Save the data to the database
+    sql_db = m3.SqlDatabase(
+        database=cs.PRICES["database"],
+        table=cs.PRICES["sql_table"],
+        insert=cs.PRICES["sql_command"],
+        debug=True,
+    )
+    for element in data:
+        sql_db.queue(element)
 
-sql_db.insert(method="replace")
+    sql_db.insert(method="replace")
