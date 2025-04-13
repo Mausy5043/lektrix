@@ -231,7 +231,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     LOGGER.info(f"\nAvoided costs    : {_own:+.5f} euro")
     print(f"Exported earnings: {_exp:+.5f} euro")
     print(f"Buy unbalance    : {_ink:+.5f} euro")
-    print(f"Total            : {_own + _exp - _ink:+.5f} euro")
+    print(f"Total            : {_own + _exp + _ink:+.5f} euro")
 
     return data_dict
 
