@@ -12,6 +12,7 @@ Store the data in a SQLite3 database.
 import argparse
 import logging.handlers
 import os
+import platform
 import shutil
 import sys
 import time
@@ -22,13 +23,16 @@ import GracefulKiller as gk  # type: ignore[import-untyped]
 import libwizkwh as kwh
 import mausy5043_common.libsqlite3 as m3
 
+sys_log = "/dev/log"
+if platform.system() == "Darwin":
+    sys_log = "/var/run/syslog"
 logging.basicConfig(
     level=logging.INFO,
     format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
     handlers=[
         logging.handlers.SysLogHandler(
-            address="/dev/log",
+            address=sys_log,
             facility=logging.handlers.SysLogHandler.LOG_DAEMON,
         )
     ],
