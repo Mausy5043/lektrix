@@ -35,6 +35,9 @@ TABLE_PRICE: str = cs.PRICES["sql_table"]
 DEBUG: bool = False
 EDATETIME: str = "'now'"
 
+# Set the display options for pandas to prevent truncating in journal.
+pd.set_option('display.max_columns', None)
+
 sys_log = "/dev/log"
 if platform.system() == "Darwin":
     sys_log = "/var/run/syslog"
