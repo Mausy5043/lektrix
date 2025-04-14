@@ -173,20 +173,19 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     pv_balance = df[["gep", "solar", "gen"]].copy()
     pv_balance["solar"][df["gep"] < df["solar"]] = df["solar"] - df["gep"]
     pv_balance["solar"] *= -1
-    pv_balance.rename(
-        columns={"gep": "levering", "solar": "opslag", "gen": "laden"}, inplace=True
-    )
+    pv_balance.rename(columns={"gep": "leveren", "solar": "opslag", "gen": "laden"}, inplace=True)
     # LOGGER.debug("\n\n ** PV data for plotting  **")
     # LOGGER.debug(pv_balance.to_markdown(floatfmt=".3f"))
     #
     # MAINS data for plotting
     #
     p1_balance = df[["exp", "own", "imp"]].copy()
+    p1_balance.rename(columns={"exp": "verkopen", "own": "zelf gebruiken", "imp":"inkopen"}, inplace=True)
     #
     # EV data for plotting
     #
     ev_balance = df[["evn", "evp"]].copy()
-    ev_balance.rename(columns={"evn": "laden", "evp": "levering"}, inplace=True)
+    ev_balance.rename(columns={"evn": "laden", "evp": "leveren"}, inplace=True)
     # solar used for EV
     # df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
     # imported and used for EV
@@ -216,12 +215,12 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     LOGGER.debug("\n\n ** ALL data  **")
     LOGGER.debug(df.to_markdown(floatfmt=".3f"))
 
-    df_euro = df[["saved_own", "saved_exp", "price"]].copy()
+    df_euro = df[["saved_exp", "saved_own", "price"]].copy()
     df_euro["saved_own"] = df_euro["saved_own"].abs()
     df_euro["saved_exp"] = df_euro["saved_exp"].abs()
     df_euro["price"] = df_euro["price"] * df["gen"]
     df_euro.rename(
-        columns={"saved_own": "own", "saved_exp": "export", "price": "dyn.inkoop"}, inplace=True
+        columns={"saved_exp": "verkopen", "saved_own": "zelf gebruiken", "price": "dyn.inkopen"}, inplace=True
     )
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
