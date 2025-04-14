@@ -226,7 +226,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
     _own = df_euro["zelf gebruiken"].sum()
     _exp = df_euro["verkopen"].sum()
-    _ink = df_euro["dyn.inkoop"].sum()
+    _ink = df_euro["dyn.inkopen"].sum()
     LOGGER.info(f"\nAvoided costs    : {_own:+.5f} euro")
     print(f"Exported earnings: {_exp:+.5f} euro")
     print(f"Buy unbalance    : {_ink:+.5f} euro")
