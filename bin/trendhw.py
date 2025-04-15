@@ -183,7 +183,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # MAINS data for plotting
     #
     p1_balance = df[["exp", "own", "imp"]].copy()
-    p1_balance.rename(columns={"exp": "verkopen", "own": "zelf gebruiken", "imp":"inkopen"}, inplace=True)
+    p1_balance.rename(
+        columns={"exp": "verkopen", "own": "zelf gebruiken", "imp": "inkopen"}, inplace=True
+    )
     #
     # EV data for plotting
     #
@@ -223,7 +225,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df_euro["saved_exp"] = df_euro["saved_exp"].abs()
     df_euro["price"] = df_euro["price"] * df["gen"]
     df_euro.rename(
-        columns={"saved_exp": "verkopen", "saved_own": "zelf gebruiken", "price": "dyn.inkopen"}, inplace=True
+        columns={"saved_exp": "verkopen", "saved_own": "zelf gebruiken", "price": "dyn.inkopen"},
+        inplace=True,
     )
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
