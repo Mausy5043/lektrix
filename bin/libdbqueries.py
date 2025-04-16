@@ -388,8 +388,9 @@ def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     df = df.diff()
     # we sum the data to get the total production for the aggregation period...
     df = df.resample(rule=f"{settings["aggregation"]}").sum()
-    # drop first row (1st hour) as it will usually not contain complete data
-    df = df.iloc[1:, :]
+    if df.shape[0] > 1:
+        # drop first row as it will usually not contain complete data
+        df = df.iloc[1:, :]
     # ...then convert to kWh
     df *= 0.001
 
