@@ -84,6 +84,7 @@ parser_group.add_argument("--debug",
 OPTION = parser.parse_args()
 # fmt: on
 
+
 class ChunkedLogger:
     """
     A logger wrapper to safely emit large messages or DataFrames in smaller chunks.
@@ -94,7 +95,9 @@ class ChunkedLogger:
         max_lines (int): Maximum lines per log chunk for markdown tables.
     """
 
-    def __init__(self, logger: logging.Logger, chunk_size: int = 1000, max_lines: int = 5) -> None:
+    def __init__(
+        self, logger: logging.Logger, chunk_size: int = 1000, max_lines: int = 5
+    ) -> None:
         """
         Initialize the ChunkedLogger.
 
@@ -123,7 +126,9 @@ class ChunkedLogger:
         for i in range(0, len(message), self.chunk_size):
             self.logger.log(level, message[i:i + self.chunk_size])
 
-    def log_df(self, df: pd.DataFrame, level: int = logging.INFO, line_safe: bool = True, **kwargs) -> None:
+    def log_df(
+        self, df: pd.DataFrame, level: int = logging.INFO, line_safe: bool = True, **kwargs
+    ) -> None:
         """
         Log a DataFrame as markdown in safe-size chunks.
 
