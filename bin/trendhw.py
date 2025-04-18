@@ -170,7 +170,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # Use a chuncking logger to avoid sending too much text to syslog
     chunked_logger = ChunkedLogger(LOGGER)
     settings = {
-        "debug": DEBUG,
+        "debug": False,
         "edatetime": EDATETIME,
         "table": "",
         "database": DATABASE,
