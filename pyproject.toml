@@ -17,6 +17,7 @@ dependencies = [
     "python-dateutil~=2.9",
     "pytz~=2025.2",
     "requests~=2.32",
+    "sessypy==0.1.13",
     "sh~=2.2",
     "tabulate~=0.9",
     "zeroconf~=0.146.3"
@@ -44,6 +45,12 @@ skips = []
 [tool.black]
 line-length = 98
 target-version = ["py312", "py313"]
+exclude = '''
+/(
+    legacy/|
+    \.local/
+)
+'''
 
 [tool.isort]
 profile = "black"
