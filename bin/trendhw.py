@@ -235,7 +235,10 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df["own"] = df["exp"] + df["gep"] + df["evp"]
     # any negative 'own' is set to zero, because there are no other generators in the home.
     # Print rows where 'own' is less than 0
-    LOGGER.warning(df.loc[df["own"] < 0])
+    if df.loc[df["own"] < 0].shape[0] > 0:
+        LOGGER.warning("Negative 'own' values found:")
+        # Log the rows with negative 'own' values
+        chunked_logger.log_df(df.loc[df["own"] < 0], floatfmt=".3f", level=logging.WARNING)
     # Set 'own' values less than 0 to 0
     df.loc[df["own"] < 0, "own"] = 0
     # the 'own' energy avoids the need to import energy from the grid
