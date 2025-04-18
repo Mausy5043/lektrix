@@ -23,7 +23,9 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 class Kamstrup:  # pylint: disable=too-many-instance-attributes
     """Class to interact with the P1-port."""
 
-    def __init__(self, debug: bool = False) -> None:  # pylint: disable=too-many-instance-attributes
+    def __init__(
+        self, debug: bool = False
+    ) -> None:  # pylint: disable=too-many-instance-attributes
         self.PORT = serial.Serial()
         self.PORT.baudrate = 9600
         self.PORT.bytesize = serial.SEVENBITS

@@ -36,7 +36,7 @@ DEBUG: bool = False
 EDATETIME: str = "'now'"
 
 # Set the display options for pandas to prevent truncating in journal.
-pd.set_option('display.max_columns', None)
+pd.set_option("display.max_columns", None)
 
 sys_log = "/dev/log"
 if platform.system() == "Darwin":
@@ -124,7 +124,7 @@ class ChunkedLogger:
             raise ValueError("Invalid logging level.")
 
         for i in range(0, len(message), self.chunk_size):
-            self.logger.log(level, message[i:i + self.chunk_size])
+            self.logger.log(level, message[i : i + self.chunk_size])
 
     def log_df(
         self, df: pd.DataFrame, level: int = logging.INFO, line_safe: bool = True, **kwargs
@@ -151,7 +151,7 @@ class ChunkedLogger:
         if line_safe:
             lines = md.splitlines()
             for i in range(0, len(lines), self.max_lines):
-                chunk = "\n".join(lines[i:i + self.max_lines])
+                chunk = "\n".join(lines[i : i + self.max_lines])
                 self.logger.log(level, chunk)
         else:
             self.log(level, md)
@@ -206,7 +206,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # join='inner': This option performs an intersection of the indexes, including
     #               only the indexes that are present in all DataFrames. This results
     #               in a DataFrame that contains only the common indexes.
-    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='inner')
+    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join="inner")
     LOGGER.debug("\n\no  database concatenated data")
     chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
     LOGGER.debug("\n======\n\n")
@@ -243,7 +243,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df["saved_own"] = df["own"] * df["price"]
     # the 'exp'orted energy is the energy that is not used by the home but sold to the grid.
     # 2025: for now we assume selling at the hourly price.
-    df['saved_exp'] = df["exp"] * df["price"]
+    df["saved_exp"] = df["exp"] * df["price"]
     #
     # PV data for plotting
     #

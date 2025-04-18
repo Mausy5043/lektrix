@@ -119,8 +119,8 @@ data: list = []
 site_id: str = cs.PRICES["template"]["site_id"]
 for item in resp_data:
     try:
-        sample_time = item['startsAt'].split(".")[0].replace("T", " ")
-        price = float(item['total'])
+        sample_time = item["startsAt"].split(".")[0].replace("T", " ")
+        price = float(item["total"])
         sample_epoch = int(pd.Timestamp(sample_time).timestamp())
         data.append(
             {
@@ -134,7 +134,7 @@ for item in resp_data:
         print(f"Error processing item: {item}, error: {her}")
 
 # Save the data to a JSON file
-with open(savefile, 'w', encoding='utf-8') as _f:
+with open(savefile, "w", encoding="utf-8") as _f:
     json.dump(data, _f, ensure_ascii=True, indent=4)
 # print(json.dumps(data, indent=4))
 

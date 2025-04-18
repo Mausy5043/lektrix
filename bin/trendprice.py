@@ -142,18 +142,18 @@ def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
     # Pre-processing
     df.drop("site_id", axis=1, inplace=True, errors="ignore")
     # daily averages
-    davg_df = df.groupby(pd.Grouper(freq='D', key='sample_time')).mean()
+    davg_df = df.groupby(pd.Grouper(freq="D", key="sample_time")).mean()
     # print(davg_df.to_markdown(floatfmt=".5f"))
     _l: list = []
     for row in range(len(davg_df)):
-        day_avg = davg_df.iloc[row]['price']
+        day_avg = davg_df.iloc[row]["price"]
         _l += [day_avg] * 24
-    df['avg_price'] = _l
-    df['past'] = np.where(df['sample_time'] < dt.now(), df['price'], np.nan)
-    df['low'] = np.where(df['price'] <= df['avg_price'], df['price'], np.nan)
-    df['low'] = np.where(df['past'].notna(), np.nan, df['low'])
-    df['high'] = np.where(df['price'] > df['avg_price'], df['price'], np.nan)
-    df['high'] = np.where(df['past'].notna(), np.nan, df['high'])
+    df["avg_price"] = _l
+    df["past"] = np.where(df["sample_time"] < dt.now(), df["price"], np.nan)
+    df["low"] = np.where(df["price"] <= df["avg_price"], df["price"], np.nan)
+    df["low"] = np.where(df["past"].notna(), np.nan, df["low"])
+    df["high"] = np.where(df["price"] > df["avg_price"], df["price"], np.nan)
+    df["high"] = np.where(df["past"].notna(), np.nan, df["high"])
 
     # drop sample_time separately!
     df.drop("sample_time", axis=1, inplace=True, errors="ignore")
@@ -172,7 +172,7 @@ def fetch_data_prices(hours_to_fetch=48, aggregation="H") -> pd.DataFrame:
 
 
 def compute_avg_val(df):
-    df['average'] = df['price'].mean()
+    df["average"] = df["price"].mean()
     return df
 
 
