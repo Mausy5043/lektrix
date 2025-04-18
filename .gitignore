@@ -13,6 +13,7 @@ FIXME-SECURITY
 
 ### for local testing
 .local/
+legacy/
 
 ### Python ###
 __pycache__/
