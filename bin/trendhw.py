@@ -84,6 +84,73 @@ parser_group.add_argument("--debug",
 OPTION = parser.parse_args()
 # fmt: on
 
+class ChunkedLogger:
+    """
+    A logger wrapper to safely emit large messages or DataFrames in smaller chunks.
+
+    Attributes:
+        logger (logging.Logger): The logger instance to use.
+        chunk_size (int): Maximum characters per log message for plain text.
+        max_lines (int): Maximum lines per log chunk for markdown tables.
+    """
+
+    def __init__(self, logger: logging.Logger, chunk_size: int = 1000, max_lines: int = 5) -> None:
+        """
+        Initialize the ChunkedLogger.
+
+        Args:
+            logger (logging.Logger): Standard Python logger.
+            chunk_size (int): Max characters per log message (default: 1000).
+            max_lines (int): Max lines per log chunk for markdown tables (default: 50).
+        """
+        self.logger = logger
+        self.chunk_size = chunk_size
+        self.max_lines = max_lines
+
+    def log(self, level: int, message: str) -> None:
+        """
+        Log a long plain-text message in chunks.
+
+        Args:
+            level (int): Logging level (e.g., logging.INFO).
+            message (str): The message to log.
+        """
+        if not isinstance(message, str):
+            raise ValueError("Message must be a string.")
+        if not isinstance(level, int) or level not in logging._levelToName:
+            raise ValueError("Invalid logging level.")
+
+        for i in range(0, len(message), self.chunk_size):
+            self.logger.log(level, message[i:i + self.chunk_size])
+
+    def log_df(self, df: pd.DataFrame, level: int = logging.INFO, line_safe: bool = True, **kwargs) -> None:
+        """
+        Log a DataFrame as markdown in safe-size chunks.
+
+        Args:
+            df (pd.DataFrame): The DataFrame to log.
+            level (int): Logging level (default: logging.INFO).
+            line_safe (bool): If True, chunk by line count. If False, chunk by char length.
+            kwargs: Additional arguments passed to `df.to_markdown()`.
+        """
+        if df.empty:
+            self.logger.log(level, "DataFrame is empty.")
+            return
+
+        try:
+            md = df.to_markdown(**kwargs)
+        except Exception as e:
+            self.logger.error(f"Failed to convert DataFrame to markdown: {e}")
+            return
+
+        if line_safe:
+            lines = md.splitlines()
+            for i in range(0, len(lines), self.max_lines):
+                chunk = "\n".join(lines[i:i + self.max_lines])
+                self.logger.log(level, chunk)
+        else:
+            self.log(level, md)
+
 
 def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     """Query the database to fetch the requested data
