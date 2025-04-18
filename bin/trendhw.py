@@ -180,7 +180,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         "index_col": "sample_epoch",
         "cols2drop": [],
     }
-    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of MAINS data from")
+    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of MAINS data")
     settings["table"] = TABLE_MAINS
     settings["cols2drop"] = ["site_id", "v1", "frq"]
     df_mains = dbq.post_process_mains(dbq.query_for_data(settings=settings), settings)
