@@ -162,6 +162,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     Returns:
         dict with dataframes containing mains and production data
     """
+    # Use a chuncking logger to avoid sending too much text to syslog
+    chunked_logger = ChunkedLogger(LOGGER)
     settings = {
         "debug": DEBUG,
         "edatetime": EDATETIME,
@@ -201,7 +203,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #               in a DataFrame that contains only the common indexes.
     df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join='inner')
     LOGGER.debug("\n\no  database concatenated data")
-    LOGGER.debug(df.to_markdown(floatfmt=".3f"))
+    chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
     LOGGER.debug("\n======\n\n")
 
     # rename rows and perform calculations
@@ -271,7 +273,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # ... and/or export ('export' is negative!)
     # df["EB"][df["EB"] < 0] = 0
     # LOGGER.debug("o  database charger processed data")
-    # LOGGER.debug(df.to_markdown(floatfmt=".3f"))
+    # chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
 
     # df.drop(
     #     ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
@@ -285,7 +287,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # df.columns = pd.CategoricalIndex(df.columns.values, ordered=True, categories=categories)
     df = df.sort_index(axis=1)
     LOGGER.debug("\n\n ** ALL data  **")
-    LOGGER.debug(df.to_markdown(floatfmt=".3f"))
+    chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
 
     df_euro = df[["saved_exp", "saved_own", "price"]].copy()
     df_euro["saved_own"] = df_euro["saved_own"].abs()
@@ -301,9 +303,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     _exp = df_euro["verkopen"].sum()
     _ink = df_euro["dyn.inkopen"].sum()
     LOGGER.info(f"\nAvoided costs    : {_own:+.5f} euro")
-    print(f"Exported earnings: {_exp:+.5f} euro")
-    print(f"Buy unbalance    : {_ink:+.5f} euro")
-    print(f"Total            : {_own + _exp + _ink:+.5f} euro")
+    LOGGER.info(f"Exported earnings: {_exp:+.5f} euro")
+    LOGGER.info(f"Buy unbalance    : {_ink:+.5f} euro")
+    LOGGER.info(f"Total            : {_own + _exp + _ink:+.5f} euro")
 
     return data_dict
 
@@ -322,13 +324,15 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
 
     Returns: nothing
     """
+    chunked_logger = ChunkedLogger(LOGGER)
+
     if locatorformat is None:
         locatorformat = ["hour", "%d-%m %Hh"]
     LOGGER.debug("\n\n*** PLOTTING ***")
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
         LOGGER.debug(parameter)
-        LOGGER.debug(data_frame.to_markdown(floatfmt=".3f"))
+        chunked_logger.log_df(data_frame, floatfmt=".3f", level=logging.DEBUG)
         mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
             mjr_ticks = 1
