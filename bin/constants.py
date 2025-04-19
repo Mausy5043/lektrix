@@ -46,14 +46,14 @@ FLOAT_FMT = "+.0f"
 # fmt: off
 BATTERY: dict = {
     "database": _DATABASE,
-    "sql_table": "storage",
-    "graph_file": ".local/graph.png",
-    "sql_command": "INSERT INTO storage ("
+    "sql_table": "battery",
+    "sql_command": "INSERT INTO battery ("
                    "sample_time, sample_epoch, battery_id, soc, soh"
                    ") "
-                   "VALUES (?, ?, ?, ?)",
-    "report_time": 299,
+                   "VALUES (?, ?, ?, ?, ?)",
+    "report_interval": 299,
     "samplespercycle": 1,
+    "delay": 360,
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
