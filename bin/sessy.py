@@ -143,12 +143,12 @@ def set_led(dev, colour) -> None:
 
 if __name__ == "__main__":
     if OPTION.debug:
-        DEBUG = True
         print(OPTION)
         if len(LOGGER.handlers) == 0:
             LOGGER.addHandler(logging.StreamHandler(sys.stdout))
         LOGGER.setLevel(logging.DEBUG)
-        LOGGER.debug("Debug-mode started.")
+        DEBUG = True
+        LOGGER.debug("DEBUG-mode started")
         print("Use <Ctrl>+C to stop.")
 
     # OPTION.start only executes this next line, we don't need to test for it.
