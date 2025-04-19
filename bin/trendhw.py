@@ -149,8 +149,8 @@ class ChunkedLogger:
             return
 
         if line_safe:
-            self.logger.log(level, "\n")
-            lines = md.splitlines()
+            lines = ["\n"]
+            lines.append(md.splitlines())
             for i in range(0, len(lines), self.max_lines):
                 chunk = "\n".join(lines[i : i + self.max_lines])
                 self.logger.log(level, chunk)
