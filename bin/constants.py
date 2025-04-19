@@ -51,13 +51,13 @@ BATTERY: dict = {
                    "sample_time, sample_epoch, battery_id, soc, soh"
                    ") "
                    "VALUES (?, ?, ?, ?, ?)",
-    "report_interval": 299,
-    "samplespercycle": 1,
+    "report_interval": 300,  # 5 minutes resolution
+    "samplespercycle": 10,
     "delay": 360,
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": "1_2", # Battery 1 & 2
+        "site_id": "4.12",  # Battery 1 & 2
         "soc": 0,
         "soh": 1000,
     },
@@ -114,7 +114,7 @@ WIZ_KWH: dict = {
     "template": {
         "sample_time": "yyyy-mm-dd hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": 4.2,     # 4.1 = myenergi zappi; 4.2 = HomeWizard
+        "site_id": 4.2,  # 4.1 = myenergi zappi; 4.2 = HomeWizard
         "exp": 0,
         "imp": 0,
         "gen": 0,
@@ -138,7 +138,7 @@ PRICES: dict = {
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": "4.2",     # 4.1 = Pure Energie; 4.2 = Tibber
+        "site_id": "4.2",  # 4.1 = Pure Energie; 4.2 = Tibber
         "price": 0.0,
     },
     "config": f"{_MYHOME}/.config/tibber/account.ini",
