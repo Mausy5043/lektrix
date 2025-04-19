@@ -57,10 +57,11 @@ BATTERY: dict = {
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
-        "battery_id": 0,
+        "site_id": "1_2", # Battery 1 & 2
         "soc": 0,
         "soh": 1000,
     },
+    "config": f"{_MYHOME}/.config/sessy.json",
 }
 
 TREND: dict = {
