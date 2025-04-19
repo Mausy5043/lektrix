@@ -149,6 +149,7 @@ class ChunkedLogger:
             return
 
         if line_safe:
+            self.logger.log(level, "\n")
             lines = md.splitlines()
             for i in range(0, len(lines), self.max_lines):
                 chunk = "\n".join(lines[i : i + self.max_lines])
@@ -310,7 +311,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     _own = df_euro["zelf gebruiken"].sum()
     _exp = df_euro["verkopen"].sum()
     _ink = df_euro["dyn.inkopen"].sum()
-    LOGGER.info(f"\nAvoided costs    : {_own:+.5f} euro")
+    LOGGER.info(f"Avoided costs    : {_own:+.5f} euro")
     LOGGER.info(f"Exported earnings: {_exp:+.5f} euro")
     LOGGER.info(f"Buy unbalance    : {_ink:+.5f} euro")
     LOGGER.info(f"Total            : {_own + _exp + _ink:+.5f} euro")
