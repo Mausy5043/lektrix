@@ -372,6 +372,33 @@ def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) ->
     return df
 
 
+def post_process_battery(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
+    """Post process the production data.
+
+    Args:
+        df (pandas.DataFrame):     data to be processed
+        settings (dict):           settings to be used
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+    debug = settings["debug"]
+
+    # raw SoC data from batteries comes in centipercent per 5 minutes.
+    # we average the data to get the average SoC for the aggregation period...
+    df = df.resample(rule=f"{settings["aggregation"]}").mean()
+    # drop first row (1st hour) as it will usually not contain complete data...
+    # ...and drop the last rows to match the size of the mains data
+    # df = df.iloc[1:trim_rows+1, :]
+    # ...then convert to %
+    df["soc"] *= 0.01
+
+    if debug:
+        print("o  POST-processed BATTERY data")
+        print(df.to_markdown(floatfmt=".3f"))
+    return df
+
+
 def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     """Post process the mains data.
 
