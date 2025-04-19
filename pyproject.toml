@@ -107,6 +107,10 @@ indent-width = 4
 line-length = 98
 output-format = "concise"
 include = ["pyproject.toml", "bin/**/*.py"]
+exclude = [
+    "legacy/",
+    ".local/",
+]
 
 [tool.ruff.format]
 indent-style = "space"
