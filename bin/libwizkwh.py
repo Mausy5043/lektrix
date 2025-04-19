@@ -109,9 +109,9 @@ class WizkWh:
         _ev = telegram[0]
         LOGGER.debug(f"EV:\n{_ev}")
         _pv = telegram[1]
-        LOGGER.debug(f"PV:\n{_ev}")
+        LOGGER.debug(f"PV:\n{_pv}")
         _p1 = telegram[2]
-        LOGGER.debug(f"P1:\n{_ev}")
+        LOGGER.debug(f"P1:\n{_p1}")
         self.ev_elec_in = int(_ev.energy_export_kwh * 1000)  # EV kWH-meter is connected wrong way round
         self.pv_elec_in = int(_pv.energy_export_kwh * 1000)  # PV kWH-meter is connected wrong way round
         self.p1_elec_in = int(_p1.energy_import_kwh * 1000)
