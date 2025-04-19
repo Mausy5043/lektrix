@@ -101,7 +101,7 @@ WIZ_KWH: dict = {
     "sql_command": "INSERT INTO mains ("
                    "sample_time, sample_epoch, site_id,"
                    "exp, imp, gen, gep, evn, evp,"
-                   "v1, frq, pf"
+                   "v1, frq"
                    ");"
                    "VALUES (?, ?, ?,"
                    "?, ?, ?, ?, ?, ?, ?, ?,"
