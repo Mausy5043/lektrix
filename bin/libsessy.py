@@ -99,9 +99,9 @@ class SesBat:
         LOGGER.debug(f"Battery #2:\n{json.dumps(_b2, indent=1)}")
         # State of Charge and State of Health are in centipercent
         _soc1 = _b1["sessy"]["state_of_charge"] * 10000
-        _soh1 = 1000 # _b1["soh"] * 1000
+        _soh1 = 1000  # _b1["soh"] * 1000
         _soc2 = _b2["sessy"]["state_of_charge"] * 10000
-        _soh2 = 1000 # _b1["soh"] * 1000
+        _soh2 = 1000  # _b1["soh"] * 1000
         self.soc = int((_soc1 + _soc2) / 2)
         self.soh = int((_soh1 + _soh2) / 2)
 
@@ -157,6 +157,8 @@ class SesBat:
         LOGGER.debug(f"Resampled (max) dataframe:\n{df_out.to_markdown(floatfmt='.3f')}")
         # reset 'site_id'
         df_out["site_id"] = cs.BATTERY["template"]["site_id"]
+        df_out["soc"] = df_mean["soc"]
+        df_out["soh"] = df_mean["soh"]
         LOGGER.debug(f"Added means to dataframe:\n{df_out.to_markdown(floatfmt='.3f')}")
 
         # recreate column 'sample_time' that was lost to the index
