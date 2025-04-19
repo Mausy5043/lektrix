@@ -87,21 +87,21 @@ class SesBat:
     def _translate_telegram(self, telegram: list) -> dict:
         """Translate the telegram to a dict.
 
-        kW or kWh are converted to W resp. kW
+        SoC and SoH are in fractions and converted to centipercent.
 
         Returns:
-            (dict): data converted to a dict.
+            (dict): data extracted and converted to a dict.
         """
         # fmt: off
         _b1 = telegram[0]
-        LOGGER.debug(f"Battery #1:\n{_b1}")
+        LOGGER.debug(f"Battery #1:\n{json.dumps(_b1, indent=1)}")
         _b2 = telegram[1]
-        LOGGER.debug(f"Battery #2:\n{_b2}")
+        LOGGER.debug(f"Battery #2:\n{json.dumps(_b2, indent=1)}")
         # State of Charge and State of Health are in centipercent
-        _soc1 = _b1["soc"] * 1000
-        _soh1 = _b1["soh"] * 1000
-        _soc2 = _b2["soc"] * 1000
-        _soh2 = _b2["soh"] * 1000
+        _soc1 = _b1["sessy"]["state_of_charge"] * 10000
+        _soh1 = 1000 # _b1["soh"] * 1000
+        _soc2 = _b2["sessy"]["state_of_charge"] * 10000
+        _soh2 = 1000 # _b1["soh"] * 1000
         self.soc = int((_soc1 + _soc2) / 2)
         self.soh = int((_soh1 + _soh2) / 2)
 
