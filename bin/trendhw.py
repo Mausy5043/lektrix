@@ -32,6 +32,7 @@ DATABASE: str = cs.TREND["database"]
 TABLE_MAINS: str = cs.WIZ_KWH["sql_table"]
 TABLE_PRDCT: str = cs.SOLAREDGE["sql_table"]
 TABLE_PRICE: str = cs.PRICES["sql_table"]
+TABLE_BATTERY: str = cs.BATTERY["sql_table"]
 DEBUG: bool = False
 EDATETIME: str = "'now'"
 
@@ -158,7 +159,7 @@ class ChunkedLogger:
             self.log(level, md)
 
 
-def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     """Query the database to fetch the requested data
 
     Args:
@@ -200,6 +201,13 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df_pris = dbq.post_process_prices(
         dbq.query_for_data(settings=settings), settings, df_mains_len
     )
+
+    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of battery SoC data")
+    settings["table"] = TABLE_BATTERY
+    settings["cols2drop"] = ["site_id", "soh"]
+    df_soc = dbq.post_process_battery(
+        dbq.query_for_data(settings=settings), settings, df_mains_len
+    )
     # merge the dataframes
     # join='outer': This is the default option. It performs a union of the indexes,
     #               including all indexes from all DataFrames.
@@ -223,24 +231,17 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # price: price of energy in the timeperiod
     # own: home usage from PV or V2H := gep + evp + exp
     #
-    # (temp) total EV usage
-    df["EVtotal"] = df["evp"] + df["evn"]
-    # (temp) total SOLAR
-    df["PVtotal"] = df["gen"] + df["gep"]
-    # (temp) total P1
-    df["P1total"] = df["imp"] + df["exp"]
     # 'own' is the total energy used internally by the home (was: eigen bedrijf; EB).
     # that is: *not* imported from the grid
     # NOTE that 'gen' and 'evn' are not used in the calculation of 'own'
     # because they are diverted from somewhere else (one of the __p values)
     df["own"] = df["exp"] + df["gep"] + df["evp"]
     # any negative 'own' is set to zero, because there are no other generators in the home.
-    # Print rows where 'own' is less than 0
+    # print rows where 'own' is less than 0 to the log
     if df.loc[df["own"] < 0].shape[0] > 0:
         LOGGER.warning("Negative 'own' values found:")
-        # Log the rows with negative 'own' values
         chunked_logger.log_df(df.loc[df["own"] < 0], floatfmt=".3f", level=logging.WARNING)
-    # Set 'own' values less than 0 to 0
+    # set 'own' values less than 0 to 0
     df.loc[df["own"] < 0, "own"] = 0
     # the 'own' energy avoids the need to import energy from the grid
     # so the money avoided by 'own' is saved.
@@ -308,6 +309,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     )
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
+    soc_dict = {"SOC": df_soc}
     _own = df_euro["zelf gebruiken"].sum()
     _exp = df_euro["verkopen"].sum()
     _ink = df_euro["dyn.inkopen"].sum()
@@ -316,10 +318,12 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     LOGGER.info(f"Buy unbalance    : {_ink:+.5f} euro")
     LOGGER.info(f"Total            : {_own + _exp + _ink:+.5f} euro")
 
-    return data_dict
+    return [data_dict, soc_dict]
 
 
-def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None) -> None:
+def plot_graph(
+    output_file: str, data_list: list, plot_title: str, show_data=False, locatorformat=None
+) -> None:
     """Plot the data in a chart.
 
     Args:
@@ -333,6 +337,9 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
 
     Returns: nothing
     """
+    data_dict: dict = data_list[0]
+    soc_dict: dict = data_list[1]
+    soc_frame = soc_dict["SOC"]  # type: pd.DataFrame
     chunked_logger = ChunkedLogger(LOGGER)
 
     if locatorformat is None:
@@ -341,6 +348,10 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
         LOGGER.debug(parameter)
+        plot_soc = False
+        if parameter in ["PV", "HOME"] and locatorformat[0] == "hour":
+            plot_soc = True
+            chunked_logger.log_df(soc_frame, floatfmt=".3f", level=logging.DEBUG)
         chunked_logger.log_df(data_frame, floatfmt=".3f", level=logging.DEBUG)
         mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
@@ -385,6 +396,19 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             ax1.set_xlabel("Datetime")
             ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
             ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
+            if plot_soc:
+                ax2 = ax1.twinx()
+                ax2.plot(
+                    soc_frame.index,
+                    soc_frame["soc"],
+                    color="black",
+                    label="SoC",
+                    linewidth=2.0,
+                    marker="o",
+                    markersize=10,
+                )
+                ax2.set_ylim(0, 100)
+                ax2.set_ylabel("SoC [%]")
             plt.gcf().autofmt_xdate()
             plt.title(f"{parameter} {plot_title}")
             plt.tight_layout()
