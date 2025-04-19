@@ -13,7 +13,6 @@ py-solaredge==0.0.4.9
 python-dateutil~=2.9
 pytz~=2025.2
 requests~=2.32
-sessypy==0.1.13
 sh~=2.2
 tabulate~=0.9
 zeroconf==0.146.3
