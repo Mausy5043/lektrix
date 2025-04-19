@@ -78,3 +78,23 @@ CREATE TABLE prices (
 
 CREATE INDEX idx_prices_epoch ON prices(sample_epoch);
 -- SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
+
+
+-- --------------------------------------------------------
+-- Track battery state
+-- --------------------------------------------------------
+DROP TABLE IF EXISTS battery;
+
+-- SoC is the state of charge of the battery in centipercent
+-- SOH is the state of health of the battery in centipercent
+
+CREATE TABLE battery (
+  sample_time   datetime NOT NULL PRIMARY KEY,
+  sample_epoch  integer,
+  site_id       text,
+  soc           integer,
+  soh           integer
+  );
+
+CREATE INDEX idx_battery_epoch ON battery(sample_epoch);
+-- SQLite3 automatically creates a UNIQUE INDEX on the PRIMARY KEY in the background.
