@@ -21,7 +21,7 @@ dependencies:
   # Not on conda channels:
   - pip:
       - gracefulkiller~=0.4
-      - mausy5043-common>=2.2.7
+      - mausy5043-common>=2.4
       - py-solaredge==0.0.4.9
   - python-dateutil=2.9
   - pytz=2025.2
