@@ -1,0 +1,18 @@
+# This service is for starting the Sessy battery telemetry service
+
+[Unit]
+Description=Sessy battery telemetry service
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+EnvironmentFile=/home/pi/.pyenvpaths
+WorkingDirectory=/home/pi/lektrix
+ExecStart=/home/pi/lektrix/bin/sessy.py --start
+# stand back for 15 minutes to allow for server to fail-over
+RestartSec=900s
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

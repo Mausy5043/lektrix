@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# lektrix - wizkwh
+# lektrix - sessy
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
 
@@ -55,8 +55,8 @@ OPTION = parser.parse_args()
 # constants
 DEBUG = False
 HERE = os.path.realpath(__file__).split("/")
-# example HERE = ['', 'home', 'pi', 'lektrix', 'bin', 'wizkwh.py']
-MYID = HERE[-1]  # wizkwh.py
+# example HERE = ['', 'home', 'pi', 'lektrix', 'bin', 'sessy.py']
+MYID = HERE[-1]  # sessy.py
 MYAPP = HERE[-3]  # lektrix
 MYROOT = "/".join(HERE[0:-3])  # /home/pi
 APPROOT = "/".join(HERE[0:-2])  # /home/pi/lektrix
