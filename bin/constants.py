@@ -57,7 +57,7 @@ BATTERY: dict = {
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
-        "site_id": "4.12",  # Battery 1 & 2
+        "site_id": 4.12,  # Battery 1 & 2
         "soc": 0,
         "soh": 1000,
     },
