@@ -112,8 +112,7 @@ def main() -> None:
                     raise  # may be changed to pass if errors can be corrected.
                 try:
                     LOGGER.debug("\n...inserting data")
-                    if not DEBUG:
-                        sql_db.insert(method="replace")
+                    sql_db.insert(method="replace")
                 except Exception:  # noqa
                     set_led("bat", "red")
                     LOGGER.critical(
