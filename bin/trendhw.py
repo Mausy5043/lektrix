@@ -215,7 +215,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     # join='inner': This option performs an intersection of the indexes, including
     #               only the indexes that are present in all DataFrames. This results
     #               in a DataFrame that contains only the common indexes.
-    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join="inner")
+    df = pd.concat([df_mains, df_prod, df_pris, df_soc], axis="columns", join="inner")
+    df = df.sort_index(axis=1)
+
     LOGGER.debug("\n\no  database concatenated data")
     chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
     LOGGER.debug("\n======\n\n")
@@ -270,35 +272,15 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     #
     ev_balance = df[["evn", "evp"]].copy()
     ev_balance.rename(columns={"evn": "laden", "evp": "leveren"}, inplace=True)
-    # solar used for EV
-    # df["EVsol"] = np.minimum(df["EVtotal"], solbalance)
-    # imported and used for EV
-    # df["EVnet"] = df["EVtotal"] - df["EVsol"]
-    # compensate for import diverted to EV ...
-    # df["import"] = df["imp"] - df["EVnet"]
-    # ... and/or import
-    # compensate for solar diverted to EV ...
-    # df["EB"] = df["gep"] + df["export"] - df["EVsol"]
-    # df["EB"] = df["PVtotal"] - df["EVsol"] + df["exp"]
-    # ... and/or export ('export' is negative!)
-    # df["EB"][df["EB"] < 0] = 0
-    # LOGGER.debug("o  database charger processed data")
-    # chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
+    #
+    # Battery SoC data for plotting
+    #
+    soc_balance = df[["soc"]].copy()
 
-    # df.drop(
-    #     ["h1b", "h1d", "gen", "imp", "exp", "gep", "EVtotal", "SOLtotal", "P1total"],
-    #     axis=1,
-    #     inplace=True,
-    #     errors="ignore",
-    # )
-
-    # put columns in the right order for plotting
-    # categories = ["export", "import", "EB", "EVsol", "EVnet"]
-    # df.columns = pd.CategoricalIndex(df.columns.values, ordered=True, categories=categories)
-    df = df.sort_index(axis=1)
     LOGGER.debug("\n\n ** ALL data  **")
     chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
 
+    # convert kWh to euros saved
     df_euro = df[["saved_exp", "saved_own", "price"]].copy()
     df_euro["saved_own"] = df_euro["saved_own"].abs()
     df_euro["saved_exp"] = df_euro["saved_exp"].abs()
@@ -309,7 +291,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     )
 
     data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
-    soc_dict = {"SOC": df_soc}
+    soc_dict = {"SOC": soc_balance}
+
+    # log financial balance
     _own = df_euro["zelf gebruiken"].sum()
     _exp = df_euro["verkopen"].sum()
     _ink = df_euro["dyn.inkopen"].sum()
@@ -396,19 +380,7 @@ def plot_graph(
             ax1.set_xlabel("Datetime")
             ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
             ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
-            if plot_soc:
-                ax2 = ax1.twinx()
-                ax2.plot(
-                    soc_frame.index,
-                    soc_frame["soc"],
-                    color="black",
-                    label="SoC",
-                    linewidth=2.0,
-                    marker="o",
-                    markersize=10,
-                )
-                ax2.set_ylim(0, 100)
-                ax2.set_ylabel("SoC [%]")
+
             plt.gcf().autofmt_xdate()
             plt.title(f"{parameter} {plot_title}")
             plt.tight_layout()
