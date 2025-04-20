@@ -159,7 +159,7 @@ class ChunkedLogger:
             self.log(level, md)
 
 
-def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -215,7 +215,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     # join='inner': This option performs an intersection of the indexes, including
     #               only the indexes that are present in all DataFrames. This results
     #               in a DataFrame that contains only the common indexes.
-    df = pd.concat([df_mains, df_prod, df_pris, df_soc], axis="columns", join="inner")
+    df = pd.concat([df_mains, df_prod, df_pris], axis="columns", join="inner")
     df = df.sort_index(axis=1)
 
     LOGGER.debug("\n\no  database concatenated data")
@@ -275,7 +275,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     #
     # Battery SoC data for plotting
     #
-    soc_balance = df[["soc"]].copy()
+    # soc_balance = df[["soc"]].copy()
 
     LOGGER.debug("\n\n ** ALL data  **")
     chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
@@ -290,8 +290,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
         inplace=True,
     )
 
-    data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro}
-    soc_dict = {"SOC": soc_balance}
+    data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro, "SOC": df_soc}
 
     # log financial balance
     _own = df_euro["zelf gebruiken"].sum()
@@ -302,11 +301,11 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> list[dict]:
     LOGGER.info(f"Buy unbalance    : {_ink:+.5f} euro")
     LOGGER.info(f"Total            : {_own + _exp + _ink:+.5f} euro")
 
-    return [data_dict, soc_dict]
+    return data_dict
 
 
 def plot_graph(
-    output_file: str, data_list: list, plot_title: str, show_data=False, locatorformat=None
+    output_file: str, data_dict: dict, plot_title: str, show_data=False, locatorformat=None
 ) -> None:
     """Plot the data in a chart.
 
@@ -321,9 +320,6 @@ def plot_graph(
 
     Returns: nothing
     """
-    data_dict: dict = data_list[0]
-    soc_dict: dict = data_list[1]
-    soc_frame = soc_dict["SOC"]  # type: pd.DataFrame
     chunked_logger = ChunkedLogger(LOGGER)
 
     if locatorformat is None:
@@ -332,10 +328,6 @@ def plot_graph(
     for parameter in data_dict:
         data_frame = data_dict[parameter]  # type: pd.DataFrame
         LOGGER.debug(parameter)
-        plot_soc = False
-        if parameter in ["PV", "HOME"] and locatorformat[0] == "hour":
-            plot_soc = True
-            chunked_logger.log_df(soc_frame, floatfmt=".3f", level=logging.DEBUG)
         chunked_logger.log_df(data_frame, floatfmt=".3f", level=logging.DEBUG)
         mjr_ticks = int(len(data_frame.index) / 40)
         if mjr_ticks <= 0:
