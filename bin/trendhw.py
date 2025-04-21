@@ -290,7 +290,13 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         inplace=True,
     )
 
-    data_dict = {"PV": pv_balance, "HOME": p1_balance, "EV": ev_balance, "EURO": df_euro, "SOC": df_soc}
+    data_dict = {
+        "PV": pv_balance,
+        "HOME": p1_balance,
+        "EV": ev_balance,
+        "EURO": df_euro,
+        "SOC": df_soc,
+    }
 
     # log financial balance
     _own = df_euro["zelf gebruiken"].sum()
