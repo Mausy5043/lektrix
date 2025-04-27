@@ -8,10 +8,10 @@
 """Common functions for database queries"""
 
 import datetime as dt
-from datetime import datetime as dtdt
 import random
 import sqlite3 as s3
 import time
+from datetime import datetime as dtdt
 
 import numpy as np
 import pandas as pd
@@ -453,6 +453,7 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
         print(df.to_markdown(floatfmt=".5f"))
     return df
 
+
 def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     """Separate price data in high and low periods.
 
@@ -479,7 +480,9 @@ def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
         dflt = dmdn_df.copy()
     if settings["minimum"]:
         # use the lowest value from davg_df and dmdn_df
-        dflt["price"] = np.where(davg_df["price"] < dmdn_df["price"], davg_df["price"], dmdn_df["price"])
+        dflt["price"] = np.where(
+            davg_df["price"] < dmdn_df["price"], davg_df["price"], dmdn_df["price"]
+        )
     _l: list = []
     for row in range(len(dflt)):
         day_limit = dflt.iloc[row]["price"]

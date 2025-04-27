@@ -9,10 +9,8 @@
 
 import argparse
 import logging.handlers
-import random
-import sqlite3 as s3
+import platform
 import sys
-import time
 from datetime import datetime as dt
 from datetime import timedelta as dttd
 
@@ -20,9 +18,7 @@ import constants as cs
 import libdbqueries as dbq
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
-import numpy as np
 import pandas as pd
-import platform
 
 DATABASE: str = cs.PRICES["database"]
 TABLE_PRICE: str = cs.PRICES["sql_table"]
@@ -83,7 +79,6 @@ OPTION = parser.parse_args()
 
 
 # fmt: on
-
 
 
 class ChunkedLogger:
@@ -176,7 +171,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         "edatetime": EDATETIME,
         "table": "",
         "database": DATABASE,
-        "hours_to_fetch": hours_to_fetch -2,    # compensate for greedy query
+        "hours_to_fetch": hours_to_fetch - 2,  # compensate for greedy query
         "aggregation": aggregation,
         "parse_dates": ["sample_time"],
         "index_col": "sample_epoch",
@@ -188,9 +183,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df = dbq.post_process_prices(
-        dbq.query_for_data(settings=settings), settings, 1
-    )
+    df = dbq.post_process_prices(dbq.query_for_data(settings=settings), settings, 1)
     df = df.sort_index(axis=1)
 
     df = dbq.separate_prices(df, settings)
@@ -204,7 +197,6 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     }
 
     return data_dict
-
 
 
 def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorformat=None) -> None:
