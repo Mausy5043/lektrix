@@ -152,7 +152,7 @@ class ChunkedLogger:
             lines: list = ["\n"]
             lines += md.splitlines()
             for i in range(0, len(lines), self.max_lines):
-                chunk = "\n".join(lines[i : i + self.max_lines])
+                chunk = "\n" + "\n".join(lines[i : i + self.max_lines])
                 self.logger.log(level, chunk)
         else:
             self.log(level, md)
