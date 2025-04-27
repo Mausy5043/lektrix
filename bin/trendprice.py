@@ -32,22 +32,22 @@ parser.add_argument("--twoday", "-t",
                     action="store_true",
                     help="graph for the last two days"
                     )
-parser.add_argument("--hours", "-hr",
-                    type=int,
-                    help="create hour-trend for last <HOURS> hours",
-                    )
-parser.add_argument("--days", "-d",
-                    type=int,
-                    help="create day-trend for last <DAYS> days"
-                    )
-parser.add_argument("--months", "-m",
-                    type=int,
-                    help="number of months of data to use for the graph",
-                    )
-parser.add_argument("--years", "-y",
-                    type=int,
-                    help="number of months of data to use for the graph",
-                    )
+# parser.add_argument("--hours", "-hr",
+#                     type=int,
+#                     help="create hour-trend for last <HOURS> hours",
+#                     )
+# parser.add_argument("--days", "-d",
+#                     type=int,
+#                     help="create day-trend for last <DAYS> days"
+#                     )
+# parser.add_argument("--months", "-m",
+#                     type=int,
+#                     help="number of months of data to use for the graph",
+#                     )
+# parser.add_argument("--years", "-y",
+#                     type=int,
+#                     help="number of months of data to use for the graph",
+#                     )
 parser.add_argument("--edate", "-e",
                     type=str,
                     help="date of last day of the graph (default: now)",
@@ -176,29 +176,29 @@ def main(opt) -> None:
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["hour", "%Hh"],
         )
-    if opt.days:
-        plot_graph(
-            output_file=cs.PRICES["day_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.days * 24, aggregation="D"),
-            plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            locatorformat=["day", "%Y-%m-%d"],
-        )
-    if opt.months:
-        plot_graph(
-            output_file=cs.PRICES["month_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="M"),
-            plot_title=f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=False,
-            locatorformat=["month", "%Y-%m"],
-        )
-    if opt.years:
-        plot_graph(
-            output_file=cs.PRICES["year_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="A"),
-            plot_title=f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
-            show_data=True,
-            locatorformat=["year", "%Y"],
-        )
+    # if opt.days:
+    #     plot_graph(
+    #         output_file=cs.PRICES["day_graph"],
+    #         data_dict=fetch_data(hours_to_fetch=opt.days * 24, aggregation="D"),
+    #         plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+    #         locatorformat=["day", "%Y-%m-%d"],
+    #     )
+    # if opt.months:
+    #     plot_graph(
+    #         output_file=cs.PRICES["month_graph"],
+    #         data_dict=fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="M"),
+    #         plot_title=f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+    #         show_data=False,
+    #         locatorformat=["month", "%Y-%m"],
+    #     )
+    # if opt.years:
+    #     plot_graph(
+    #         output_file=cs.PRICES["year_graph"],
+    #         data_dict=fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="A"),
+    #         plot_title=f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+    #         show_data=True,
+    #         locatorformat=["year", "%Y"],
+    #     )
 
 
 if __name__ == "__main__":
@@ -210,10 +210,10 @@ if __name__ == "__main__":
         EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
         sdate = dt.now().replace(hour=0, minute=0, second=0, microsecond=0)
         OPTION.hours = (edate - sdate).total_seconds() / 3600
-    if OPTION.hours == 0:
-        edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
-        EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
-        OPTION.hours = 8 * 24
+    # if OPTION.hours == 0:
+    #     edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
+    #     EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
+    #     OPTION.hours = 8 * 24
     # if OPTION.days == 0:
     #     edate = dt.now().replace(hour=23, minute=0, second=0, microsecond=0) + dttd(days=1)
     #     EDATETIME = f"'{dt.strftime(edate, cs.DT_FORMAT)}'"
