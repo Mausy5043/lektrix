@@ -8,6 +8,7 @@
 """Common functions for database queries"""
 
 import datetime as dt
+from datetime import datetime as dtdt
 import random
 import sqlite3 as s3
 import time
@@ -450,4 +451,48 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
     if debug:
         print("o  POST-processed PRICE data")
         print(df.to_markdown(floatfmt=".5f"))
+    return df
+
+def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
+    """Separate price data in high and low periods.
+
+    Args:
+        df (pandas.DataFrame):    data to be processed
+        settings (dict):          settings to be used
+
+    Returns:
+        pandas.DataFrame() with data
+    """
+    debug = settings["debug"]
+    # calculate the mean and median for the day
+    davg_df = df.groupby(pd.Grouper(freq="D")).mean()
+    dmdn_df = df.groupby(pd.Grouper(freq="D")).median()
+    if debug:
+        print("\no  Daily averages")
+        print(davg_df.to_markdown(floatfmt=".5f"))
+        print("\no  Daily medians")
+        print(dmdn_df.to_markdown(floatfmt=".5f"))
+    # select the average by default
+    dflt = davg_df.copy()
+    if settings["median"]:
+        # use the median instead of the average
+        dflt = dmdn_df.copy()
+    if settings["minimum"]:
+        # use the lowest value from davg_df and dmdn_df
+        dflt["price"] = np.where(davg_df["price"] < dmdn_df["price"], davg_df["price"], dmdn_df["price"])
+    _l: list = []
+    for row in range(len(dflt)):
+        day_limit = dflt.iloc[row]["price"]
+        _l += [day_limit] * 24
+    df["avg_price"] = _l
+    # separate the past, high and low periods
+    df["past"] = np.where(df.index < dtdt.now(), df["price"], np.nan)
+    df["low"] = np.where(df["price"] <= df["avg_price"], df["price"], np.nan)
+    df["low"] = np.where(df["past"].notna(), np.nan, df["low"])
+    df["high"] = np.where(df["price"] > df["avg_price"], df["price"], np.nan)
+    df["high"] = np.where(df["past"].notna(), np.nan, df["high"])
+
+    # drop the columns we don't need
+    df.drop(labels=["avg_price", "price"], axis=1, inplace=True, errors="ignore")
+
     return df
