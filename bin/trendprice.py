@@ -8,6 +8,7 @@
 """Create trendbargraphs of the energy price data for various periods."""
 
 import argparse
+import logging.handlers
 import random
 import sqlite3 as s3
 import sys
@@ -16,15 +17,36 @@ from datetime import datetime as dt
 from datetime import timedelta as dttd
 
 import constants as cs
+import libdbqueries as dbq
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import numpy as np
 import pandas as pd
+import platform
 
 DATABASE: str = cs.PRICES["database"]
 TABLE_PRICE: str = cs.PRICES["sql_table"]
 DEBUG: bool = False
 EDATETIME: str = "'now'"
+
+# Set the display options for pandas to prevent truncating in journal.
+pd.set_option("display.max_columns", None)
+
+sys_log = "/dev/log"
+if platform.system() == "Darwin":
+    sys_log = "/var/run/syslog"
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.handlers.SysLogHandler(
+            address=sys_log,
+            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+        )
+    ],
+)
+LOGGER: logging.Logger = logging.getLogger(__name__)
 
 # fmt: off
 parser = argparse.ArgumentParser(description="Create a trendgraph")
@@ -145,19 +167,42 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         aggregation (str): pandas resample rule
 
     Returns:
-        dict with dataframe containing the data
+        dict with dataframes containing mains and production data
     """
-    if DEBUG:
-        print(f"\nRequest {hours_to_fetch} hours of pricing data")
-    df_price = fetch_data_prices(hours_to_fetch=hours_to_fetch, aggregation=aggregation)
+    # Use a chuncking logger to avoid sending too much text to syslog
+    chunked_logger = ChunkedLogger(LOGGER)
+    settings = {
+        "debug": OPTION.debug,
+        "edatetime": EDATETIME,
+        "table": "",
+        "database": DATABASE,
+        "hours_to_fetch": hours_to_fetch -2,    # compensate for greedy query
+        "aggregation": aggregation,
+        "parse_dates": ["sample_time"],
+        "index_col": "sample_epoch",
+        "cols2drop": [],
+        "median": False,
+        "minimum": False,
+        # "bar_colors": ["red", "seagreen", "orange"],
+    }
+    LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
+    settings["table"] = TABLE_PRICE
+    settings["cols2drop"] = ["site_id"]
+    df = dbq.post_process_prices(
+        dbq.query_for_data(settings=settings), settings, 1
+    )
+    df = df.sort_index(axis=1)
 
-    df_price = df_price.sort_index(axis=1)
-    if DEBUG:
-        print("\n\n ** PRICING data for plotting  **")
-        print(df_price.to_markdown(floatfmt=".3f"))
+    df = dbq.separate_prices(df, settings)
 
-    data_dict: dict = {}
-    data_dict["prices"] = df_price
+    LOGGER.debug("\n\no  database concatenated data")
+    chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
+    LOGGER.debug("\n======\n\n")
+
+    data_dict = {
+        "prices": df,
+    }
+
     return data_dict
 
 
