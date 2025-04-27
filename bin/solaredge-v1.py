@@ -3,9 +3,9 @@
 # lektrix - solaredge-v1
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
+# SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Daemon to periodically call the SolarEdge API, using the module py-solaredge,
-   to fetch energy production data.
+"""Daemon to periodically call the SolarEdge API, using the module py-solaredge, to fetch energy production data.
 
 Store the data in a SQLite3 database.
 """

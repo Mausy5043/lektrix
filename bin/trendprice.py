@@ -3,10 +3,9 @@
 # lektrix
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
+# SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Create trendbargraphs of the data for various periods.
-Using pricing data
-"""
+"""Create trendbargraphs of the energy price data for various periods."""
 
 import argparse
 import random

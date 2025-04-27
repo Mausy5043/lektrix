@@ -3,8 +3,9 @@
 # lektrix
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
+# SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Common functions for use with the KAMSTRUP electricity meter"""
+"""Common functions for database queries"""
 
 import datetime as dt
 import random

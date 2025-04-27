@@ -3,8 +3,9 @@
 # lektrix - sessy
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
+# SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Daemon to periodically interogate the Home Wizard kWh meters to fetch energy usage data.
+"""Daemon to periodically interogate the Sessy home battery to fetch SoC info.
 
 Store the data in a SQLite3 database.
 """

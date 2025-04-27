@@ -3,6 +3,12 @@
 # lektrix
 # Copyright (C) 2025  Maurice (mausy5043) Hendrix
 # AGPL-3.0-or-later  - see LICENSE
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+"""Fetch daily energy prices from the interweb.
+
+Store the data in a SQLite3 database.
+"""
 
 import argparse
 import configparser
