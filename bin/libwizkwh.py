@@ -37,6 +37,8 @@ class WizkWh:
         self.pv_freq = np.nan
         self.ev_pf = np.nan
         self.pv_pf = np.nan
+        self.home_freq = np.nan
+        self.home_voltage = np.nan
         self.list_data: list = []
 
         # set-up logging
