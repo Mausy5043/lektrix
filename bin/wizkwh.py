@@ -69,6 +69,7 @@ def main() -> None:
     """Execute main loop until killed."""
     LOGGER.info(f"Running on Python {sys.version}")
     set_led("ev", "orange")
+    set_led("p1", "orange")
     set_led("pv", "orange")
     killer = gk.GracefulKiller()
     API_KWH = kwh.WizkWh(debug=DEBUG)
