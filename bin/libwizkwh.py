@@ -73,15 +73,24 @@ class WizkWh:
 
         # NB: mausy5043_common displays device info.
         # connect to the Home Wizard devices
-        self.ev_hwe = hwz.MyHomeWizard(
-            serial=self.ev_serial, token=self.ev_token, debug=self.debug
-        )
-        self.pv_hwe = hwz.MyHomeWizard(
-            serial=self.pv_serial, token=self.pv_token, debug=self.debug
-        )
-        self.p1_hwe = hwz.MyHomeWizard(
-            serial=self.p1_serial, token=self.p1_token, debug=self.debug
-        )
+        try:
+            self.ev_hwe = hwz.MyHomeWizard(
+                serial=self.ev_serial, token=self.ev_token, debug=self.debug
+            )
+        except Exception as err:
+            LOGGER.error(f"Error connecting to EV device: {err}")
+        try:
+            self.pv_hwe = hwz.MyHomeWizard(
+                serial=self.pv_serial, token=self.pv_token, debug=self.debug
+            )
+        except Exception as err:
+            LOGGER.error(f"Error connecting to PV device: {err}")
+        try:
+            self.p1_hwe = hwz.MyHomeWizard(
+                serial=self.p1_serial, token=self.p1_token, debug=self.debug
+            )
+        except Exception as err:
+            LOGGER.error(f"Error connecting to P1 device: {err}")
         self.ev_hwe.connect()
         self.pv_hwe.connect()
         self.p1_hwe.connect()
@@ -92,9 +101,21 @@ class WizkWh:
         Returns:
             Nothing
         """
-        _ev_data = self.ev_hwe.get_measurement()
-        _pv_data = self.pv_hwe.get_measurement()
-        _p1_data = self.p1_hwe.get_measurement()
+        _ev_data = None
+        _pv_data = None
+        _p1_data = None
+        try:
+            _ev_data = self.ev_hwe.get_measurement()
+        except Exception as err:
+            LOGGER.error(f"Error getting data from EV device: {err}")
+        try:
+            _pv_data = self.pv_hwe.get_measurement()
+        except Exception as err:
+            LOGGER.error(f"Error getting data from EV device: {err}")
+        try:
+            _p1_data = self.p1_hwe.get_measurement()
+        except Exception as err:
+            LOGGER.error(f"Error getting data from EV device: {err}")
 
         self.list_data.append(self._translate_telegram([_ev_data, _pv_data, _p1_data]))
         LOGGER.debug(f"\n\n{self.list_data}")
@@ -115,21 +136,24 @@ class WizkWh:
         LOGGER.debug(f"PV:\n{_pv}")
         _p1 = telegram[2]
         LOGGER.debug(f"P1:\n{_p1}")
-        self.ev_elec_in = int(_ev.energy_export_kwh * 1000)  # EV kWH-meter is connected wrong way round
-        self.pv_elec_in = int(_pv.energy_export_kwh * 1000)  # PV kWH-meter is connected wrong way round
-        self.p1_elec_in = int(_p1.energy_import_kwh * 1000)
-        self.ev_elec_out = int(_ev.energy_import_kwh * -1000)  # EV kWH-meter is connected wrong way round
-        self.pv_elec_out = int(_pv.energy_import_kwh * -1000)  # PV kWH-meter is connected wrong way round
-        self.p1_elec_out = int(_p1.energy_export_kwh * -1000)
-        self.ev_voltage = _ev.voltage_v
-        self.pv_voltage = _pv.voltage_v
-        # not available on P1-dongle w/ KAMSTRUP
-        # self.p1_voltage = int(_p1.voltage_v * 10)
+        if _ev:
+            self.ev_elec_in = int(_ev.energy_export_kwh * 1000)  # EV kWH-meter is connected wrong way round
+            self.ev_elec_out = int(_ev.energy_import_kwh * -1000)  # EV kWH-meter is connected wrong way round
+            self.ev_voltage = _ev.voltage_v
+            self.ev_freq = _ev.frequency_hz
+        if _pv:
+            self.pv_elec_in = int(_pv.energy_export_kwh * 1000)  # PV kWH-meter is connected wrong way round
+            self.pv_elec_out = int(_pv.energy_import_kwh * -1000)  # PV kWH-meter is connected wrong way round
+            self.pv_voltage = _pv.voltage_v
+            self.pv_freq = _pv.frequency_hz
+        if _p1:
+            self.p1_elec_in = int(_p1.energy_import_kwh * 1000)
+            self.p1_elec_out = int(_p1.energy_export_kwh * -1000)
+            # not available on P1-dongle w/ KAMSTRUP
+            # self.p1_voltage = int(_p1.voltage_v * 10)
+            # not available on P1-dongle w/ KAMSTRUP
+            # self.p1_freq = int(_p1.active_frequency_hz * 10)
         self.home_voltage = int(np.nanmean([self.ev_voltage, self.pv_voltage]) * 10)
-        self.ev_freq = _ev.frequency_hz
-        self.pv_freq = _pv.frequency_hz
-        # not available on P1-dongle w/ KAMSTRUP
-        # self.p1_freq = int(_p1.active_frequency_hz * 10)
         self.home_freq = int(np.nanmean([self.ev_freq, self.pv_freq]) * 10)
 
         idx_dt: dt.datetime = dt.datetime.now()
