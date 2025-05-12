@@ -115,7 +115,7 @@ WIZ_KWH: dict = {
                    "?, ?, ?, ?, ?, ?, ?, ?,"
                    "?, ?, ?"
                    ")",
-    "report_interval": 900,
+    "report_interval": 300,
     "samplespercycle": 10,
     "delay": 0,
     "template": {
