@@ -61,18 +61,18 @@ def unpeel(
     _key: str,
 ) -> list:
     """Unpeel the data from the given key."""
-    _ldata: dict = _data["data"]
-    _lviewer: dict = _ldata["viewer"]
-    _lhomes: list = _lviewer["homes"]
-    _lhome: dict = _lhomes[0]
-    _lcurSub: dict = _lhome["currentSubscription"]
-    _lpriceInfo: dict = _lcurSub["priceInfo"]
-    _lkey: list = _lpriceInfo[_key]
+    _lkey: list = []
+    try:
+        _ldata: dict = _data["data"]
+        _lviewer: dict = _ldata["viewer"]
+        _lhomes: list = _lviewer["homes"]
+        _lhome: dict = _lhomes[0]
+        _lcurSub: dict = _lhome["currentSubscription"]
+        _lpriceInfo: dict = _lcurSub["priceInfo"]
+        _lkey = _lpriceInfo[_key]
+    except KeyError:
+        pass
 
-    #
-    # _l1: list = _data["data"]["viewer"]["homes"]
-    # _l2: list = _l1[0]["currentSubscription"]["priceInfo"][_key]
-    # print(_lkey, _l2, _lpriceInfo)
     return _lkey
 
 
@@ -98,24 +98,35 @@ except configparser.Error as her:
     print(f"Error processing config file: {her}")
     sys.exit(1)
 
-# Get the today's data from the API
 headers_post: dict = {"Content-Type": "application/json", "Authorization": f"Bearer {api_key}"}
+
+# Get the today's data from the API
+now_data: dict = {}
 payload: dict = {"query": qry_now}
-now_data: dict = req_post(
-    api_url,
-    headers_post,
-    payload,
-)
+try:
+    now_data = req_post(
+        api_url,
+        headers_post,
+        payload,
+    )
+except Exception as her:
+    print(f"Error fetching today's data: {her}")
+    pass
 if OPTION.debug:
     print(json.dumps(now_data, indent=1))
 
 # Get the tomorrow's data from the API
+nxt_data: dict = {}
 payload = {"query": qry_nxt}
-nxt_data: dict = req_post(
-    api_url,
-    headers_post,
-    payload,
-)
+try:
+    nxt_data = req_post(
+        api_url,
+        headers_post,
+        payload,
+    )
+except KeyError as her:
+    print(f"Error fetching tomorrow's data: {her}")
+    pass
 if OPTION.debug:
     print(json.dumps(nxt_data, indent=1))
 
