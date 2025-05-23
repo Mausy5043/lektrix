@@ -218,7 +218,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df = df.sort_index(axis=1)
 
     LOGGER.debug("\n\no  database concatenated data")
-    chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
+    chunked_logger.log_df(df.head(16), floatfmt=".3f", level=logging.DEBUG)
     LOGGER.debug("\n======\n\n")
 
     # rename rows and perform calculations
@@ -277,7 +277,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # soc_balance = df[["soc"]].copy()
 
     LOGGER.debug("\n\n ** ALL data  **")
-    chunked_logger.log_df(df, floatfmt=".3f", level=logging.DEBUG)
+    chunked_logger.log_df(df.head(16), floatfmt=".3f", level=logging.DEBUG)
 
     # convert kWh to euros saved
     df_euro = df[["saved_exp", "saved_own", "price"]].copy()

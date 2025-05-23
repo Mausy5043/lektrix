@@ -293,8 +293,8 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     parse_dates = settings["parse_dates"]
     index_col = settings["index_col"]
 
-    # we use a greedy query. Requesting for two hours in the future (for improved
-    # grouping) and two hours in the past to get all data (two hours for UTC vs CEST)
+    # We use a greedy query: Requesting for two hours in the future (for improved
+    # grouping) and two hours in the past to get all data regardless of UTC, CET or CEST.
     where_condition = (
         f" ( sample_time >= datetime({edatetime}, '-{hours_to_fetch + 2} hours')"
         f" AND sample_time <= datetime({edatetime}, '+2 hours') )"
@@ -342,9 +342,9 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     # sample_epoch becomes the index visualized as datetime
     df.index = pd.to_datetime(df.index, unit="s")
-    # if debug:
-    #     print("o  PRE-processed data")
-    #     print(df.to_markdown(floatfmt=".3f"))
+    if debug:
+        print("o  PRE-processed data")
+        print(df.head(16).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -370,7 +370,7 @@ def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) ->
 
     if debug:
         print("o  POST-processed PRODUCTION data")
-        print(df.to_markdown(floatfmt=".3f"))
+        print(df.head(16).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -397,7 +397,7 @@ def post_process_battery(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd
 
     if debug:
         print("o  POST-processed BATTERY data")
-        print(df.to_markdown(floatfmt=".3f"))
+        print(df.head(16).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -425,7 +425,7 @@ def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
 
     if debug:
         print("o  POST-processed MAINS data")
-        print(df.to_markdown(floatfmt=".3f"))
+        print(df.head(16).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -450,7 +450,7 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
 
     if debug:
         print("o  POST-processed PRICE data")
-        print(df.to_markdown(floatfmt=".5f"))
+        print(df.head(16).to_markdown(floatfmt=".5f"))
     return df
 
 
