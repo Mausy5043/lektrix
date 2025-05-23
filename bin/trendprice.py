@@ -183,7 +183,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df = dbq.post_process_prices(dbq.query_for_data(settings=settings), settings, 1)
+    df = dbq.pass1_process_prices(dbq.query_for_data(settings=settings), settings, 1)
     df = df.sort_index(axis=1)
 
     df = dbq.separate_prices(df, settings)
