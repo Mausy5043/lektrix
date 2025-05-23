@@ -239,7 +239,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     df["own"] = df["exp"] + df["gep"] + df["evp"]
     # any negative 'own' is set to zero, because there are no other generators in the home.
     # print rows where 'own' is less than 0 to the log
-    if df.loc[df["own"] < 0].shape[0] > 0:
+    if DEBUG and df.loc[df["own"] < 0].shape[0] > 0:
         LOGGER.warning("Negative 'own' values found:")
         chunked_logger.log_df(df.loc[df["own"] < 0], floatfmt=".3f", level=logging.WARNING)
     # set 'own' values less than 0 to 0
