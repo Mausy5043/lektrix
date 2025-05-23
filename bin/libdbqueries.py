@@ -276,7 +276,9 @@ def build_arrays44(lbls, use_data, expo_data) -> tuple:
 
 
 def query_for_data(settings: dict) -> pd.DataFrame:
-    """Query the database to fetch the requested data
+    """Query the database to fetch the requested data.
+    As of Jun 2025 Tibber price data has a resolution of 15 minutes so we must fetch the data with the same resolution.
+    If data does not have the required resolution we will resample it to the requested resolution.
 
     Args
         settings (dict):           settings to be used
@@ -299,8 +301,9 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         f" ( sample_time >= datetime({edatetime}, '-{hours_to_fetch + 2} hours')"
         f" AND sample_time <= datetime({edatetime}, '+2 hours') )"
     )
-    # we don't use grouping here, as we want to get all data and we'll group
-    # it later during post-processing
+    # We don't use grouping here, as we want to get all data.
+    # During pre-processing we'll resample (if neccessary) to 15 minute samples and during
+    # post-processing we'll resample to the desired aggregation interval.
     group_condition = ""
     # make sure the data is sorted by sample_time
     sort_condition = "ORDER BY sample_time ASC"
@@ -348,7 +351,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     return df
 
 
-def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
+def pass1_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
     """Post process the production data.
 
     Args:
@@ -374,7 +377,7 @@ def post_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) ->
     return df
 
 
-def post_process_battery(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
+def pass1_process_battery(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
     """Post process the production data.
 
     Args:
@@ -401,7 +404,7 @@ def post_process_battery(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd
     return df
 
 
-def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
+def pass1_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     """Post process the mains data.
 
     Args:
@@ -429,7 +432,7 @@ def post_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     return df
 
 
-def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
+def pass1_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.DataFrame:
     """Post process the price data.
 
     Args:
@@ -440,13 +443,9 @@ def post_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd.
         pandas.DataFrame() with data
     """
     debug = settings["debug"]
-    # price data already comes in euro/kWh in hourly periods.
-    if settings["aggregation"] != "H":
-        # we average the price for all other aggregation periods
-        df = df.resample(f"{settings["aggregation"]}").mean()
-    # drop first row (1st hour) as it will usually not contain complete data...
-    # ...and drop the last rows to match the size of the mains data
-    # df = df.iloc[:trim_rows, :]
+    df = df.resample(f"{settings["aggregation"]}").mean()
+    # fill non-existing data with the last known value
+    df.fillna(method='ffill', inplace=True)
 
     if debug:
         print("o  POST-processed PRICE data")

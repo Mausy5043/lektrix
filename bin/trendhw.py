@@ -176,7 +176,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         "table": "",
         "database": DATABASE,
         "hours_to_fetch": hours_to_fetch,
-        "aggregation": aggregation,
+        "aggregation": "15min",
         "parse_dates": ["sample_time"],
         "index_col": "sample_epoch",
         "cols2drop": [],
@@ -184,27 +184,27 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of MAINS data")
     settings["table"] = TABLE_MAINS
     settings["cols2drop"] = ["site_id", "v1", "frq"]
-    df_mains = dbq.post_process_mains(dbq.query_for_data(settings=settings), settings)
+    df_mains = dbq.pass1_process_mains(dbq.query_for_data(settings=settings), settings)
     df_mains_len = df_mains.shape[0]
 
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of PRODUCTION data")
     settings["table"] = TABLE_PRDCT
     settings["cols2drop"] = ["site_id"]
-    df_prod = dbq.post_process_production(
+    df_prod = dbq.pass1_process_production(
         dbq.query_for_data(settings=settings), settings, df_mains_len
     )
 
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df_pris = dbq.post_process_prices(
+    df_pris = dbq.pass1_process_prices(
         dbq.query_for_data(settings=settings), settings, df_mains_len
     )
 
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of battery SoC data")
     settings["table"] = TABLE_BATTERY
     settings["cols2drop"] = ["site_id", "soh"]
-    df_soc = dbq.post_process_battery(
+    df_soc = dbq.pass1_process_battery(
         dbq.query_for_data(settings=settings), settings, df_mains_len
     )
     # merge the dataframes
