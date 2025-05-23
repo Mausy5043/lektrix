@@ -444,7 +444,7 @@ def pass1_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd
     debug = settings["debug"]
     df = df.resample(f"{settings["aggregation"]}").mean()
     # fill non-existing data with the last known value
-    df.fillna(method='ffill', inplace=True)
+    df.fillna(method="ffill", inplace=True)
 
     if debug:
         print("o  POST-processed PRICE data")
