@@ -305,7 +305,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     # During pre-processing we'll resample (if neccessary) to 15 minute samples and during
     # post-processing we'll resample to the desired aggregation interval.
     group_condition = ""
-    # make sure the data is sorted by sample_time
+    # make sure the data is sorted by sample_time so we don't have to worry about that.
     sort_condition = "ORDER BY sample_time ASC"
     # construct the query
     s3_qry: str = (
@@ -316,7 +316,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     )
     if debug:
         print(f"  Query > {s3_qry}")
-    # get the data
+    # get the data retry if the database appears to be locked
     success = False
     retries = 5
     while not success and retries > 0:
@@ -334,8 +334,7 @@ def query_for_data(settings: dict) -> pd.DataFrame:
     # show the fetched data when debugging
     # if debug:
     #     print("o  RAW data")
-    #     print(df.to_markdown(floatfmt=".3f"))
-    #     print("\n*** preprocessing data ***")
+    #     print(df.head(16).to_markdown(floatfmt=".3f"))
     # finally, drop the column sample_time
     df.drop(labels=["sample_time"], axis=1, inplace=True, errors="ignore")
     # drop columns we don't need
