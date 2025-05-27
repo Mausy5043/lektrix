@@ -301,10 +301,10 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     _own = df_euro["zelf gebruiken"].sum()
     _exp = df_euro["verkopen"].sum()
     _ink = df_euro["dyn.inkopen"].sum()
-    LOGGER.info(f"Avoided costs    : {_own:+.5f} euro")
-    LOGGER.info(f"Exported earnings: {_exp:+.5f} euro")
-    LOGGER.info(f"Buy unbalance    : {_ink:+.5f} euro")
-    LOGGER.info(f"Total            : {_own + _exp + _ink:+.5f} euro")
+    LOGGER.debug(f"Avoided costs    : {_own:+.5f} euro")
+    LOGGER.debug(f"Exported earnings: {_exp:+.5f} euro")
+    LOGGER.debug(f"Buy unbalance    : {_ink:+.5f} euro")
+    LOGGER.debug(f"Total            : {_own + _exp + _ink:+.5f} euro")
 
     return data_dict
 
