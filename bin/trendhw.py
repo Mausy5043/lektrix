@@ -426,11 +426,11 @@ def main(opt) -> None:
 if __name__ == "__main__":
     print(f"Trending (me) with Python {sys.version}")
     if OPTION.hours == 0:
-        OPTION.hours = 80
+        OPTION.hours = 180
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
-        OPTION.months = 2  # 6 * 12 + dt.now().month
+        OPTION.months = dt.now().month - 3 # + 6 * 12
     if OPTION.years == 0:
         OPTION.years = 1  # 10
     if OPTION.edate:
