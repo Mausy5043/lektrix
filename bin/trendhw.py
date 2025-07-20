@@ -430,7 +430,7 @@ if __name__ == "__main__":
     if OPTION.days == 0:
         OPTION.days = 80
     if OPTION.months == 0:
-        OPTION.months = dt.now().month - 3 # + 6 * 12
+        OPTION.months = dt.now().month - 3  # + 6 * 12
     if OPTION.years == 0:
         OPTION.years = 1  # 10
     if OPTION.edate:
