@@ -238,7 +238,7 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
         if DEBUG:
             for item in data_list:
                 LOGGER.debug(f"    : {item}")
-    except json.decoder.JSONDecodeError:
+    except (json.decoder.JSONDecodeError, KeyError):
         LOGGER.warning("Request returned no usable data.")
         LOGGER.warning("Maybe next time...")
     except Exception:  # noqa  # pylint: disable=W0718
