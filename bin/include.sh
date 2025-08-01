@@ -112,6 +112,15 @@ graph_lektrix() {
     . "${ROOT_DIR}/bin/pastyear.sh"
 }
 
+# create monthly report
+report_lektrix() {
+    echo "*** $app_name running on $host_name >>>>>>: report $1"
+    ROOT_DIR=$1
+
+    echo "Creating monthly report"
+    . "${ROOT_DIR}/bin/monthly.sh"
+}
+
 # stop, update the repo and start the application
 # do some additional stuff when called by systemd
 restart_lektrix() {

@@ -40,6 +40,9 @@ for i in "$@"; do
     --graph)
         graph_lektrix "${HERE}"
         ;;
+    -p | --report)
+        report_lektrix "${HERE}"
+        ;;
     --update)
         update_lektrix
         ;;
