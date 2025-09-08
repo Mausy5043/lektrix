@@ -15,4 +15,4 @@ pytz~=2025.2
 requests~=2.32
 sh~=2.2
 tabulate~=0.9
-zeroconf==0.147.0
+zeroconf==0.147.2
