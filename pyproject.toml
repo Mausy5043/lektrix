@@ -19,7 +19,7 @@ dependencies = [
     "requests~=2.32",
     "sh~=2.2",
     "tabulate~=0.9",
-    "zeroconf~=0.147"
+    "zeroconf~=0.147.2"
     ]
 license = {file = "LICENSE"}
 authors = [
