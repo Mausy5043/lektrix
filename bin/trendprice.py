@@ -154,7 +154,7 @@ class ChunkedLogger:
             self.log(level, md)
 
 
-def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -283,7 +283,7 @@ def main(opt) -> None:
     if opt.hours:
         plot_graph(
             output_file=cs.PRICES["hour_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation="15min"),
+            data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation="h"),
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["hour", "%Hh"],
         )
