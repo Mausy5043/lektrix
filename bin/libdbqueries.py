@@ -484,9 +484,10 @@ def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
             davg_df["price"] < dmdn_df["price"], davg_df["price"], dmdn_df["price"]
         )
     _l: list = []
+    _ln: int = 24
     for row in range(len(dflt)):
         day_limit = dflt.iloc[row]["price"]
-        _l += [day_limit] * 24
+        _l += [day_limit] * _ln
     df["avg_price"] = _l
     # separate the past, high and low periods
     df["past"] = np.where(df.index < dtdt.now(), df["price"], np.nan)
