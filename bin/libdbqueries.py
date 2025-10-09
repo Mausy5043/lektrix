@@ -485,7 +485,7 @@ def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
             davg_df["price"] < dmdn_df["price"], davg_df["price"], dmdn_df["price"]
         )
     _l: list = []
-    _ln: int = 24
+    _ln: int = len(df)
     for row in range(len(dflt)):
         day_limit = dflt.iloc[row]["price"]
         _l += [day_limit] * _ln
