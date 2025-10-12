@@ -496,6 +496,18 @@ def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     df["low"] = np.where(df["past"].notna(), np.nan, df["low"])
     df["high"] = np.where(df["price"] > df["avg_price"], df["price"], np.nan)
     df["high"] = np.where(df["past"].notna(), np.nan, df["high"])
+    # Group by day and get indices of 16 lowest prices for each day
+    lowest_indices = (
+        df.groupby(pd.Grouper(freq="D"))["price"].apply(lambda x: x.nsmallest(16).index).explode()
+    )
+    # Create the lowest column with NaN values
+    df["lowest"] = np.nan
+    # Fill in the lowest prices at the identified indices
+    df.loc[lowest_indices, "lowest"] = df.loc[lowest_indices, "price"]
+    # Ensure future values are NaN
+    df["low"] = np.where(df["lowest"].notna(), np.nan, df["low"])
+    df["high"] = np.where(df["lowest"].notna(), np.nan, df["high"])
+    df["lowest"] = np.where(df["past"].notna(), np.nan, df["lowest"])
 
     # drop the columns we don't need
     df.drop(labels=["avg_price", "price"], axis=1, inplace=True, errors="ignore")

@@ -248,7 +248,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 stacked=True,
                 width=0.9,
                 figsize=(fig_x, fig_y),
-                color=["red", "seagreen", "orange"],
+                color=["red", "seagreen", "orange", "lightgreen"],
             )
             # linewidth and alpha need to be set separately
             for _, a in enumerate(ax1.lines):
