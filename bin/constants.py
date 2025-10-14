@@ -15,29 +15,24 @@ from sh import CommandNotFound, git  # type: ignore[import-untyped]
 
 _MYHOME: str = os.environ["HOME"]
 _DATABASE_FILENAME: str = "lektrix.v2.sqlite3"
-_DATABASE: str = f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}"
+# Define possible database locations in order of preference
+DATABASE_PATHS = [
+    f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}",
+    f"/srv/databases/{_DATABASE_FILENAME}",
+    f"/srv/data/{_DATABASE_FILENAME}",
+    f"/mnt/data/{_DATABASE_FILENAME}",
+    f".local/{_DATABASE_FILENAME}",
+    f"{_MYHOME}/.sqlite3/lektrix/{_DATABASE_FILENAME}",  # symlink from Dropbox
+    _DATABASE_FILENAME,
+]
 _HERE_list: list[str] = os.path.realpath(__file__).split("/")
 # ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
 _HERE: str = "/".join(_HERE_list[0:-2])
 _WEBSITE: str = "/run/lektrix/site/img"
 
-if not os.path.isfile(_DATABASE):
-    _DATABASE = f"/srv/databases/{_DATABASE_FILENAME}"
-if not os.path.isfile(_DATABASE):
-    _DATABASE = f"/srv/data/{_DATABASE_FILENAME}"
-if not os.path.isfile(_DATABASE):
-    _DATABASE = f"/mnt/data/{_DATABASE_FILENAME}"
-if not os.path.isfile(_DATABASE):
-    _DATABASE = f".local/{_DATABASE_FILENAME}"
-    print(f"Searching for {_DATABASE}")
-if not os.path.isfile(_DATABASE):
-    # ln -s ~/Dropbox/raspi/_databases/lektrix/ ~/.sqlite/lektrix
-    _DATABASE = f"{_MYHOME}/.sqlite3/lektrix/{_DATABASE_FILENAME}"
-    print(f"Searching for {_DATABASE}")
-if not os.path.isfile(_DATABASE):
-    _DATABASE = f"{_DATABASE_FILENAME}"
-    print(f"Searching for {_DATABASE}")
-if not os.path.isfile(_DATABASE):
+# Find the first existing database file
+_DATABASE = next((path for path in DATABASE_PATHS if os.path.isfile(path)), None)
+if _DATABASE is None:
     print("Database is missing.")
     sys.exit(1)
 
