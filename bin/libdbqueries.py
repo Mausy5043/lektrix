@@ -497,8 +497,9 @@ def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     df["high"] = np.where(df["price"] > df["avg_price"], df["price"], np.nan)
     df["high"] = np.where(df["past"].notna(), np.nan, df["high"])
     # Group by day and get indices of 16 lowest prices for each day
+    _ns = int(settings["lowq"])
     lowest_indices = (
-        df.groupby(pd.Grouper(freq="D"))["price"].apply(lambda x: x.nsmallest(16).index).explode()
+        df.groupby(pd.Grouper(freq="D"))["price"].apply(lambda x: x.nsmallest(_ns).index).explode()
     )
     # Create the lowest column with NaN values
     df["lowest"] = np.nan
