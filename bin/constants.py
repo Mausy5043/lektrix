@@ -16,7 +16,7 @@ from sh import CommandNotFound, git  # type: ignore[import-untyped]
 _MYHOME: str = os.environ["HOME"]
 _DATABASE_FILENAME: str = "lektrix.v2.sqlite3"
 # Define possible database locations in order of preference
-DATABASE_PATHS = [
+DATABASE_PATHS: list[str] = [
     f"/srv/rmt/_databases/lektrix/{_DATABASE_FILENAME}",
     f"/srv/databases/{_DATABASE_FILENAME}",
     f"/srv/data/{_DATABASE_FILENAME}",
@@ -31,8 +31,8 @@ _HERE: str = "/".join(_HERE_list[0:-2])
 _WEBSITE: str = "/run/lektrix/site/img"
 
 # Find the first existing database file
-_DATABASE = next((path for path in DATABASE_PATHS if os.path.isfile(path)), None)
-if _DATABASE is None:
+_DATABASE: str = next((path for path in DATABASE_PATHS if os.path.isfile(path)), "")
+if not _DATABASE:
     print("Database is missing.")
     sys.exit(1)
 
