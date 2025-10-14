@@ -178,7 +178,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
         "cols2drop": [],
         "median": False,
         "minimum": False,
-        "lowq": 12
+        "lowq": 12,
         # "bar_colors": ["red", "seagreen", "orange"],
     }
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
