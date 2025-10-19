@@ -23,6 +23,7 @@ dependencies:
       - gracefulkiller~=0.4
       - mausy5043-common>=2.4
       - py-solaredge==0.0.4.9
+  - pyarrow<=20.0.0
   - python-dateutil=2.9
   - pytz=2025.2
   - requests=2.32
