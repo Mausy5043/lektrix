@@ -23,13 +23,13 @@ dependencies:
       - gracefulkiller~=0.4
       - mausy5043-common>=2.4
       - py-solaredge==0.0.4.9
+      - zeroconf==0.148.0
   - pyarrow<=20.0.0
   - python-dateutil=2.9
   - pytz=2025.2
   - requests=2.32
   - sh=2.2
   - tabulate=0.9
-  - zeroconf=0.148.0
 
   # dev deps
   - jupyterlab
