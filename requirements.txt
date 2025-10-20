@@ -9,9 +9,9 @@ mausy5043-common>=2.4
 # already delivered by mausy5043-common, so no need to specify version here:
 numpy
 pandas
+py-solaredge==0.0.4.9
 # py-arrow v21.0.0 crashes with "Illegal Instruction"
 pyarrow<=21.0.0
-py-solaredge==0.0.4.9
 python-dateutil~=2.9
 pytz~=2025.2
 requests~=2.32
