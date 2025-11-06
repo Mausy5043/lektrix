@@ -344,9 +344,9 @@ def query_for_data(settings: dict) -> pd.DataFrame:
         df[c] = pd.to_numeric(df[c], errors="coerce")
     # sample_epoch becomes the index visualized as datetime
     df.index = pd.to_datetime(df.index, unit="s")
-    if debug:
-        print("o  PRE-processed data")
-        print(df.head(16).to_markdown(floatfmt=".3f"))
+    # if debug:
+    #     print("o  PRE-processed data")
+    #     print(df.head(16).to_markdown(floatfmt=".3f"))
     return df
 
 
