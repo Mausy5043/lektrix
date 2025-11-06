@@ -250,6 +250,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # the 'exp'orted energy is the energy that is not used by the home but sold to the grid.
     # 2025: for now we assume selling at the hourly price.
     df["saved_exp"] = df["exp"] * df["price"]
+    # We want to know the total energy cost for the EV, so we can compare this with the 'Grid Rewards'
+    df["ev_cost"] = df["evn"] * df["price"]
     #
     # PV data for plotting
     #
@@ -271,6 +273,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     #
     ev_balance = df[["evn", "evp"]].copy()
     ev_balance.rename(columns={"evn": "laden", "evp": "leveren"}, inplace=True)
+    ev_cost = df[["ev_cost"]].copy()
     #
     # Battery SoC data for plotting
     #
@@ -295,6 +298,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
         "EV": ev_balance.resample(rule=f"{aggregation}").sum(),
         "EURO": df_euro.resample(rule=f"{aggregation}").sum(),
         "SOC": df_soc.resample(rule=f"{aggregation}").mean(),
+        "EVcost": ev_cost.resample(rule=f"{aggregation}").sum(),
     }
 
     # log financial balance
