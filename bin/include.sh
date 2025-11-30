@@ -1,5 +1,32 @@
 #!/usr/bin/env bash
 
+# Prerequisites:
+#  git
+#  pyenv
+#  nginx
+
+APPos=""
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    case "$ID" in
+        debian|ubuntu)
+            echo "Running on Debian"
+            APPos="debian"
+            ;;
+        arch)
+            echo "Running on Arch Linux"
+            APPos="arch"
+            ;;
+        *)
+            echo "Running on $ID (not supported)"
+            exit 2
+            ;;
+    esac
+else
+    echo "Cannot detect OS: /etc/os-release not found"
+    exit 3
+fi
+
 HEREcon=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
 APPDIR="${HEREcon}/.."
 APPROOT="${APPDIR}/.."
@@ -42,7 +69,13 @@ declare -a lektrix_services=("lektrix.wizkwh.service"
 # SQLite3 support (incl python3)
 declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "python3-pip"
     "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
-    "sqlite3")
+    "sqlite3" "rclone")
+declare -a lektrix_pacman_packages=("base-devel" "python" "python-pip"
+    "python-atlas" "libxcb" "openjpeg2" "libtiff"
+    "sqlite" "rclone" "curl"
+    # the following must be installed before attempting to install the app.
+    "pyenv" "zlib" "bzip2" "libffi" "gdbm" "ncurses" "readline" "openssl" "xz" "tk" "libxml2" "xmlsec" "pkgconf"
+    "util-linux" "gdb" "lcov")
 # placeholders for trendgraphs to make website work regardless of the state of the graphs.
 declare -a lektrix_graphs=('lex_pasthours_mains.png'
     'lex_pasthours_production.png'
@@ -179,10 +212,15 @@ install_lektrix() {
     fi
 
     echo "Installing ${app_name} on $(date)"
-    # install APT packages
-    for PKG in "${lektrix_apt_packages[@]}"; do
-        action_apt_install "${PKG}"
-    done
+    if [ "$APPos" = "debian" ]; then    # install APT packages
+        for PKG in "${lektrix_apt_packages[@]}"; do
+            action_apt_install "${PKG}"
+        done
+    elif [ "$APPos" = "arch" ]; then    # install PACMAN packages
+        for PKG in "${lektrix_pacman_packages[@]}"; do
+            action_pacman_install "${PKG}"
+        done
+    fi
     # install Python3 stuff
     pyenv virtualenv 3.13 "${app_name}"  # create a virtual environment
     pyenv local "${app_name}"     # set the virtual environment for the project
@@ -279,6 +317,21 @@ action_apt_install() {
     else
         echo "* Already installed !!!"
         echo "***************************************************(APT)*"
+    fi
+    echo
+}
+# See if packages are installed and install them using pacman
+action_pacman_install() {
+    PKG=$1
+    echo "***************************************************(PACMAN)*"
+    echo "* $app_name running on $host_name requesting ${PKG}"
+    if ! pacman -Q "${PKG}" &>/dev/null; then
+        echo -n "* Installing ${PKG} "
+        sudo pacman -S --noconfirm --needed "${PKG}" && echo " ... [OK]"
+        echo "***************************************************(PACMAN)*"
+    else
+        echo "* Already installed !!!"
+        echo "***************************************************(PACMAN)*"
     fi
     echo
 }
