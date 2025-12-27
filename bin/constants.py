@@ -22,6 +22,7 @@ DATABASE_PATHS: list[str] = [
     f"/srv/data/{_DATABASE_FILENAME}",
     f"/mnt/data/{_DATABASE_FILENAME}",
     f".local/{_DATABASE_FILENAME}",
+    f"{_MYHOME}/../data/{_DATABASE_FILENAME}",
     f"{_MYHOME}/.sqlite3/lektrix/{_DATABASE_FILENAME}",  # symlink from Dropbox
     _DATABASE_FILENAME,
 ]

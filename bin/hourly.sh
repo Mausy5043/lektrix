@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 MAINTENANCE=${1}
-HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)  # /app/scripts
 max_retries=5
 retry_delay=32
 flag_sql_succes=1
+db_full_path="${HERE}/../data/lektrix.v2.sqlite3"
 
 execute_sql() {
     local sql=$2
@@ -26,7 +27,7 @@ execute_sql() {
 
 pushd "${HERE}" >/dev/null || exit 1
     # shellcheck disable=SC1091
-    source ./include.sh
+    # source ./include.sh
 
     if [ "${MAINTENANCE}" == "-" ]; then
         # do some maintenance

@@ -13,11 +13,11 @@ else
 fi
 
 # determine machine identity
-host_name=$(hostname)
+host_name=$(< /etc/hostname)
 
 # construct database paths
-database_local_root="/srv/rmt/_databases"
-database_remote_root="remote:raspi/_databases"
+database_local_root="/srv/containers/lektrix/data"
+database_container_root="data"
 database_filename="lektrix.v2.sqlite3"
 db_full_path="${database_local_root}/${app_name}/${database_filename}"
 # website_dir="/tmp/${app_name}/site"
@@ -176,7 +176,7 @@ install_lektrix() {
     fi
 
     echo "Installing ${app_name} on $(date)"
-    
+
 
     echo "Fetching existing database from cloud."
     # sync the database from the cloud
