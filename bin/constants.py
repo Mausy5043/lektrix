@@ -13,7 +13,7 @@ import sys
 import pytz
 from sh import CommandNotFound, git  # type: ignore[import-untyped]
 
-_MYHOME: str = os.environ["HOME"]
+_MYHOME: str = os.environ["PWD"]
 _DATABASE_FILENAME: str = "lektrix.v2.sqlite3"
 # Define possible database locations in order of preference
 DATABASE_PATHS: list[str] = [
@@ -27,9 +27,13 @@ DATABASE_PATHS: list[str] = [
     _DATABASE_FILENAME,
 ]
 _HERE_list: list[str] = os.path.realpath(__file__).split("/")
-# ['', 'home', 'pi', 'kimnaty', 'bin', 'constants.py']
+print(_HERE_list)
+# ['', 'usr', 'local', 'lib', 'python3.13', '_pyrepl', '__main__.py']
+#_HERE_list: list[str] = _MYHOME.split("/")
+# ['', 'app', 'scripts']
 _HERE: str = "/".join(_HERE_list[0:-2])
-_WEBSITE: str = "/run/lektrix/site/img"
+print(f"_HERE: {_HERE}")
+_WEBSITE: str = "/app/www"
 
 # Find the first existing database file
 _DATABASE: str = next((path for path in DATABASE_PATHS if os.path.isfile(path)), "")
