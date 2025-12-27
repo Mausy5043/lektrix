@@ -94,9 +94,6 @@ update_lektrix() {
     git fetch origin
     git checkout "${branch_name}"
     git reset --hard "origin/${branch_name}" && git clean -f -d
-    echo "pip update..."
-    python -m pip install --upgrade pip -r "${APPDIR}/requirements.txt" \
-        | grep -v "Requirement already satisfied"
 }
 
 # create graphs
@@ -179,20 +176,7 @@ install_lektrix() {
     fi
 
     echo "Installing ${app_name} on $(date)"
-    # install APT packages
-    for PKG in "${lektrix_apt_packages[@]}"; do
-        action_apt_install "${PKG}"
-    done
-    # install Python3 stuff
-    pyenv virtualenv 3.13 "${app_name}"  # create a virtual environment
-    pyenv local "${app_name}"     # set the virtual environment for the project
-    python3 -m pip install --upgrade pip setuptools wheel
-    python3 -m pip install --upgrade -r requirements.txt
-    echo
-
-    # install account keys from local fileserver
-    # getfilefromserver "solaredge" "0740"
-    # getfilefromserver "zappi" "0740"
+    
 
     echo "Fetching existing database from cloud."
     # sync the database from the cloud
