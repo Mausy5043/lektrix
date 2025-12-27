@@ -28,11 +28,8 @@ DATABASE_PATHS: list[str] = [
 ]
 _HERE_list: list[str] = os.path.realpath(__file__).split("/")
 print(_HERE_list)
-# ['', 'usr', 'local', 'lib', 'python3.13', '_pyrepl', '__main__.py']
-#_HERE_list: list[str] = _MYHOME.split("/")
-# ['', 'app', 'scripts']
+# ['', 'app', 'scripts', 'constants.py']
 _HERE: str = "/".join(_HERE_list[0:-2])
-print(f"_HERE: {_HERE}")
 _WEBSITE: str = "/app/www"
 
 # Find the first existing database file
