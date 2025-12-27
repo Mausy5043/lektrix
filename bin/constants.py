@@ -27,7 +27,6 @@ DATABASE_PATHS: list[str] = [
     _DATABASE_FILENAME,
 ]
 _HERE_list: list[str] = os.path.realpath(__file__).split("/")
-print(_HERE_list)
 # ['', 'app', 'scripts', 'constants.py']
 _HERE: str = "/".join(_HERE_list[0:-2])
 _WEBSITE: str = "/app/www"
