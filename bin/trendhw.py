@@ -10,6 +10,7 @@
 # pylint: disable=C0413
 import argparse
 import logging.handlers
+import os
 import platform
 import sys
 import warnings
@@ -38,19 +39,26 @@ EDATETIME: str = "'now'"
 # Set the display options for pandas to prevent truncating in journal.
 pd.set_option("display.max_columns", None)
 
-sys_log = "/dev/log"
+# Declare the handler type for mypy
+handler: logging.Handler
+sys_log = "/dev/log"  # default for Linux / Debian
 if platform.system() == "Darwin":
-    sys_log = "/var/run/syslog"
+    sys_log = "/var/run/syslog"  # default for macOS
+# configure the handler
+if os.path.exists(sys_log):
+    handler = logging.handlers.SysLogHandler(
+        address=sys_log,
+        facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+    )
+else:
+    # fallback to stdout for podman/docker or if syslog is not available
+    handler = logging.StreamHandler(sys.stdout)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.handlers.SysLogHandler(
-            address=sys_log,
-            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
-        )
-    ],
+    handlers=[handler],
 )
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
@@ -250,7 +258,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
     # the 'exp'orted energy is the energy that is not used by the home but sold to the grid.
     # 2025: for now we assume selling at the hourly price.
     df["saved_exp"] = df["exp"] * df["price"]
-    # We want to know the total energy cost for the EV, so we can compare this with the 'Grid Rewards'
+    # We want to know the total energy cost for the EV, so we can compare this
+    # with the 'Grid Rewards'
     df["ev_cost"] = df["evn"] * df["price"]
     #
     # PV data for plotting

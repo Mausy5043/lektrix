@@ -9,6 +9,7 @@
 
 import argparse
 import logging.handlers
+import os
 import platform
 import sys
 from datetime import datetime as dt
@@ -28,19 +29,26 @@ EDATETIME: str = "'now'"
 # Set the display options for pandas to prevent truncating in journal.
 pd.set_option("display.max_columns", None)
 
-sys_log = "/dev/log"
+# Declare the handler type for mypy
+handler: logging.Handler
+sys_log = "/dev/log"  # default for Linux / Debian
 if platform.system() == "Darwin":
-    sys_log = "/var/run/syslog"
+    sys_log = "/var/run/syslog"  # default for macOS
+# configure the handler
+if os.path.exists(sys_log):
+    handler = logging.handlers.SysLogHandler(
+        address=sys_log,
+        facility=logging.handlers.SysLogHandler.LOG_DAEMON,
+    )
+else:
+    # fallback to stdout for podman/docker or if syslog is not available
+    handler = logging.StreamHandler(sys.stdout)
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(module)s.%(funcName)s [%(levelname)s] - %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
-    handlers=[
-        logging.handlers.SysLogHandler(
-            address=sys_log,
-            facility=logging.handlers.SysLogHandler.LOG_DAEMON,
-        )
-    ],
+    handlers=[handler],
 )
 LOGGER: logging.Logger = logging.getLogger(__name__)
 
