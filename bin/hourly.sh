@@ -53,7 +53,7 @@ pushd "${HERE}" >/dev/null || exit 1
         # do some maintenance
         CURRENT_EPOCH=$(date +'%s')
         # fetch a fresh copy of the database
-        scp_db
+        # scp_db
         # shellcheck disable=SC2154
         echo "${db_full_path} re-indexing... "
         execute_sql "${db_full_path}" "REINDEX;"
