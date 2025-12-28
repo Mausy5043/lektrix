@@ -155,27 +155,7 @@ PRICES: dict = {
 # fmt: on
 
 
-def get_app_version() -> str:
-    """Retrieve information of current version of lektrix.
-
-    Returns:
-        versionstring
-    """
-    # git log -n1 --format="%h"
-    # git --no-pager log -1 --format="%ai"
-    git_args = ["-C", f"{_HERE}", "--no-pager", "log", "-1", "--format='%h'"]
-    try:
-        _exit_h = git(git_args).strip("\n").strip("'")
-    except CommandNotFound as e:
-        print(f"Error executing git command: {e}")
-        _exit_h = None
-    git_args[5] = "--format='%ai'"
-    _exit_ai = git(git_args).strip("\n").strip("'")
-    return f"{_exit_h}  -  {_exit_ai}"
-
-
 if __name__ == "__main__":
     print(f"home              = {_MYHOME}")
     print(f"database location = {_DATABASE}")
     print("")
-    print(f"lektrix (me)      = {get_app_version()}")
