@@ -13,7 +13,7 @@ import sys
 import pytz
 from sh import CommandNotFound, git  # type: ignore[import-untyped]
 
-_MYHOME: str = os.environ["PWD"]
+_MYHOME: str = os.environ["HOME"]
 _DATABASE_FILENAME: str = "lektrix.v2.sqlite3"
 # Define possible database locations in order of preference
 DATABASE_PATHS: list[str] = [
@@ -22,7 +22,7 @@ DATABASE_PATHS: list[str] = [
     f"/srv/data/{_DATABASE_FILENAME}",
     f"/mnt/data/{_DATABASE_FILENAME}",
     f".local/{_DATABASE_FILENAME}",
-    f"{_MYHOME}/../data/{_DATABASE_FILENAME}",
+    f"/app/data/{_DATABASE_FILENAME}",
     f"{_MYHOME}/.sqlite3/lektrix/{_DATABASE_FILENAME}",  # symlink from Dropbox
     _DATABASE_FILENAME,
 ]
@@ -64,7 +64,7 @@ BATTERY: dict = {
         "soc": 0,
         "soh": 1000,
     },
-    "config": f"{_MYHOME}/.config/sessy.json",
+    "config": "/app/config/sessy.json",
 }
 
 TREND: dict = {
@@ -96,7 +96,7 @@ SOLAREDGE: dict = {
         "site_id": 0,
         "solar": 0,
     },
-    "config": f"{_MYHOME}/.config/solaredge/account.ini",
+    "config": "app/config/solaredge.ini",
 }
 
 WIZ_KWH: dict = {
@@ -127,7 +127,7 @@ WIZ_KWH: dict = {
         "v1": 0,
         "frq": 0,
     },
-    "config": f"{_MYHOME}/.config/homewizard/kwh.json",
+    "config": "/app/config/homewizard.json",
 }
 
 PRICES: dict = {
@@ -144,7 +144,7 @@ PRICES: dict = {
         "site_id": "4.2",  # 4.1 = Pure Energie; 4.2 = Tibber
         "price": 0.0,
     },
-    "config": f"{_MYHOME}/.config/tibber/account.ini",
+    "config": "/app/config/tibber.ini",
     "website": _WEBSITE,
     "twoday_graph": f"{_WEBSITE}/price_twodays",
     "hour_graph": f"{_WEBSITE}/price_pasthours",
