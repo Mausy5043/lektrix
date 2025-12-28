@@ -11,7 +11,6 @@ import os
 import sys
 
 import pytz
-from sh import CommandNotFound, git  # type: ignore[import-untyped]
 
 _MYHOME: str = os.environ["HOME"]
 _DATABASE_FILENAME: str = "lektrix.v2.sqlite3"
