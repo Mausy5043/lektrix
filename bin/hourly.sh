@@ -53,6 +53,8 @@ pushd "${HERE}" >/dev/null || exit 1
         # do some maintenance
         CURRENT_EPOCH=$(date +'%s')
         # fetch a fresh copy of the database
+        # this is done by the service on the host because
+        # in the container we don't have a connection to the network.
         # scp_db
         # shellcheck disable=SC2154
         echo "${db_full_path} re-indexing... "
@@ -78,7 +80,8 @@ pushd "${HERE}" >/dev/null || exit 1
             execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
             execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
         else
-            echo "Database integrity check failed. Skipping backup and vacuuming." >&2
+            echo "Database integrity check failed. Aborting..." >&2
+            exit 1
         fi
     fi
 
