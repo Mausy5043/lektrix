@@ -95,7 +95,7 @@ SOLAREDGE: dict = {
         "site_id": 0,
         "solar": 0,
     },
-    "config": "app/config/solaredge.ini",
+    "config": "/app/config/solaredge.ini",
 }
 
 WIZ_KWH: dict = {
