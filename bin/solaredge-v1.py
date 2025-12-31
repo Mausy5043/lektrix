@@ -5,7 +5,7 @@
 # AGPL-3.0-or-later  - see LICENSE
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Daemon to periodically call the SolarEdge API, using the module py-solaredge, to fetch energy production data.
+"""Script to call the SolarEdge API, using the module py-solaredge, to fetch energy production data.
 
 Store the data in a SQLite3 database.
 """
@@ -53,7 +53,7 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the solaredge daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--start",
+parser_group.add_argument("--single",
                           action="store_true",
                           help="start the daemon as a service"
                           )
@@ -76,18 +76,12 @@ APPROOT: str = "/".join(HERE[0:-2])
 # host_name :
 NODE: str = os.uname()[1]
 
-# example values:
-# HERE: ['', 'home', 'pi', 'lektrix', 'bin', 'solaredge-v1.py']
-# MYID: 'solaredge-v1.py
-# MYAPP: lektrix
-# MYROOT: /home/pi
-# NODE: rbelec
-
 
 def main() -> None:
     """Execute main loop until killed."""
-    LOGGER.info(f"Running on Python {sys.version}")
-    single_loop = False
+    LOGGER.info(f"{MYAPP} running on Python {sys.version}")
+    debug_loop = False
+    meas_ready = False
     set_led("solar", "orange")
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
@@ -99,7 +93,7 @@ def main() -> None:
     sites = sol.sites.get_sites()
     site_id = sites["sites"]["site"][0]["id"]
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
-    LOGGER.info(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True))
+    LOGGER.debug(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True))
 
     sql_db = m3.SqlDatabase(
         database=cs.SOLAREDGE["database"],
@@ -112,11 +106,12 @@ def main() -> None:
     report_interval = int(cs.SOLAREDGE["report_interval"])
     sample_interval: float = report_interval / int(cs.SOLAREDGE["samplespercycle"])
     pause_interval: float = 0.0
-    next_time: float = pause_interval + local_now()
+    next_time: float = next_quarter_hour(local_now())
     lookback_hours = 24
     lookahead_days = 1
     set_led("solar", "orange")
-    while not killer.kill_now and not single_loop:  # pylint: disable=too-many-nested-blocks
+    while not killer.kill_now and not debug_loop and not meas_ready:  # pylint: disable=too-many-nested-blocks
+        # wait for the next whole quarter-hour interval
         if local_now() > next_time:
             start_time: float = local_now()
             if start_dt > dt.datetime.today():
@@ -169,7 +164,7 @@ def main() -> None:
             # fmt: on
             # allow the inverter to update the data on the server.
             pause_interval += cs.SOLAREDGE["delay"]
-            next_time = (
+            next_time = next_quarter_hour(
                 pause_interval + local_now()
             )  # gives the actual time when the next loop should start
             # pylint: disable-next=W0105
@@ -214,7 +209,8 @@ def main() -> None:
             else:
                 start_dt = new_start_dt
                 lookahead_days = 1
-
+                meas_ready = bool(OPTION.single)   # measurement is ready
+                LOGGER.info(f"Data updated up to {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.")
             if pause_interval > 0:
                 LOGGER.debug(f"Waiting  : {pause_interval:.1f}s")
                 LOGGER.debug("................................")
@@ -223,8 +219,8 @@ def main() -> None:
                 LOGGER.debug("................................")
         else:
             time.sleep(1.0)  # 1s resolution is enough
-        if DEBUG:
-            single_loop = True
+        debug_loop = bool(OPTION.debug)
+
 
 
 def do_work(client, site_id, start_dt=None, lookback=4) -> list:
@@ -292,8 +288,13 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
 
 
 def local_now() -> float:
+    """Return the current timestamp in UTC."""
     return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
 
+def next_quarter_hour(ts: float) -> float:
+    """Return the timestamp of the next quarter-hour."""
+    next_ts = (-ts) % (15*60)
+    return next_ts + ts
 
 def set_led(dev, colour) -> None:
     LOGGER.debug(f"{dev} is {colour}")
