@@ -10,7 +10,7 @@ pushd "${HERE}" >/dev/null || exit 1
     # wizkwh   : 60s -> 300s
     # sessy    : 60s -> 300s
     # sessy.py     &
-    solaredge.py --single &
+    /app/scripts/solaredge.py --single &
     # wizkwh.py    &
     wait
 
