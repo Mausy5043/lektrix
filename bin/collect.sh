@@ -11,7 +11,7 @@ pushd "${HERE}" >/dev/null || exit 1
     # sessy    : 60s -> 300s
     # sessy.py     &
     /app/scripts/solaredge-v1.py --single &
-    # wizkwh.py    &
+    /app/scripts/wizkwh.py --single   &
     wait
 
 

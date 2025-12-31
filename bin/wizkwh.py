@@ -11,6 +11,7 @@ Store the data in a SQLite3 database.
 """
 
 import argparse
+import datetime as dt
 import logging.handlers
 import os
 import platform
@@ -50,7 +51,7 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the home wizard P1 daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--start",
+parser_group.add_argument("--single",
                           action="store_true",
                           help="start the daemon as a service"
                           )
@@ -86,15 +87,16 @@ def main() -> None:
         insert=cs.WIZ_KWH["sql_command"],
         debug=DEBUG,
     )
-
+    meas_ready = False
     report_interval = int(cs.WIZ_KWH["report_interval"])
     sample_interval = report_interval / int(cs.WIZ_KWH["samplespercycle"])
 
-    next_time = time.time()
-    rprt_time = time.time() + (report_interval - (time.time() % report_interval))
-    while not killer.kill_now:
-        if time.time() > next_time:
-            start_time = time.time()
+    # next_time = time.time()
+    next_time: float = next_quarter_hour(local_now())
+    rprt_time: float = local_now() + (report_interval - (local_now() % report_interval))
+    while not killer.kill_now and not meas_ready:
+        if local_now() > next_time:
+            start_time: float = local_now()
             try:
                 LOGGER.debug("\n...requesting telegram")
                 API_KWH.get_telegram()
@@ -109,42 +111,44 @@ def main() -> None:
                 LOGGER.error(traceback.format_exc())
                 raise
             # check if we already need to report the result data
-            if time.time() > rprt_time:
-                LOGGER.debug("\n...reporting")
-                LOGGER.debug(f"Result   : {API_KWH.list_data}")
-                # resample to 15m entries
-                data, API_KWH.list_data = API_KWH.compact_data(API_KWH.list_data)
-                try:
-                    LOGGER.debug("\n...queueing")
-                    for element in data:
-                        LOGGER.debug(f"{element}")  # is already logged by sql_db.queue()
-                        sql_db.queue(element)
-                except Exception:  # noqa
-                    set_led("p1", "red")
-                    set_led("ev", "red")
-                    set_led("pv", "red")
-                    LOGGER.critical("Unexpected error while trying to queue the data")
-                    LOGGER.error(traceback.format_exc())
-                    raise  # may be changed to pass if errors can be corrected.
-                try:
-                    LOGGER.debug("\n...inserting data")
-                    sql_db.insert(method="replace")
-                except Exception:  # noqa
-                    set_led("p1", "red")
-                    set_led("ev", "red")
-                    set_led("pv", "red")
-                    LOGGER.critical(
-                        "Unexpected error while trying to commit the data to the database"
-                    )
-                    LOGGER.error(traceback.format_exc())
-                    raise  # may be changed to pass if errors can be corrected.
-
+            # # if local_now() > rprt_time:
+            LOGGER.debug("\n...reporting")
+            LOGGER.debug(f"Result   : {API_KWH.list_data}")
+            # resample to 15m entries
+            data, API_KWH.list_data = API_KWH.compact_data(API_KWH.list_data)
+            try:
+                LOGGER.debug("\n...queueing")
+                for element in data:
+                    LOGGER.debug(f"{element}")  # is already logged by sql_db.queue()
+                    sql_db.queue(element)
+            except Exception:  # noqa
+                set_led("p1", "red")
+                set_led("ev", "red")
+                set_led("pv", "red")
+                LOGGER.critical("Unexpected error while trying to queue the data")
+                LOGGER.error(traceback.format_exc())
+                raise  # may be changed to pass if errors can be corrected.
+            try:
+                LOGGER.debug("\n...inserting data")
+                sql_db.insert(method="replace")
+            except Exception:  # noqa
+                set_led("p1", "red")
+                set_led("ev", "red")
+                set_led("pv", "red")
+                LOGGER.critical(
+                    "Unexpected error while trying to commit the data to the database"
+                )
+                LOGGER.error(traceback.format_exc())
+                raise  # may be changed to pass if errors can be corrected.
+            # # endif
+            LOGGER.info("wizkwh measurement cycle complete.")
+            meas_ready = bool(OPTION.single)  # measurement is ready
             # determine moment of next report
             next_time = sample_interval + start_time - (start_time % sample_interval)
-            rprt_time = time.time() + (report_interval - (time.time() % report_interval))
-            LOGGER.debug(f"Spent          {time.time() - start_time:.1f}s getting data")
-            LOGGER.debug(f"Report in      {rprt_time - time.time():.0f}s")
-            LOGGER.debug(f"Next sample in {next_time - time.time():.0f}s")
+            rprt_time = local_now() + (report_interval - (local_now() % report_interval))
+            LOGGER.debug(f"Spent          {local_now() - start_time:.1f}s getting data")
+            LOGGER.debug(f"Report in      {rprt_time - local_now():.0f}s")
+            LOGGER.debug(f"Next sample in {next_time - local_now():.0f}s")
             LOGGER.debug("................................")
         else:
             time.sleep(1.0)  # 1s resolution is enough
@@ -156,6 +160,17 @@ def set_led(dev, colour) -> None:
     in_dirfile = f"{APPROOT}/www/{colour}.png"
     out_dirfile = f'{cs.TREND["website"]}/{dev}.png'
     shutil.copy(f"{in_dirfile}", out_dirfile)
+
+
+def local_now() -> float:
+    """Return the current timestamp in UTC."""
+    return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
+
+
+def next_quarter_hour(ts: float) -> float:
+    """Return the timestamp of the next quarter-hour."""
+    next_ts = (-ts) % (15 * 60)
+    return next_ts + ts
 
 
 if __name__ == "__main__":
@@ -171,4 +186,4 @@ if __name__ == "__main__":
     # OPTION.start only executes this next line, we don't need to test for it.
     main()
 
-    LOGGER.info("And it's goodnight from him")
+    LOGGER.info("And it's goodnight from him (wizkwh)")
