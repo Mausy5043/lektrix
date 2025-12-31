@@ -11,8 +11,8 @@ Store the data in a SQLite3 database.
 """
 
 import argparse
-import logging.handlers
 import datetime as dt
+import logging.handlers
 import os
 import platform
 import shutil
@@ -153,6 +153,7 @@ def next_quarter_hour(ts: float) -> float:
     """Return the timestamp of the next quarter-hour."""
     next_ts = (-ts) % (15 * 60)
     return next_ts + ts
+
 
 def set_led(dev, colour) -> None:
     LOGGER.debug(f"{dev} is {colour}")

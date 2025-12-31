@@ -93,7 +93,9 @@ def main() -> None:
     sites = sol.sites.get_sites()
     site_id = sites["sites"]["site"][0]["id"]
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
-    LOGGER.debug(json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True))
+    LOGGER.debug(
+        json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True)
+    )
 
     sql_db = m3.SqlDatabase(
         database=cs.SOLAREDGE["database"],
@@ -209,7 +211,7 @@ def main() -> None:
             else:
                 start_dt = new_start_dt
                 lookahead_days = 1
-                meas_ready = bool(OPTION.single)   # measurement is ready
+                meas_ready = bool(OPTION.single)  # measurement is ready
                 LOGGER.info(f"Data updated up to {start_dt.strftime('%Y-%m-%d %H:%M:%S')}.")
             if pause_interval > 0:
                 LOGGER.debug(f"Waiting  : {pause_interval:.1f}s")
@@ -220,7 +222,6 @@ def main() -> None:
         else:
             time.sleep(1.0)  # 1s resolution is enough
         debug_loop = bool(OPTION.debug)
-
 
 
 def do_work(client, site_id, start_dt=None, lookback=4) -> list:
@@ -291,10 +292,12 @@ def local_now() -> float:
     """Return the current timestamp in UTC."""
     return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
 
+
 def next_quarter_hour(ts: float) -> float:
     """Return the timestamp of the next quarter-hour."""
-    next_ts = (-ts) % (15*60)
+    next_ts = (-ts) % (15 * 60)
     return next_ts + ts
+
 
 def set_led(dev, colour) -> None:
     LOGGER.debug(f"{dev} is {colour}")
