@@ -186,8 +186,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
         "cols2drop": [],
         "median": False,
         "minimum": False,
-        "lowq": 12,
-        # "bar_colors": ["red", "seagreen", "orange"],
+        "lowq": 18,
+        "highq": 18,
+        "bar_colors": ["red", "seagreen", "orange", "lightgreen", "darkorange"],
     }
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
@@ -257,7 +258,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 stacked=True,
                 width=0.9,
                 figsize=(fig_x, fig_y),
-                color=["red", "seagreen", "orange", "lightgreen"],
+                color=data_dict["bar_colors"],
             )
             # linewidth and alpha need to be set separately
             for _, a in enumerate(ax1.lines):
