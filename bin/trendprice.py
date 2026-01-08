@@ -181,7 +181,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
         "database": DATABASE,
         "hours_to_fetch": hours_to_fetch - 2,  # compensate for greedy query
         "aggregation": aggregation,
-        "parse_dates": ["sample_time"],
+        "parse_dates": {"sample_time": "%Y-%m-%d %H:%M:%S"},
         "index_col": "sample_epoch",
         "cols2drop": [],
         "median": False,
