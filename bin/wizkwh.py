@@ -11,7 +11,6 @@ Store the data in a SQLite3 database.
 """
 
 import argparse
-import datetime as dt
 import logging.handlers
 import os
 import platform
@@ -92,11 +91,11 @@ def main() -> None:
     sample_interval = report_interval / int(cs.WIZ_KWH["samplespercycle"])
 
     # next_time = time.time()
-    next_time: float = next_quarter_hour(local_now())
-    rprt_time: float = local_now() + (report_interval - (local_now() % report_interval))
+    next_time: float = cs.this_quarter_hour_end(cs.local_now(), cs.QUARTER_FINAL)
+    rprt_time: float = cs.local_now() + (report_interval - (cs.local_now() % report_interval))
     while not killer.kill_now and not meas_ready:
-        if local_now() > next_time:
-            start_time: float = local_now()
+        if cs.local_now() > next_time:
+            start_time: float = cs.local_now()
             try:
                 LOGGER.debug("\n...requesting telegram")
                 API_KWH.get_telegram()
@@ -145,10 +144,10 @@ def main() -> None:
             meas_ready = bool(OPTION.single)  # measurement is ready
             # determine moment of next report
             next_time = sample_interval + start_time - (start_time % sample_interval)
-            rprt_time = local_now() + (report_interval - (local_now() % report_interval))
-            LOGGER.debug(f"Spent          {local_now() - start_time:.1f}s getting data")
-            LOGGER.debug(f"Report in      {rprt_time - local_now():.0f}s")
-            LOGGER.debug(f"Next sample in {next_time - local_now():.0f}s")
+            rprt_time = cs.local_now() + (report_interval - (cs.local_now() % report_interval))
+            LOGGER.debug(f"Spent          {cs.local_now() - start_time:.1f}s getting data")
+            LOGGER.debug(f"Report in      {rprt_time - cs.local_now():.0f}s")
+            LOGGER.debug(f"Next sample in {next_time - cs.local_now():.0f}s")
             LOGGER.debug("................................")
         else:
             time.sleep(1.0)  # 1s resolution is enough
@@ -160,17 +159,6 @@ def set_led(dev, colour) -> None:
     in_dirfile = f"{APPROOT}/www/{colour}.png"
     out_dirfile = f'{cs.TREND["website"]}/{dev}.png'
     shutil.copy(f"{in_dirfile}", out_dirfile)
-
-
-def local_now() -> float:
-    """Return the current timestamp in UTC."""
-    return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
-
-
-def next_quarter_hour(ts: float) -> float:
-    """Return the timestamp of the next quarter-hour."""
-    next_ts = (-ts) % (15 * 60)
-    return next_ts + ts
 
 
 if __name__ == "__main__":

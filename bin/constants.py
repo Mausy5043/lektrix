@@ -7,6 +7,7 @@
 
 """Home of the constants."""
 
+import datetime as dt
 import os
 import sys
 
@@ -29,6 +30,8 @@ _HERE_list: list[str] = os.path.realpath(__file__).split("/")
 # ['', 'app', 'scripts', 'constants.py']
 _HERE: str = "/".join(_HERE_list[0:-2])
 _WEBSITE: str = "/app/www"
+
+QUARTER_FINAL = 30.0
 
 # Find the first existing database file
 _DATABASE: str = next((path for path in DATABASE_PATHS if os.path.isfile(path)), "")
@@ -152,6 +155,22 @@ PRICES: dict = {
     "year_graph": f"{_WEBSITE}/price_pastyears",
 }
 # fmt: on
+
+
+def local_now() -> float:
+    """Return the current timestamp in UTC."""
+    return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
+
+
+def next_quarter_hour(ts: float) -> float:
+    """Return the timestamp of the next quarter-hour."""
+    next_ts = (-ts) % (15 * 60)
+    return next_ts + ts
+
+
+def this_quarter_hour_end(ts: float, ns: float) -> float:
+    """Return the timestamp of the current quarter-hour last ns sec."""
+    return next_quarter_hour(ts) - ns
 
 
 if __name__ == "__main__":

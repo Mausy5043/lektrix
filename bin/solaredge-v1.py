@@ -108,14 +108,14 @@ def main() -> None:
     report_interval = int(cs.SOLAREDGE["report_interval"])
     sample_interval: float = report_interval / int(cs.SOLAREDGE["samplespercycle"])
     pause_interval: float = 0.0
-    next_time: float = next_quarter_hour(local_now())
+    next_time: float = cs.this_quarter_hour_end(cs.local_now(), cs.QUARTER_FINAL)
     lookback_hours = 24
     lookahead_days = 1
     set_led("solar", "orange")
     while not killer.kill_now and not debug_loop and not meas_ready:  # pylint: disable=too-many-nested-blocks
         # wait for the next whole quarter-hour interval
-        if local_now() > next_time:
-            start_time: float = local_now()
+        if cs.local_now() > next_time:
+            start_time: float = cs.local_now()
             if start_dt > dt.datetime.today():
                 LOGGER.debug(f"Can't query {start_dt.strftime('%Y-%m-%d')} in the future.")
                 start_dt = dt.datetime.today()
@@ -140,7 +140,7 @@ def main() -> None:
                 try:
                     for element in data:
                         # also add data for the running quarter
-                        if element["sample_epoch"] < (local_now() + 15 * 60):
+                        if element["sample_epoch"] < (cs.local_now() + 15 * 60):
                             sql_db.queue(element)
                 except Exception:  # noqa  # pylint: disable=W0718
                     set_led("solar", "red")
@@ -160,14 +160,14 @@ def main() -> None:
             # fmt: off
             pause_interval = (
                 sample_interval
-                - (local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
+                - (cs.local_now() - start_time)  # time spent in this loop           eg. (40-3) = 37s
                 - (start_time % sample_interval)  # number of seconds to next loop    eg. 3 % 60 = 3s
             )
             # fmt: on
             # allow the inverter to update the data on the server.
             pause_interval += cs.SOLAREDGE["delay"]
-            next_time = next_quarter_hour(
-                pause_interval + local_now()
+            next_time = cs.this_quarter_hour_end(
+                pause_interval + cs.local_now(), cs.QUARTER_FINAL
             )  # gives the actual time when the next loop should start
             # pylint: disable-next=W0105
             """Example calculation:
@@ -286,17 +286,6 @@ def do_work(client, site_id, start_dt=None, lookback=4) -> list:
             LOGGER.debug(f"    : {date_time} = {energy}")
             result_list.append(result_dict)
     return result_list
-
-
-def local_now() -> float:
-    """Return the current timestamp in UTC."""
-    return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
-
-
-def next_quarter_hour(ts: float) -> float:
-    """Return the timestamp of the next quarter-hour."""
-    next_ts = (-ts) % (15 * 60)
-    return next_ts + ts
 
 
 def set_led(dev, colour) -> None:
