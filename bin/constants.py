@@ -31,7 +31,7 @@ _HERE_list: list[str] = os.path.realpath(__file__).split("/")
 _HERE: str = "/".join(_HERE_list[0:-2])
 _WEBSITE: str = "/app/www"
 
-QUARTER_FINAL = 30.0
+QUARTER_FINAL = 5.0
 
 # Find the first existing database file
 _DATABASE: str = next((path for path in DATABASE_PATHS if os.path.isfile(path)), "")
