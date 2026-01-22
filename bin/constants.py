@@ -169,7 +169,7 @@ def next_quarter_hour(ts: float) -> float:
 
 
 def this_quarter_hour_end(ts: float, ns: float) -> float:
-    """Return the timestamp of the current quarter-hour last ns sec."""
+    """Return the timestamp of the end of the current quarter-hour minus ns sec."""
     return next_quarter_hour(ts) - ns
 
 
