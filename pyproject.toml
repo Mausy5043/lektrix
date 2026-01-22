@@ -12,7 +12,7 @@ dependencies = [
     "mausy5043-common>=2.4",
     # already delivered by mausy5043-common, so no need to specify version here:
     "numpy",
-    "pandas",
+    "pandas==2.3.3",
     "pyarrow<=20.0.0",
     "py-solaredge==0.0.4.9",
     "python-dateutil~=2.9",

@@ -16,7 +16,7 @@ dependencies:
   - matplotlib=3.10
   # already delivered by mausy5043-common, no need to specify version here:
   - numpy
-  - pandas
+  - pandas=2.3.3
 
   # Not on conda channels:
   - pip:
