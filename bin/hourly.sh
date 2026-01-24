@@ -57,17 +57,17 @@ create_hourly_backup() {
     local backup_path
 
     timestamp=$(date +'%Y%m%d_%H%M%S')
-    backup_path="${hourly_backup_dir}/lektrix.v2_${timestamp}.sqlite3"
-    cp "${db_full_path}" "${backup_path}"
-    echo "___ created hourly backup: ${backup_path}"
+    backup_path="${hourly_backup_dir}/${timestamp}_${db_leaf_name}"
+    echo "___ creating hourly backup..."
+    cp -v "${db_full_path}" "${backup_path}"
 
     # Cleanup: Keep only the last 24 hourly backups
     find "${hourly_backup_dir}" -type f -name '*.sqlite3' -printf '%T@ %p\n' | \
         sort -n | \
         head -n -24 | \
-        while read -r timestamp old_backup; do
+        while read -r ts old_backup; do
             rm -f "${old_backup}"
-            echo "___ removed old hourly backup: ${old_backup}"
+            echo "___ removed old hourly backup: ${ts} = ${old_backup}"
         done
 }
 
