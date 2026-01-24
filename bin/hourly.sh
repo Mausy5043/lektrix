@@ -6,18 +6,23 @@ max_retries=5
 retry_delay=32
 flag_sql_succes=1
 db_full_path="${HERE}/../data/lektrix.v2.sqlite3"
+backup_dir="${HERE}/../data/backup"
+hourly_backup_dir="${backup_dir}/hourly"
+daily_backup_dir="${backup_dir}/daily"
+monthly_backup_dir="${backup_dir}/monthly"
 
 execute_sql() {
-    local sql=$2
     local database=$1
+    local sql=$2
+
     flag_sql_succes=1
     for ((i=1; i<=max_retries; i++)); do
         if sqlite3 "${database}" "${sql}"; then
-            echo "SQL executed successfully: ${sql}"
+            echo "succesful"
             flag_sql_succes=0
             return 0
         else
-            echo "Database is locked. Retry $i/$max_retries in $retry_delay seconds..."
+            echo "Database error (locked?). Retry $i/$max_retries in $retry_delay seconds..."
             sleep $retry_delay
         fi
     done
@@ -45,44 +50,96 @@ scp_db() {
     exit 1
 }
 
+create_hourly_backup() {
+    local timestamp
+    local backup_path
+
+    timestamp=$(date +'%Y%m%d_%H%M%S')
+    backup_path="${hourly_backup_dir}/lektrix.v2_${timestamp}.sqlite3"
+    cp "${db_full_path}" "${backup_path}"
+    echo "___ created hourly backup: ${backup_path}"
+
+    # Cleanup: Keep only the last 24 hourly backups
+    find "${hourly_backup_dir}" -type f -name '*.sqlite3' -printf '%T@ %p\n' | \
+        sort -n | \
+        head -n -24 | \
+        while read -r timestamp old_backup; do
+            rm -f "${old_backup}"
+            echo "___ removed old hourly backup: ${old_backup}"
+        done
+}
+
+create_daily_backup() {
+    local timestamp
+    local daily_backup_path
+    local compressed_backup_path
+
+    timestamp=$(date +'%Y%m%d')
+    daily_backup_path="${daily_backup_dir}/lektrix_${timestamp}.sqlite3"
+    compressed_backup_path="${daily_backup_dir}/lektrix_${timestamp}.sqlite3.bz2"
+
+    # Create uncompressed daily backup
+    cp "${db_full_path}" "${daily_backup_path}"
+
+    # Compress with bzip2 -9
+    bzip2 -9 -f "${daily_backup_path}"
+    echo "Created and compressed daily backup: ${compressed_backup_path}"
+
+    # Cleanup: Keep only the last 30 daily backups
+    ls -t "${daily_backup_dir}" | grep ".bz2" | tail -n +31 | while read -r old_backup; do
+        rm -f "${daily_backup_dir}/${old_backup}"
+        echo "Removed old daily backup: ${daily_backup_dir}/${old_backup}"
+    done
+
+    # Monthly backup: On the last day of the month, move the daily backup to monthly storage
+    if [ "$(date +'%d')" -eq "$(date -d "$(date +'%Y-%m-01') +1 month -1 day" +'%d')" ]; then
+        local monthly_backup_path="${monthly_backup_dir}/lektrix_${timestamp}.sqlite3.bz2"
+        mv "${compressed_backup_path}" "${monthly_backup_path}"
+        echo "Moved monthly backup to long-term storage: ${monthly_backup_path}"
+    fi
+}
+
 pushd "${HERE}" >/dev/null || exit 1
     # shellcheck disable=SC1091
-    # source ./include.sh
-
-    if [ "${MAINTENANCE}" == "-" ]; then
+    if [ "${MAINTENANCE}" == "-maintenance" ]; then
         # do some maintenance
         CURRENT_EPOCH=$(date +'%s')
-        # fetch a fresh copy of the database
-        # this is done by the service on the host because
-        # in the container we don't have a connection to the network.
-        # scp_db
+        echo "...Starting lektrix database maintenance..."
+
+        # ### HOURLY MAINTENANCE ###
         # shellcheck disable=SC2154
-        echo "${db_full_path} re-indexing... "
-        execute_sql "${db_full_path}" "REINDEX;"
-
-        echo -n "${db_full_path} integrity check:   "
+        echo -n "___ ${db_full_path} integrity check:   "
         execute_sql "${db_full_path}" "PRAGMA integrity_check;"
+
         if [ "${flag_sql_succes=1}" == 0 ]; then
-            # echo "${db_full_path} copying to backup... "
-            # TODO: copy to backup
+            # integrity check was succesful, safe to make a backup
+            create_hourly_backup
 
-            # if command -v rclone &> /dev/null; then
-            #     # shellcheck disable=SC2154
-            #     rclone copyto -v \
-            #         "${database_local_root}/${app_name}/${database_filename}" \
-            #         "${database_remote_root}/backup/${database_filename}"
-            # fi
+            # ### DAILY MAINTENANCE ###
+            # run once per day:
+            if [ "$(date +'%H')" -eq 0 ]; then
+                echo -n "___ ${db_full_path} daily ANALYZE  :   "
+                execute_sql "${db_full_path}" "ANALYZE;"
 
-            # Keep upto 10 years of data
-            echo "${db_full_path} vacuuming... "
-            PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (3660 * 24 * 3600)" | bc)
-            execute_sql "${db_full_path}" "DELETE FROM mains WHERE sample_epoch < ${PURGE_EPOCH};"
-            execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
-            execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
+                if [ "${flag_sql_succes=1}" == 0 ]; then
+                    echo "ok"
+                fi
+                # Create daily backup
+                # create_daily_backup
+
+                # Keep upto 10 years of data
+#                echo "${db_full_path} vacuuming... "
+#                PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (3660 * 24 * 3600)" | bc)
+#                execute_sql "${db_full_path}" "DELETE FROM mains WHERE sample_epoch < ${PURGE_EPOCH};"
+#                execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
+#                execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
+            fi
+
         else
             echo "Database integrity check failed. Aborting..." >&2
             exit 1
         fi
+        # exit 0  # skip trending when doing maintenance
     fi
 
     ./trendhw.py --hours 0
