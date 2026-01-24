@@ -77,28 +77,29 @@ create_daily_backup() {
     local compressed_backup_path
 
     timestamp=$(date +'%Y%m%d')
-    daily_backup_path="${daily_backup_dir}/lektrix_${timestamp}.sqlite3"
-    compressed_backup_path="${daily_backup_dir}/lektrix_${timestamp}.sqlite3.bz2"
+    daily_backup_path="${daily_backup_dir}/${timestamp}_${db_leaf_name}"
+    compressed_backup_path="${daily_backup_path}.bz2"
 
     # Create uncompressed daily backup
-    cp "${db_full_path}" "${daily_backup_path}"
+    echo "___ creating compressed daily backup..."
+    cp -v "${db_full_path}" "${daily_backup_path}"
+    bzip2 -9 -v "${daily_backup_path}"
 
-    # Compress with bzip2 -9
-    bzip2 -9 -f "${daily_backup_path}"
-    echo "Created and compressed daily backup: ${compressed_backup_path}"
+    # Cleanup: Keep only the last 31 daily backups
+    find "${daily_backup_dir}" -type f -name '*.bz2' -printf '%T@ %p\n' | \
+        sort -n | \
+        head -n -31 | \
+        while read -r ts old_backup; do
+            rm -f "${old_backup}"
+            echo "___ removed old daily backup: ${ts} = ${old_backup}"
+        done
 
-    # Cleanup: Keep only the last 30 daily backups
-    ls -t "${daily_backup_dir}" | grep ".bz2" | tail -n +31 | while read -r old_backup; do
-        rm -f "${daily_backup_dir}/${old_backup}"
-        echo "Removed old daily backup: ${daily_backup_dir}/${old_backup}"
-    done
-
-    # Monthly backup: On the last day of the month, move the daily backup to monthly storage
-    if [ "$(date +'%d')" -eq "$(date -d "$(date +'%Y-%m-01') +1 month -1 day" +'%d')" ]; then
-        local monthly_backup_path="${monthly_backup_dir}/lektrix_${timestamp}.sqlite3.bz2"
-        mv "${compressed_backup_path}" "${monthly_backup_path}"
-        echo "Moved monthly backup to long-term storage: ${monthly_backup_path}"
-    fi
+#    # Monthly backup: On the last day of the month, move the daily backup to monthly storage
+#    if [ "$(date +'%d')" -eq "$(date -d "$(date +'%Y-%m-01') +1 month -1 day" +'%d')" ]; then
+#        local monthly_backup_path="${monthly_backup_dir}/lektrix_${timestamp}.sqlite3.bz2"
+#        mv "${compressed_backup_path}" "${monthly_backup_path}"
+#        echo "Moved monthly backup to long-term storage: ${monthly_backup_path}"
+#    fi
 }
 
 pushd "${HERE}" >/dev/null || exit 1
@@ -109,7 +110,6 @@ pushd "${HERE}" >/dev/null || exit 1
         echo "...Starting lektrix database maintenance..."
 
         # ### HOURLY MAINTENANCE ###
-        # shellcheck disable=SC2154
         echo -n "___ ${db_full_path} integrity check:   "
         execute_sql "${db_full_path}" "PRAGMA integrity_check;"
 
@@ -125,13 +125,16 @@ pushd "${HERE}" >/dev/null || exit 1
 
                 if [ "${flag_sql_succes=1}" == 0 ]; then
                     echo "ok"
+                    # 'analyze' was succesful, also make a daily backup
+                    create_daily_backup
+                else
+                    echo "ANALYZE failed!"
                 fi
-                # Create daily backup
-                # create_daily_backup
 
                 # Keep upto 10 years of data
-#                echo "${db_full_path} vacuuming... "
-#                PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (3660 * 24 * 3600)" | bc)
+                PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (20 * 366 * 24 * 3600)" | bc)
+                echo -n "${db_full_path} vacuuming... "
+                echo "${PURGE_EPOCH}"
 #                execute_sql "${db_full_path}" "DELETE FROM mains WHERE sample_epoch < ${PURGE_EPOCH};"
 #                execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
 #                execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
