@@ -165,7 +165,8 @@ pushd "${HERE}" >/dev/null || exit 1
                 # run once per month:
                 if [ "$(date +'%d')" -eq 1 ]; then
                     create_monthly_backup
-                    
+                    now=$(date +'%Y%m')
+                    ./trendhw.py --months 8 --debug > "${app_data_path}/report_${now}.txt"
                 fi
             fi
 
