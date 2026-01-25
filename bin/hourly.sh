@@ -123,6 +123,7 @@ create_monthly_backup() {
     # ### PURGE OLD DATA ###
     # !!!this code disabled for now!!!
     # Keep upto 20 years of data           (yr   day   hr   sec )
+    # CURRENT_EPOCH=$(date +'%s')
     # PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (20 * 366 * 24 * 3600)" | bc)
     # echo -n "${db_full_path} vacuuming... "
     # echo "${PURGE_EPOCH}"
@@ -135,7 +136,6 @@ pushd "${HERE}" >/dev/null || exit 1
     # shellcheck disable=SC1091
     if [ "${MAINTENANCE}" == "-maintenance" ]; then
         # do some maintenance
-        CURRENT_EPOCH=$(date +'%s')
         echo "...Starting lektrix database maintenance..."
 
         # ### HOURLY MAINTENANCE ###
@@ -165,6 +165,7 @@ pushd "${HERE}" >/dev/null || exit 1
                 # run once per month:
                 if [ "$(date +'%d')" -eq 1 ]; then
                     create_monthly_backup
+                    
                 fi
             fi
 
@@ -175,9 +176,7 @@ pushd "${HERE}" >/dev/null || exit 1
         # exit 0  # skip trending when doing maintenance
     fi
 
-    ./trendhw.py --hours 0
-    ./trendhw.py --days 0
-    ./trendhw.py --months 0 --years 0
+    ./trendhw.py --hours 0 --days 0 --months 0 --years 0
 
     ./trendprice.py --twoday
 
