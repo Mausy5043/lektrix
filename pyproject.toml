@@ -13,7 +13,7 @@ dependencies = [
     # already delivered by mausy5043-common, so no need to specify version here:
     "numpy",
     "pandas",
-    "pyarrow<=20.0.0",
+    "pyarrow<=23.0.0",
     "py-solaredge==0.0.4.9",
     "python-dateutil~=2.9",
     "pytz~=2025.2",
