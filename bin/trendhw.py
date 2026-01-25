@@ -396,6 +396,7 @@ def plot_graph(
             plt.tight_layout()
             plt.savefig(fname=f"{output_file}_{parameter}.png", format="png")
             LOGGER.debug(f" --> {output_file}_{parameter}.png\n")
+            plt.close()
 
 
 def main(opt) -> None:
