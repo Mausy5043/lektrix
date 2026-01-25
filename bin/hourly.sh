@@ -93,13 +93,42 @@ create_daily_backup() {
             rm -f "${old_backup}"
             echo "___ removed old daily backup: ${ts} = ${old_backup}"
         done
+}
 
-#    # Monthly backup: On the last day of the month, move the daily backup to monthly storage
-#    if [ "$(date +'%d')" -eq "$(date -d "$(date +'%Y-%m-01') +1 month -1 day" +'%d')" ]; then
-#        local monthly_backup_path="${monthly_backup_dir}/lektrix_${timestamp}.sqlite3.bz2"
-#        mv "${compressed_backup_path}" "${monthly_backup_path}"
-#        echo "Moved monthly backup to long-term storage: ${monthly_backup_path}"
-#    fi
+create_monthly_backup() {
+    local timestamp
+    local daily_backup_path
+    # local compressed_backup_path
+
+    timestamp=$(date +'%Y%m')
+    monthly_backup_path="${monthly_backup_dir}/${timestamp}_${db_leaf_name}"
+    # compressed_backup_path="${monthly_backup_path}.bz2"
+
+    # Create uncompressed daily backup
+    echo "___ creating compressed monthly backup..."
+    cp -v "${db_full_path}" "${monthly_backup_path}"
+    bzip2 -9 -v "${monthly_backup_path}"
+
+    # TODO: move backup to remote location
+
+    # Cleanup: Keep only the last 14 monthly backups
+    find "${monthly_backup_dir}" -type f -name '*.bz2' -printf '%T@ %p\n' | \
+        sort -n | \
+        head -n -14 | \
+        while read -r ts old_backup; do
+            rm -f "${old_backup}"
+            echo "___ removed old monthly backup: ${ts} = ${old_backup}"
+        done
+
+    # ### PURGE OLD DATA ###
+    # !!!this code disabled for now!!!
+    # Keep upto 20 years of data           (yr   day   hr   sec )
+    # PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (20 * 366 * 24 * 3600)" | bc)
+    # echo -n "${db_full_path} vacuuming... "
+    # echo "${PURGE_EPOCH}"
+    # execute_sql "${db_full_path}" "DELETE FROM mains WHERE sample_epoch < ${PURGE_EPOCH};"
+    # execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
+    # execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
 }
 
 pushd "${HERE}" >/dev/null || exit 1
@@ -128,16 +157,15 @@ pushd "${HERE}" >/dev/null || exit 1
                     # 'analyze' was succesful, also make a daily backup
                     create_daily_backup
                 else
-                    echo "ANALYZE failed!"
+                    echo "ANALYZE failed! Aborting..." >&2
+                    exit 1
                 fi
 
-                # Keep upto 10 years of data
-                PURGE_EPOCH=$(echo "${CURRENT_EPOCH} - (20 * 366 * 24 * 3600)" | bc)
-                echo -n "${db_full_path} vacuuming... "
-                echo "${PURGE_EPOCH}"
-#                execute_sql "${db_full_path}" "DELETE FROM mains WHERE sample_epoch < ${PURGE_EPOCH};"
-#                execute_sql "${db_full_path}" "DELETE FROM production WHERE sample_epoch < ${PURGE_EPOCH};"
-#                execute_sql "${db_full_path}" "DELETE FROM prices WHERE sample_epoch < ${PURGE_EPOCH};"
+                # ### MONTHLY MAINTENANCE ###
+                # run once per month:
+                if [ "$(date +'%d')" -eq 1 ]; then
+                    create_monthly_backup
+                fi
             fi
 
         else
