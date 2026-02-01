@@ -29,7 +29,10 @@ DATABASE_PATHS: list[str] = [
 _HERE_list: list[str] = os.path.realpath(__file__).split("/")
 # ['', 'app', 'scripts', 'constants.py']
 _HERE: str = "/".join(_HERE_list[0:-2])
-_WEBSITE: str = "/app/www"
+# Determine website directory
+_WEBSITE: str = "/tmp" if not os.path.isdir("/app/www") else "/app/www"
+if _WEBSITE == "/tmp":
+    print("Graphics will be diverted to /tmp")
 
 QUARTER_FINAL = 5.0
 
@@ -38,10 +41,6 @@ _DATABASE: str = next((path for path in DATABASE_PATHS if os.path.isfile(path)),
 if not _DATABASE:
     print("Database is missing.")
     sys.exit(1)
-
-if not os.path.isdir(_WEBSITE):
-    print("Graphics will be diverted to /tmp")
-    _WEBSITE = "/tmp"  # nosec B108
 
 D_FORMAT = "%Y-%m-%d"
 DT_FORMAT = "%Y-%m-%d %H:%M:%S"
