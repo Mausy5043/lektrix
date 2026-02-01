@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-TEST="${1}"
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)  # /app/scripts
 
 echo "Collecting data..."
