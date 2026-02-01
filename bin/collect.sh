@@ -6,7 +6,7 @@ HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)  # /app/scrip
 echo "Collecting data..."
 
 pushd "${HERE}" >/dev/null || exit 1
-    /app/scripts/sessy.py --single    &
+    /app/scripts/sessy.py --single &
     /app/scripts/solaredge-v1.py --single &
     /app/scripts/wizkwh.py --single   &
     wait
