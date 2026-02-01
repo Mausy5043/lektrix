@@ -51,10 +51,12 @@ FLOAT_FMT = "+.0f"
 BATTERY: dict = {
     "database": _DATABASE,
     "sql_table": "battery",
-    "sql_command": "INSERT INTO battery ("
-                   "sample_time, sample_epoch, battery_id, soc, soh"
-                   ") "
-                   "VALUES (?, ?, ?, ?, ?)",
+    "sql_command": (
+        "INSERT INTO battery ("
+        "sample_time, sample_epoch, battery_id, soc, soh"
+        ") "
+        "VALUES (?, ?, ?, ?, ?)"
+    ),
     "report_interval": 300,  # 5 minutes resolution
     "samplespercycle": 10,
     "delay": 360,
@@ -82,10 +84,11 @@ TREND: dict = {
 SOLAREDGE: dict = {
     "database": _DATABASE,
     "sql_table": "production",
-    "sql_command": "INSERT INTO production ("
-                   "sample_time, sample_epoch, site_id, energy"
-                   ");"
-                   "VALUES (?, ?, ?, ?)",
+    "sql_command": (
+        "INSERT INTO production ("
+        "sample_time, sample_epoch, site_id, energy"
+        ") VALUES (?, ?, ?, ?)"
+    ),
     "report_interval": 900,  # quarter of an hour resolution
     "samplespercycle": 1,
     "delay": 360,
@@ -103,15 +106,17 @@ SOLAREDGE: dict = {
 WIZ_KWH: dict = {
     "database": _DATABASE,
     "sql_table": "mains",
-    "sql_command": "INSERT INTO mains ("
-                   "sample_time, sample_epoch, site_id,"
-                   "exp, imp, gen, gep, evn, evp,"
-                   "v1, frq"
-                   ");"
-                   "VALUES (?, ?, ?,"
-                   "?, ?, ?, ?, ?, ?, ?, ?,"
-                   "?, ?, ?"
-                   ")",
+    "sql_command": (
+        "INSERT INTO mains ("
+        "sample_time, sample_epoch, site_id,"
+        "exp, imp, gen, gep, evn, evp,"
+        "v1, frq"
+        ");"
+        "VALUES (?, ?, ?,"
+        "?, ?, ?, ?, ?, ?, ?, ?,"
+        "?, ?, ?"
+        ")"
+    ),
     "report_interval": 300,
     "samplespercycle": 10,
     "delay": 0,
@@ -134,11 +139,13 @@ WIZ_KWH: dict = {
 PRICES: dict = {
     "database": _DATABASE,
     "sql_table": "prices",
-    "sql_command": "INSERT INTO prices ("
-                   "sample_time, sample_epoch, "
-                   "site_id, price"
-                   ");"
-                   "VALUES (?, ?, ?, ?)",
+    "sql_command": (
+        "INSERT INTO prices ("
+        "sample_time, sample_epoch, "
+        "site_id, price"
+        ");"
+        "VALUES (?, ?, ?, ?)"
+    ),
     "template": {
         "sample_time": "dd-mmm-yyyy hh:mm:ss",
         "sample_epoch": 0,
