@@ -5,38 +5,38 @@
 name: lektrix
 
 channels:
-  - conda-forge
-  - defaults
+    - conda-forge
+    - defaults
 
 dependencies:
-  - python=3.13
-  - pip
+    - python=3.13
+    - pip
 
-  # imported deps
-  - matplotlib=3.10
-  # already delivered by mausy5043-common, no need to specify version here:
-  - numpy
-  - pandas=2.3.3
+    # imported deps
+    - matplotlib=3.10
+    # already delivered by mausy5043-common, no need to specify version here:
+    - numpy
+    - pandas=2.3.3
 
-  # Not on conda channels:
-  - pip:
-      - gracefulkiller~=0.4
-      - mausy5043-common>=2.4
-      - py-solaredge==0.0.4.9
-      - zeroconf==0.148.0
-  - pyarrow<=20.0.0
-  - python-dateutil=2.9
-  - pytz=2025.2
-  - requests=2.32
-  - sh=2.2
-  - tabulate=0.9
+    # Not on conda channels:
+    - pip:
+          - gracefulkiller~=0.4
+          - mausy5043-common==2.8.2
+          - py-solaredge==0.0.4.9
+          - zeroconf==0.148.0
+    - pyarrow<=20.0.0
+    - python-dateutil=2.9
+    - pytz=2025.2
+    - requests=2.32
+    - sh=2.2
+    - tabulate=0.9
 
-  # dev deps
-  - jupyterlab
-  - libtiff
-  - pandas-stubs
-  - pipdeptree
-  - pre-commit
-  - scipy
-  - types-pytz
-  - types-requests
+    # dev deps
+    - jupyterlab
+    - libtiff
+    - pandas-stubs
+    - pipdeptree
+    - pre-commit
+    - scipy
+    - types-pytz
+    - types-requests
