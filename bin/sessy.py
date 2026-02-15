@@ -50,11 +50,11 @@ LOGGER: logging.Logger = logging.getLogger(__name__)
 # fmt: off
 parser = argparse.ArgumentParser(description="Execute the home wizard P1 daemon.")
 parser_group = parser.add_mutually_exclusive_group(required=True)
-parser_group.add_argument("--single",
+_ = parser_group.add_argument("--single",
                           action="store_true",
                           help="start the daemon as a service"
                           )
-parser_group.add_argument("--debug",
+_ = parser_group.add_argument("--debug",
                           action="store_true",
                           help="start the daemon in debugging mode"
                           )
