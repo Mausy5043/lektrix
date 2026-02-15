@@ -143,7 +143,7 @@ def main() -> None:
             time.sleep(1.0)  # 1s resolution is enough
 
 
-def set_led(dev, colour) -> None:
+def set_led(dev: str, colour: str) -> None:
     LOGGER.debug(f"{dev} is {colour}")
 
     in_dirfile = f"{APPROOT}/www/{colour}.png"
