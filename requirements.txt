@@ -11,7 +11,7 @@ numpy
 pandas
 py-solaredge==0.0.4.9
 # py-arrow v21.0.0 crashes with "Illegal Instruction"
-pyarrow<=23.0.0
+pyarrow<=23.0.1
 python-dateutil~=2.9
 pytz~=2025.2
 requests~=2.32
