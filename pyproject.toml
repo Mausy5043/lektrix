@@ -133,3 +133,7 @@ unfixable = []
 
 [tool.pyright]
 reportAttributeAccessIssue="none"
+reportUnknownMemberType="none"
+reportUnknownArgumentType="none"
+reportAny=false
+# typeCheckingMode = "off"
