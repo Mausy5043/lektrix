@@ -88,7 +88,7 @@ def main() -> None:
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
-    iniconf.read(cs.SOLAREDGE["config"])
+    _ = iniconf.read(cs.SOLAREDGE["config"])
     api_key: str = iniconf.get("account", "api_key")
     sol = Client()
     sol.set_api_key(api_key)
