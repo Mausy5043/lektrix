@@ -11,6 +11,9 @@ FIXME-SECURITY
 ### Visual Studio ###
 .vscode/
 
+### Zed ###
+.zed/
+
 ### for local testing
 .local/
 legacy/

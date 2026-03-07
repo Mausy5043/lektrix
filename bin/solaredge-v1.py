@@ -116,7 +116,7 @@ def main() -> None:
     set_led("solar", "orange")
     while not killer.kill_now and not debug_loop and not meas_ready:  # pylint: disable=too-many-nested-blocks
         # wait for the next whole quarter-hour interval
-        if cs.local_now() > next_time:
+        if DEBUG or  (cs.local_now() > next_time):
             start_time: float = cs.local_now()
             if start_dt > dt.datetime.today():
                 LOGGER.debug(f"Can't query {start_dt.strftime('%Y-%m-%d')} in the future.")
