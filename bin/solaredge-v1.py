@@ -92,8 +92,12 @@ def main() -> None:
     api_key: str = iniconf.get("account", "api_key")
     sol = Client()
     sol.set_api_key(api_key)
-    sites = sol.sites.get_sites()
-    site_id = sites["sites"]["site"][0]["id"]
+    try:
+        sites = sol.sites.get_sites()
+        site_id = sites["sites"]["site"][0]["id"]
+    except Exception as her:
+        LOGGER.error(f"{her} - {sys.exc_info()[0]}")
+        site_id: str = iniconf.get("account", "site_id")
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
     LOGGER.debug(
         json.dumps(sol.sites.get_site_details(site_id=site_id), indent=2, sort_keys=True)
