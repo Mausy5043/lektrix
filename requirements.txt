@@ -11,7 +11,7 @@ numpy
 pandas==3.0.1
 py-solaredge==0.0.4.9
 # pyarrow v21.0.0 crashes with "Illegal Instruction"
-pyarrow<=20.0.0
+pyarrow<=23.0.1
 python-dateutil~=2.9
 pytz~=2026.1
 requests~=2.32
