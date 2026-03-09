@@ -8,10 +8,10 @@ matplotlib~=3.10
 mausy5043-common==2.8.2
 # already delivered by mausy5043-common, so no need to specify version here:
 numpy
-pandas==3.0.1
+pandas
 py-solaredge==0.0.4.9
 # pyarrow v21.0.0 crashes with "Illegal Instruction"
-pyarrow<=23.0.1
+pyarrow
 python-dateutil~=2.9
 pytz~=2026.1
 requests~=2.32

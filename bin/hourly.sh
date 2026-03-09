@@ -74,11 +74,11 @@ create_hourly_backup() {
 create_daily_backup() {
     local timestamp
     local daily_backup_path
-    local compressed_backup_path
+    # local compressed_backup_path
 
     timestamp=$(date +'%Y%m%d')
     daily_backup_path="${daily_backup_dir}/${timestamp}_${db_leaf_name}"
-    compressed_backup_path="${daily_backup_path}.bz2"
+    # compressed_backup_path="${daily_backup_path}.bz2"
 
     # Create uncompressed daily backup
     echo "___ creating compressed daily backup..."
