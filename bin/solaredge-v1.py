@@ -96,7 +96,8 @@ def main() -> None:
         sites = sol.sites.get_sites()
         site_id: str = sites["sites"]["site"][0]["id"]
     except Exception as her:
-        LOGGER.error(f"{her} - {sys.exc_info()[0]}")
+        LOGGER.warning(f"{her} - {sys.exc_info()[0]}")
+        LOGGER.info("*** Ignoring this warning !!")
         site_id = iniconf.get("account", "site_id")
     start_dt: dt.datetime = dt.datetime.today() - dt.timedelta(days=1)
     LOGGER.debug(
