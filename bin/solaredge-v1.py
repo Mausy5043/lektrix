@@ -84,7 +84,6 @@ def main() -> None:
     LOGGER.info(f"{MYAPP} running on Python {sys.version}")
     debug_loop = False
     meas_ready = False
-    set_led("solar", "orange")
     killer = gk.GracefulKiller()
     iniconf = configparser.ConfigParser()
     # read api_key from the file ~/.config/solaredge/account.ini
@@ -118,10 +117,10 @@ def main() -> None:
     next_time: float = cs.this_quarter_hour_end(cs.local_now(), cs.QUARTER_FINAL)
     lookback_hours = 24
     lookahead_days = 1
-    set_led("solar", "orange")
     while not killer.kill_now and not debug_loop and not meas_ready:  # pylint: disable=too-many-nested-blocks
         # wait for the next whole quarter-hour interval
         if DEBUG or (cs.local_now() > next_time):
+            set_led("solar", "orange")
             start_time: float = cs.local_now()
             if start_dt > dt.datetime.today():
                 LOGGER.debug(f"Can't query {start_dt.strftime('%Y-%m-%d')} in the future.")

@@ -75,9 +75,6 @@ NODE = os.uname()[1]  # rbelec
 def main() -> None:
     """Execute main loop until killed."""
     LOGGER.info(f"Running on Python {sys.version}")
-    set_led("ev", "orange")
-    set_led("p1", "orange")
-    set_led("pv", "orange")
     killer = gk.GracefulKiller()
     API_KWH = kwh.WizkWh(debug=DEBUG)
     sql_db = m3.SqlDatabase(
@@ -95,6 +92,9 @@ def main() -> None:
     rprt_time: float = cs.local_now() + (report_interval - (cs.local_now() % report_interval))
     while not killer.kill_now and not meas_ready:
         if cs.local_now() > next_time:
+            set_led("ev", "orange")
+            set_led("p1", "orange")
+            set_led("pv", "orange")
             start_time: float = cs.local_now()
             try:
                 LOGGER.debug("\n...requesting telegram")
