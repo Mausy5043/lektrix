@@ -292,7 +292,7 @@ def main(opt) -> None:
     if opt.hours:
         plot_graph(
             output_file=cs.PRICES["hour_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation=""),
+            data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation="h"),
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["hour", "%Hh"],
         )

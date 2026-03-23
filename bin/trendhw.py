@@ -166,7 +166,7 @@ class ChunkedLogger:
             self.log(level, md)
 
 
-def fetch_data(hours_to_fetch: int = 48, aggregation: str = "H") -> dict:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -406,7 +406,7 @@ def main(opt) -> None:
     if opt.hours:
         plot_graph(
             cs.TREND["hour_graph"],
-            fetch_data(hours_to_fetch=opt.hours, aggregation="H"),
+            fetch_data(hours_to_fetch=opt.hours, aggregation="h"),
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=False,
             locatorformat=["hour", "%d-%m %Hh"],
@@ -430,7 +430,7 @@ def main(opt) -> None:
     if opt.years:
         plot_graph(
             cs.TREND["year_graph"],
-            fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="A"),
+            fetch_data(hours_to_fetch=opt.years * 366 * 24, aggregation="YE"),
             plot_title=f" trend afgelopen jaren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             show_data=True,
             locatorformat=["year", "%Y"],
