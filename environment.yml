@@ -21,7 +21,7 @@ dependencies:
     # Not on conda channels:
     - pip:
           - gracefulkiller~=0.4
-          - mausy5043-common==2.8.2
+          - mausy5043-common==2.10.6
           - py-solaredge==0.0.4.9
           - zeroconf==0.148.0
     - pyarrow
