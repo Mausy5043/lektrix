@@ -252,6 +252,8 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
 
             # create a line plot
             plt.rc("font", size=fig_fontsize)
+            # Convert index to a readable string format before plotting
+            data_frame.index = data_frame.index.strftime('%Y-%m-%d %H:%M')
             ax1 = data_frame.plot(
                 kind="bar",
                 stacked=True,
@@ -292,7 +294,7 @@ def main(opt) -> None:
     if opt.hours:
         plot_graph(
             output_file=cs.PRICES["hour_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation="15min"),
+            data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation=""),
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["hour", "%Hh"],
         )
