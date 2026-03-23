@@ -266,6 +266,9 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
     #
     pv_balance = df[["gep", "solar", "gen"]].copy()
     pv_balance["solar"][df["gep"] < df["solar"]] = df["solar"] - df["gep"]
+    # ChainedAssignmentError: A value is being set on a copy of a DataFrame or Series through chained assignment.
+    # pv_balance["solar"] = (df["solar"] - df["gep"]).where(df["gep"] < df["solar"], pv_balance["solar"])
+
     pv_balance["solar"] *= -1
     pv_balance.rename(columns={"gep": "leveren", "solar": "opslag", "gen": "laden"}, inplace=True)
     # LOGGER.debug("\n\n ** PV data for plotting  **")
