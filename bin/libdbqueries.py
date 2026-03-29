@@ -497,7 +497,10 @@ def separate_prices(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
     for row in range(len(dflt)):
         day_limit = dflt.iloc[row]["price"]
         _l += [day_limit] * _ln
-    df["avg_price"] = _l
+    # during transition of DST the length of df will be off by an hour.
+    # we "fix" that here
+    # in all other cases len(_l) will be equal to the length of the df.index
+    df["avg_price"] = _l[:len(df)] # was: _l
     # separate the past, high and low periods
     df["past"] = np.where(df.index < dtdt.now(), df["price"], np.nan)
     df["low"] = np.where(df["price"] <= df["avg_price"], df["price"], np.nan)
