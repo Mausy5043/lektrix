@@ -20,6 +20,7 @@ import libdbqueries as dbq
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mticker
 import pandas as pd
+from pandas import DatetimeIndex
 
 DATABASE: str = cs.PRICES["database"]
 TABLE_PRICE: str = cs.PRICES["sql_table"]
@@ -253,7 +254,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             # create a line plot
             plt.rc("font", size=fig_fontsize)
             # Convert index to a readable string format before plotting
-            data_frame.index = data_frame.index.strftime("%Y-%m-%d %H:%M")
+            data_frame.index = DatetimeIndex(data_frame.index).strftime("%Y-%m-%d %H:%M")
             ax1 = data_frame.plot(
                 kind="bar",
                 stacked=True,
