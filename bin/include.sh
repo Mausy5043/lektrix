@@ -52,9 +52,7 @@ declare -a lektrix_graphs=('lex_pasthours_mains.png'
     'lex_pastmonths_mains.png'
     'lex_pastmonths_production.png'
     'lex_pastyears_mains.png'
-    'lex_pastyears_production.png'
-    'lex_vs_month.png'
-    'lex_gauge.png')
+    'lex_pastyears_production.png')
 
 # start the application
 start_lektrix() {

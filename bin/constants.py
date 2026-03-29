@@ -77,8 +77,6 @@ TREND: dict = {
     "day_graph": f"{_WEBSITE}/lex_pastdays",
     "month_graph": f"{_WEBSITE}/lex_pastmonths",
     "year_graph": f"{_WEBSITE}/lex_pastyears",
-    "yg_vs_month": f"{_WEBSITE}/lex_vs_month",
-    "yg_gauge": f"{_WEBSITE}/lex_gauge",
 }
 
 SOLAREDGE: dict = {
