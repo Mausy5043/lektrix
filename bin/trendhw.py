@@ -90,6 +90,8 @@ parser_group.add_argument("--debug",
                           help="start in debugging mode"
                           )
 OPTION = parser.parse_args()
+
+
 # fmt: on
 
 
@@ -266,7 +268,8 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
     #
     pv_balance = df[["gep", "solar", "gen"]].copy()
     # pv_balance["solar"][df["gep"] < df["solar"]] = df["solar"] - df["gep"]
-    # ChainedAssignmentError: A value is being set on a copy of a DataFrame or Series through chained assignment.
+    # ChainedAssignmentError: A value is being set on a copy of a DataFrame or
+    # Series through chained assignment.
     pv_balance["solar"] = (df["solar"] - df["gep"]).where(
         df["gep"] < df["solar"], pv_balance["solar"]
     )
