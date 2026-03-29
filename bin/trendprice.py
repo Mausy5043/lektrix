@@ -253,7 +253,7 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
             # create a line plot
             plt.rc("font", size=fig_fontsize)
             # Convert index to a readable string format before plotting
-            data_frame.index = data_frame.index.strftime('%Y-%m-%d %H:%M')
+            data_frame.index = data_frame.index.strftime("%Y-%m-%d %H:%M")
             ax1 = data_frame.plot(
                 kind="bar",
                 stacked=True,
