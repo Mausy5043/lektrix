@@ -372,7 +372,9 @@ def pass1_process_production(df: pd.DataFrame, settings: dict, trim_rows: int) -
 
     if debug:
         print("o  POST-processed PRODUCTION data")
-        print(df.head(16).to_markdown(floatfmt=".3f"))
+        print(f"dataframe length: {len(df)}")
+        print(df.head(8).to_markdown(floatfmt=".3f"))
+        print(df.tail(8).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -399,7 +401,9 @@ def pass1_process_battery(df: pd.DataFrame, settings: dict, trim_rows: int) -> p
 
     if debug:
         print("o  POST-processed BATTERY data")
-        print(df.head(16).to_markdown(floatfmt=".3f"))
+        print(f"dataframe length: {len(df)}")
+        print(df.head(8).to_markdown(floatfmt=".3f"))
+        print(df.tail(8).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -427,7 +431,9 @@ def pass1_process_mains(df: pd.DataFrame, settings: dict) -> pd.DataFrame:
 
     if debug:
         print("o  POST-processed MAINS data")
-        print(df.head(16).to_markdown(floatfmt=".3f"))
+        print(f"dataframe length: {len(df)}")
+        print(df.head(8).to_markdown(floatfmt=".3f"))
+        print(df.tail(8).to_markdown(floatfmt=".3f"))
     return df
 
 
@@ -451,7 +457,9 @@ def pass1_process_prices(df: pd.DataFrame, settings: dict, trim_rows: int) -> pd
     # fmt: on
     if debug:
         print("o  POST-processed PRICE data")
-        print(df.head(16).to_markdown(floatfmt=".5f"))
+        print(f"dataframe length: {len(df)}")
+        print(df.head(8).to_markdown(floatfmt=".5f"))
+        print(df.tail(8).to_markdown(floatfmt=".5f"))
     return df
 
 
