@@ -86,6 +86,7 @@ try:
     api_key: str = config.get("API", "key", fallback="")
     api_url: str = config.get("API", "url", fallback="")
     savefile: str = os.path.expanduser(config.get("API", "saveto"))
+    rawfile: str = "-".join(["raw", savefile])
     qry_now: str = config.get("API", "qry_now", fallback="")
     qry_nxt: str = config.get("API", "qry_nxt", fallback="")
     if not api_key or not api_url:
@@ -153,6 +154,10 @@ for item in resp_data:
 # Save the data to a JSON file
 with open(savefile, "w", encoding="utf-8") as _f:
     json.dump(data, _f, ensure_ascii=True, indent=4)
+
+with open(rawfile, "w", encoding="utf-8") as _f:
+    json.dump(now_data, _f, ensure_ascii=True, indent=4)
+    json.dump(nxt_data, _f, ensure_ascii=True, indent=4)
 # print(json.dumps(data, indent=4))
 
 if not OPTION.debug:
