@@ -86,7 +86,7 @@ try:
     api_key: str = config.get("API", "key", fallback="")
     api_url: str = config.get("API", "url", fallback="")
     savefile: str = os.path.expanduser(config.get("API", "saveto"))
-    rawfile: str = "-".join(["raw", savefile])
+    rawfile: str = os.path.expanduser(config.get("API", "rawsaveto"))
     qry_now: str = config.get("API", "qry_now", fallback="")
     qry_nxt: str = config.get("API", "qry_nxt", fallback="")
     if not api_key or not api_url:
