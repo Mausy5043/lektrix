@@ -23,9 +23,9 @@ dependencies:
           - gracefulkiller~=0.4
           - mausy5043-common==2.10.6
           - py-solaredge==0.0.4.9
-          - zeroconf==0.148.0
+          - zeroconf==0.149
     - pyarrow
-    - python-dateutil =2.9.*
+    - python-dateutil =2.9
     - pytz =2026.1.*
     - requests =2.33.*
     - sh =2.2.*
