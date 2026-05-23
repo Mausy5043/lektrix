@@ -17,9 +17,9 @@ host_name=$(< /etc/hostname)
 
 # construct database paths
 database_local_root="/srv/containers/lektrix/data"
-database_container_root="data"
+# database_container_root="data"
 database_filename="lektrix.v2.sqlite3"
-db_full_path="${database_local_root}/${app_name}/${database_filename}"
+# db_full_path="${database_local_root}/${app_name}/${database_filename}"
 # website_dir="/tmp/${app_name}/site"
 website_dir="/run/${app_name}/site"
 website_image_dir="${website_dir}/img"
@@ -40,9 +40,9 @@ declare -a lektrix_services=("lektrix.wizkwh.service"
 # Install python3 and develop packages
 # Support for matplotlib & numpy needs to be installed seperately
 # SQLite3 support (incl python3)
-declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "python3-pip"
-    "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
-    "sqlite3")
+#declare -a lektrix_apt_packages=("build-essential" "python3" "python3-dev" "python3-pip"
+#    "libatlas-base-dev" "libxcb1" "libopenjp2-7" "libtiff5"
+#    "sqlite3")
 # placeholders for trendgraphs to make website work regardless of the state of the graphs.
 declare -a lektrix_graphs=('lex_pasthours_mains.png'
     'lex_pasthours_production.png'
@@ -75,12 +75,6 @@ stop_lektrix() {
     echo "Stopping ${app_name} on $(date)"
     action_timers stop
     action_services stop
-    # sync the database into the cloud
-    if command -v rclone &> /dev/null; then
-        rclone copyto -v \
-               "${database_local_root}/${app_name}/${database_filename}" \
-               "${database_remote_root}/${app_name}/${database_filename}"
-    fi
 }
 
 # update the repository
@@ -174,15 +168,6 @@ install_lektrix() {
     fi
 
     echo "Installing ${app_name} on $(date)"
-
-
-    echo "Fetching existing database from cloud."
-    # sync the database from the cloud
-    if command -v rclone &> /dev/null; then
-        rclone copyto -v \
-               "${database_remote_root}/${app_name}/${database_filename}" \
-               "${database_local_root}/${app_name}/${database_filename}"
-    fi
 
     # install services and timers
     echo "Installing timers & services."
