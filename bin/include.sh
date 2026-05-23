@@ -16,9 +16,9 @@ fi
 host_name=$(< /etc/hostname)
 
 # construct database paths
-database_local_root="/srv/containers/lektrix/data"
+# database_local_root="/srv/containers/lektrix/data"
 # database_container_root="data"
-database_filename="lektrix.v2.sqlite3"
+# database_filename="lektrix.v2.sqlite3"
 # db_full_path="${database_local_root}/${app_name}/${database_filename}"
 # website_dir="/tmp/${app_name}/site"
 website_dir="/run/${app_name}/site"
