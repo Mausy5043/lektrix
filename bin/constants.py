@@ -10,6 +10,7 @@
 import datetime as dt
 import os
 import sys
+from typing import Any
 
 import pytz
 
@@ -48,7 +49,7 @@ TIMEZONE = pytz.timezone("Europe/Amsterdam")
 FLOAT_FMT = "+.0f"
 
 # fmt: off
-BATTERY: dict = {
+BATTERY: dict[str, Any] = {
     "database": _DATABASE,
     "sql_table": "battery",
     "sql_command": (
@@ -70,7 +71,7 @@ BATTERY: dict = {
     "config": "/app/config/sessy.json",
 }
 
-TREND: dict = {
+TREND: dict[str, Any] = {
     "database": _DATABASE,
     "website": _WEBSITE,
     "hour_graph": f"{_WEBSITE}/lex_pasthours",
@@ -79,7 +80,7 @@ TREND: dict = {
     "year_graph": f"{_WEBSITE}/lex_pastyears",
 }
 
-SOLAREDGE: dict = {
+SOLAREDGE: dict[str, Any] = {
     "database": _DATABASE,
     "sql_table": "production",
     "sql_command": (
@@ -101,7 +102,7 @@ SOLAREDGE: dict = {
     "config": "/app/config/solaredge.ini",
 }
 
-WIZ_KWH: dict = {
+WIZ_KWH: dict[str, Any] = {
     "database": _DATABASE,
     "sql_table": "mains",
     "sql_command": (
@@ -134,7 +135,7 @@ WIZ_KWH: dict = {
     "config": "/app/config/homewizard.json",
 }
 
-PRICES: dict = {
+PRICES: dict[str, Any] = {
     "database": _DATABASE,
     "sql_table": "prices",
     "sql_command": (
