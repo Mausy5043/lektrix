@@ -136,4 +136,5 @@ reportAttributeAccessIssue="none"
 reportUnknownMemberType="none"
 reportUnknownArgumentType="none"
 reportAny=false
+reportExplicitAny=false
 # typeCheckingMode = "off"
