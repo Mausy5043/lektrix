@@ -25,7 +25,7 @@ dependencies:
           - py-solaredge==0.0.4.9
           - zeroconf==0.149
     - pyarrow
-    - python-dateutil =2.9
+    - python-dateutil =2.9*
     - pytz =2026.1.*
     - requests =2.33.*
     - sh =2.2.*
