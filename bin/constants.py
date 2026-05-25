@@ -164,13 +164,15 @@ PRICES: dict[str, Any] = {
 
 def local_now() -> float:
     """Return the current timestamp in UTC."""
-    return dt.datetime.today().replace(tzinfo=dt.UTC).timestamp()
+    return dt.datetime.now(dt.UTC).timestamp()
 
 
-def next_quarter_hour(ts: float) -> float:
+def next_quarter_hour(ts: float | int) -> float:
     """Return the timestamp of the next quarter-hour."""
+    if not isinstance(ts, (int, float)):
+        raise ValueError("Timestamp must be a number")
     next_ts = (-ts) % (15 * 60)
-    return next_ts + ts
+    return float(next_ts + ts)
 
 
 def this_quarter_hour_end(ts: float, ns: float) -> float:
