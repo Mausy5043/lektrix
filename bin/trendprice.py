@@ -63,10 +63,10 @@ parser.add_argument("--hours", "-hr",
                     type=int,
                     help="create hour-trend for last <HOURS> hours",
                     )
-# parser.add_argument("--days", "-d",
-#                     type=int,
-#                     help="create day-trend for last <DAYS> days"
-#                     )
+parser.add_argument("--days", "-d",
+                    type=int,
+                    help="create day-trend for last <DAYS> days"
+                    )
 # parser.add_argument("--months", "-m",
 #                     type=int,
 #                     help="number of months of data to use for the graph",
@@ -298,6 +298,13 @@ def main(opt) -> None:
             data_dict=fetch_data(hours_to_fetch=opt.hours, aggregation=""),
             plot_title=f" trend afgelopen uren ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["hour", "%Hh"],
+        )
+    if opt.days:
+        plot_graph(
+            output_file=cs.PRICES["day_graph"],
+            data_dict=fetch_data(hours_to_fetch=opt.days*24, aggregation="D"),
+            plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            locatorformat=["day", "%Y-%m-%d"],
         )
 
 
