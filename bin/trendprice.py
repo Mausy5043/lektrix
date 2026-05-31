@@ -199,7 +199,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h", return_raw: boo
         print(raw_df)
         print("\n")
     if return_raw:
-        return {'proces':raw_df}
+        return {'prijs':raw_df}
 
     df = dbq.pass1_process_prices(raw_df, settings, 1)
     df = df.sort_index(axis=1)
@@ -296,6 +296,89 @@ def plot_graph(output_file, data_dict, plot_title, show_data=False, locatorforma
                 print(f" --> {output_file}_{parameter}.png\n")
 
 
+def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=None) -> None:
+    """Plot the data in a chart.
+
+    Args:
+        output_file (str): path & filestub of the resulting plot.
+                           The parametername will be appended as will the
+                           extension .png.
+        data_dict (dict): dict containing the datasets to be plotted
+        plot_title (str): text for the title to be placed above the plot
+        show_data (bool): whether to show numerical values in the plot.
+        locatorformat (list): formatting information for xticks
+
+    Returns: nothing
+    """
+    if locatorformat is None:
+        # locatorformat = ["hour", "%d-%m %Hh"]
+        locatorformat = ["hour", "%Hh"]
+    if DEBUG:
+        print("\n\n*** PLOTTING ***")
+    for parameter in data_dict:
+        df = data_dict[parameter]  # type: pd.DataFrame
+        if DEBUG:
+            print(f"{parameter}\n")
+            # print(data_frame.to_markdown(floatfmt=".3f"))
+        df['date'] = df.index.strftime('%Y-%m-%d')
+        print(df.head())
+        boxplot_data = df.pivot_table(index='date', values='price', aggfunc="sum")
+        print(boxplot_data.to_markdown())
+        # mjr_ticks = int(len(df.index) / 40)
+        # if mjr_ticks <= 0:
+        #     mjr_ticks = 1
+        # ticklabels = [""] * len(df.index)
+        # ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in df.index[::mjr_ticks]]
+        # if DEBUG:
+        #     print(ticklabels)
+        if len(boxplot_data.index) == 0:
+            if DEBUG:
+                print("No data.")
+        else:
+            fig_x = 20
+            fig_y = 7.5
+            fig_fontsize = 13
+            ahpla = 0.7
+        #
+        #     # create a line plot
+        #     plt.rc("font", size=fig_fontsize)
+        #     # Convert index to a readable string format before plotting
+        #     data_frame.index = DatetimeIndex(data_frame.index).strftime("%Y-%m-%d %H:%M")
+        ax1 = df.boxplot(
+            by="date",
+            figsize=(fig_x, fig_y),
+            fontsize=fig_fontsize,
+            grid=False,
+            rot=30,
+            meanline=True,
+            showmeans=True,
+        )
+        #     # linewidth and alpha need to be set separately
+        #     # for _, a in enumerate(ax1.lines):
+        #     #     plt.setp(a, alpha=ahpla, linewidth=1, linestyle=" ")
+        #     if show_data:
+        #         x_offset = -0.1
+        #         for p in ax1.patches:
+        #             b = p.get_bbox()  # type: ignore[attr-defined]
+        #             val = f"{b.y1 - b.y0:{cs.FLOAT_FMT}}"
+        #             ax1.annotate(
+        #                 val,
+        #                 ((b.x0 + b.x1) / 2 + x_offset, b.y0 + 0.5 * (b.y1 - b.y0)),
+        #                 rotation=30,
+        #             )
+        ax1.set_ylabel(parameter)
+        ax1.set_xlabel("Datetime")
+        plt.xticks(fontsize=fig_fontsize-2)
+        ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
+        # ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
+        plt.gcf().autofmt_xdate()
+        plt.title(f"{parameter} {plot_title}")
+        plt.tight_layout()
+        plt.savefig(fname=f"{output_file}_{parameter}.png", format="png")
+        if DEBUG:
+            print(f" --> {output_file}_{parameter}.png\n")
+
+
 def main(opt) -> None:
     """
     This is the main loop
@@ -308,9 +391,9 @@ def main(opt) -> None:
             locatorformat=["hour", "%Hh"],
         )
     if opt.days:
-        plot_graph(
+        plot_box(
             output_file=cs.PRICES["day_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.days*24, aggregation="D"),
+            data_dict=fetch_data(hours_to_fetch=opt.days*24, aggregation="", return_raw=True),
             plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["day", "%Y-%m-%d"],
         )
@@ -327,7 +410,11 @@ if __name__ == "__main__":
         OPTION.hours = (edate - sdate).total_seconds() / 3600
     if OPTION.edate:
         print("NOT NOW")
-        EDATETIME = f"'{OPTION.edate}'"
+        if OPTION.edate[0] in ["+", "-"]:
+            _ed = dt.now() + dttd(days=float(OPTION.edate))
+            EDATETIME = f"'{_ed.strftime('%Y-%m-%d')}'"
+        else:
+            EDATETIME = f"'{OPTION.edate}'"
 
     if OPTION.debug:
         print(OPTION)

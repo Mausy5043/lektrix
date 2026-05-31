@@ -180,5 +180,6 @@ pushd "${HERE}" >/dev/null || exit 1
     ./trendhw.py --hours 0 --days 0 --months 0 --years 0
 
     ./trendprice.py --twoday
+    ./trendprice.py --days 80 --edate +2
 
 popd >/dev/null || exit
