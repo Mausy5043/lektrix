@@ -20,10 +20,10 @@ dependencies:
 
     # Not on conda channels:
     - pip:
-          - gracefulkiller~=0.4
-          - mausy5043-common==2.10.6
-          - py-solaredge==0.0.4.9
-          - zeroconf==0.149
+        - gracefulkiller~=0.4
+        - mausy5043-common==2.10.6
+        - py-solaredge==0.0.4.9
+        - zeroconf~=0.149
     - pyarrow
     - python-dateutil =2.9*
     - pytz =2026.1.*
