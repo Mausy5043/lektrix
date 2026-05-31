@@ -5,7 +5,7 @@
 
 gracefulkiller~=0.4
 matplotlib~=3.10
-mausy5043-common==2.10.6
+mausy5043-common==2.11.2
 
 # already delivered by mausy5043-common, so no need to specify version here:
 numpy
@@ -15,7 +15,7 @@ py-solaredge==0.0.4.9
 pyarrow
 python-dateutil~=2.9
 python-homewizard-energy
-pytz~=2026
+pytz
 requests~=2.33
 sessypy
 sh~=2.2
