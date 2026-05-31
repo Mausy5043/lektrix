@@ -59,10 +59,10 @@ parser.add_argument("--twoday", "-t",
                     action="store_true",
                     help="graph for the last two days"
                     )
-# parser.add_argument("--hours", "-hr",
-#                     type=int,
-#                     help="create hour-trend for last <HOURS> hours",
-#                     )
+parser.add_argument("--hours", "-hr",
+                    type=int,
+                    help="create hour-trend for last <HOURS> hours",
+                    )
 # parser.add_argument("--days", "-d",
 #                     type=int,
 #                     help="create day-trend for last <DAYS> days"
