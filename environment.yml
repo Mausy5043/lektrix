@@ -29,7 +29,7 @@ dependencies:
     - pyarrow
     - python-dateutil =2.9*
     - pytz
-    - requests =2.33.*
+    - requests
     - sh =2.2.*
     - tabulate =0.10
 

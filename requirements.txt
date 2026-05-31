@@ -16,7 +16,7 @@ pyarrow
 python-dateutil~=2.9
 python-homewizard-energy
 pytz
-requests~=2.33
+requests
 sessypy
 sh~=2.2
 tabulate~=0.10

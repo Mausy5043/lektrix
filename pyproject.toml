@@ -18,7 +18,7 @@ dependencies = [
     "python-dateutil~=2.9",
     "python-homewizard-energy",
     "pytz",
-    "requests~=2.33",
+    "requests",
     "sh~=2.2",
     "sessypy",
     "tabulate~=0.10",
