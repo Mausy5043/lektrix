@@ -67,10 +67,10 @@ parser.add_argument("--days", "-d",
                     type=int,
                     help="create day-trend for last <DAYS> days"
                     )
-# parser.add_argument("--months", "-m",
-#                     type=int,
-#                     help="number of months of data to use for the graph",
-#                     )
+parser.add_argument("--months", "-m",
+                    type=int,
+                    help="number of months of data to use for the graph",
+                    )
 # parser.add_argument("--years", "-y",
 #                     type=int,
 #                     help="number of months of data to use for the graph",
@@ -319,19 +319,8 @@ def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=
         df = data_dict[parameter]  # type: pd.DataFrame
         if DEBUG:
             print(f"{parameter}\n")
-            # print(data_frame.to_markdown(floatfmt=".3f"))
-        df['date'] = df.index.strftime('%Y-%m-%d')
-        print(df.head())
-        boxplot_data = df.pivot_table(index='date', values='price', aggfunc="sum")
-        print(boxplot_data.to_markdown())
-        # mjr_ticks = int(len(df.index) / 40)
-        # if mjr_ticks <= 0:
-        #     mjr_ticks = 1
-        # ticklabels = [""] * len(df.index)
-        # ticklabels[::mjr_ticks] = [item.strftime(locatorformat[1]) for item in df.index[::mjr_ticks]]
-        # if DEBUG:
-        #     print(ticklabels)
-        if len(boxplot_data.index) == 0:
+        df['date'] = df.index.strftime(locatorformat[1])
+        if len(df.index) == 0:
             if DEBUG:
                 print("No data.")
         else:
@@ -339,11 +328,7 @@ def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=
             fig_y = 7.5
             fig_fontsize = 13
             ahpla = 0.7
-        #
-        #     # create a line plot
-        #     plt.rc("font", size=fig_fontsize)
-        #     # Convert index to a readable string format before plotting
-        #     data_frame.index = DatetimeIndex(data_frame.index).strftime("%Y-%m-%d %H:%M")
+
         ax1 = df.boxplot(
             by="date",
             figsize=(fig_x, fig_y),
@@ -353,24 +338,11 @@ def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=
             meanline=True,
             showmeans=True,
         )
-        #     # linewidth and alpha need to be set separately
-        #     # for _, a in enumerate(ax1.lines):
-        #     #     plt.setp(a, alpha=ahpla, linewidth=1, linestyle=" ")
-        #     if show_data:
-        #         x_offset = -0.1
-        #         for p in ax1.patches:
-        #             b = p.get_bbox()  # type: ignore[attr-defined]
-        #             val = f"{b.y1 - b.y0:{cs.FLOAT_FMT}}"
-        #             ax1.annotate(
-        #                 val,
-        #                 ((b.x0 + b.x1) / 2 + x_offset, b.y0 + 0.5 * (b.y1 - b.y0)),
-        #                 rotation=30,
-        #             )
+
         ax1.set_ylabel(parameter)
         ax1.set_xlabel("Datetime")
         plt.xticks(fontsize=fig_fontsize-2)
         ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
-        # ax1.xaxis.set_major_formatter(mticker.FixedFormatter(ticklabels))
         plt.gcf().autofmt_xdate()
         plt.title(f"{parameter} {plot_title}")
         plt.tight_layout()
@@ -397,7 +369,13 @@ def main(opt) -> None:
             plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["day", "%Y-%m-%d"],
         )
-
+    if opt.months:
+        plot_box(
+            output_file=cs.PRICES["month_graph"],
+            data_dict=fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="", return_raw=True),
+            plot_title=f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
+            locatorformat=["month", "%Y-%m"],
+        )
 
 if __name__ == "__main__":
     print(f"Trending (price) with Python {sys.version}")
@@ -415,7 +393,10 @@ if __name__ == "__main__":
             EDATETIME = f"'{_ed.strftime('%Y-%m-%d')}'"
         else:
             EDATETIME = f"'{OPTION.edate}'"
-
+    if OPTION.days == 0:
+        OPTION.days = 80
+    if OPTION.months == 0:
+        OPTION.months = 18 * 12
     if OPTION.debug:
         print(OPTION)
         DEBUG = True
