@@ -163,7 +163,7 @@ class ChunkedLogger:
             self.log(level, md)
 
 
-def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
+def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h", return_raw: bool = False) -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -193,7 +193,15 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h") -> dict:
     LOGGER.debug(f"\nRequest {hours_to_fetch} hours of price data")
     settings["table"] = TABLE_PRICE
     settings["cols2drop"] = ["site_id"]
-    df = dbq.pass1_process_prices(dbq.query_for_data(settings=settings), settings, 1)
+    raw_df = dbq.query_for_data(settings=settings)
+    if DEBUG:
+        print("RAW DATA")
+        print(raw_df)
+        print("\n")
+    if return_raw:
+        return {'proces':raw_df}
+
+    df = dbq.pass1_process_prices(raw_df, settings, 1)
     df = df.sort_index(axis=1)
 
     df = dbq.separate_prices(df, settings)
