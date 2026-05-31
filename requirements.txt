@@ -14,9 +14,11 @@ py-solaredge==0.0.4.9
 # pyarrow v21.0.0 crashes with "Illegal Instruction"
 pyarrow
 python-dateutil~=2.9
-pytz~=2026.1
+python-homewizard-energy
+pytz~=2026
 requests~=2.33
+sessypy
 sh~=2.2
 tabulate~=0.10
 # zeroconf 0.149.3 is latest installed
-zeroconf~=0.149
+zeroconf

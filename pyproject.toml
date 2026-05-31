@@ -16,11 +16,13 @@ dependencies = [
     "pyarrow",
     "py-solaredge==0.0.4.9",
     "python-dateutil~=2.9",
-    "pytz~=2026.1",
+    "python-homewizard-energy",
+    "pytz~=2026",
     "requests~=2.33",
     "sh~=2.2",
+    "sessypy",
     "tabulate~=0.10",
-    "zeroconf~=0.149"
+    "zeroconf"
     ]
 license = {file = "LICENSE"}
 authors = [
