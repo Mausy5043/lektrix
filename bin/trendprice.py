@@ -163,7 +163,9 @@ class ChunkedLogger:
             self.log(level, md)
 
 
-def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h", return_raw: bool = False) -> dict:
+def fetch_data(
+    hours_to_fetch: int = 48, aggregation: str = "h", return_raw: bool = False
+) -> dict:
     """Query the database to fetch the requested data
 
     Args:
@@ -199,7 +201,7 @@ def fetch_data(hours_to_fetch: int = 48, aggregation: str = "h", return_raw: boo
         print(raw_df)
         print("\n")
     if return_raw:
-        return {'prijs':raw_df}
+        return {'prijs': raw_df}
 
     df = dbq.pass1_process_prices(raw_df, settings, 1)
     df = df.sort_index(axis=1)
@@ -341,7 +343,7 @@ def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=
 
         ax1.set_ylabel(parameter)
         ax1.set_xlabel("Datetime")
-        plt.xticks(fontsize=fig_fontsize-2)
+        plt.xticks(fontsize=fig_fontsize - 2)
         ax1.grid(which="major", axis="y", color="k", linestyle="--", linewidth=0.5)
         plt.gcf().autofmt_xdate()
         plt.title(f"{parameter} {plot_title}")
@@ -365,17 +367,20 @@ def main(opt) -> None:
     if opt.days:
         plot_box(
             output_file=cs.PRICES["day_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.days*24, aggregation="", return_raw=True),
+            data_dict=fetch_data(hours_to_fetch=opt.days * 24, aggregation="", return_raw=True),
             plot_title=f" trend afgelopen dagen ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["day", "%Y-%m-%d"],
         )
     if opt.months:
         plot_box(
             output_file=cs.PRICES["month_graph"],
-            data_dict=fetch_data(hours_to_fetch=opt.months * 31 * 24, aggregation="", return_raw=True),
+            data_dict=fetch_data(
+                hours_to_fetch=opt.months * 31 * 24, aggregation="", return_raw=True
+            ),
             plot_title=f" trend afgelopen maanden ({dt.now().strftime('%d-%m-%Y %H:%M:%S')})",
             locatorformat=["month", "%Y-%m"],
         )
+
 
 if __name__ == "__main__":
     print(f"Trending (price) with Python {sys.version}")
