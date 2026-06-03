@@ -201,7 +201,7 @@ def fetch_data(
         print(raw_df)
         print("\n")
     if return_raw:
-        return {'prijs': raw_df}
+        return {"prijs": raw_df}
 
     df = dbq.pass1_process_prices(raw_df, settings, 1)
     df = df.sort_index(axis=1)
