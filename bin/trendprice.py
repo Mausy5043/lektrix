@@ -329,7 +329,7 @@ def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=
             fig_x = 20
             fig_y = 7.5
             fig_fontsize = 13
-            ahpla = 0.7
+            # ahpla = 0.7
 
         ax1 = df.boxplot(
             by="date",
