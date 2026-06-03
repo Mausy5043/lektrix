@@ -321,7 +321,7 @@ def plot_box(output_file, data_dict, plot_title, show_data=False, locatorformat=
         df = data_dict[parameter]  # type: pd.DataFrame
         if DEBUG:
             print(f"{parameter}\n")
-        df['date'] = df.index.strftime(locatorformat[1])
+        df["date"] = df.index.strftime(locatorformat[1])  # type: ignore[attr-defined]
         if len(df.index) == 0:
             if DEBUG:
                 print("No data.")
