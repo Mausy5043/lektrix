@@ -21,7 +21,7 @@ dependencies:
     # Not on conda channels:
     - pip:
         - gracefulkiller~=0.4
-        - mausy5043-common==2.11.2
+        - mausy5043-common==2.11.3
         - py-solaredge==0.0.4.9
         - python-homewizard-energy
         - sessypy
