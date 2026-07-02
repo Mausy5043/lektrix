@@ -20,12 +20,12 @@ dependencies:
 
     # Not on conda channels:
     - pip:
+        - python-homewizard-energy==10.2.0
+        - sessypy==0.2.6
+        - zeroconf==0.150.0
         - gracefulkiller~=0.4
-        - mausy5043-common==2.11.3
+        - mausy5043-common==2.11.5
         - py-solaredge==0.0.4.9
-        - python-homewizard-energy
-        - sessypy
-        - zeroconf
     - pyarrow
     - python-dateutil =2.9*
     - pytz

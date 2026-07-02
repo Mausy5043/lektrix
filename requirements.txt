@@ -5,7 +5,7 @@
 
 gracefulkiller~=0.4
 matplotlib~=3.10
-mausy5043-common==2.11.3
+mausy5043-common==2.11.5
 
 # already delivered by mausy5043-common, so no need to specify version here:
 numpy
@@ -14,11 +14,11 @@ py-solaredge==0.0.4.9
 # pyarrow v21.0.0 crashes with "Illegal Instruction"
 pyarrow
 python-dateutil~=2.9
-python-homewizard-energy
+#
+python-homewizard-energy==10.2.0
 pytz
 requests
-sessypy
+sessypy==0.2.6
 sh~=2.2
 tabulate~=0.10
-# zeroconf 0.149.3 is latest installed
-zeroconf
+zeroconf==0.150.0
