@@ -40,6 +40,9 @@ class WizkWh:
         self.home_freq = np.nan
         self.home_voltage = np.nan
         self.list_data: list = []
+        self.ev_hwe = None
+        self.pv_hwe = None
+        self.p1_hwe = None
 
         # set-up logging
         if debug:
