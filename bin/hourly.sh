@@ -147,8 +147,8 @@ pushd "${HERE}" >/dev/null || exit 1
             create_hourly_backup
 
             # ### DAILY MAINTENANCE ###
-            # run once per day:
-            if [ "$(date +'%H')" -eq 0 ]; then
+            # run once per day at 02:*. This avoids timezone issues.
+            if [ "$(date +'%H')" -eq 2 ]; then
                 echo -n "___ ${db_full_path} daily ANALYZE  :   "
                 execute_sql "${db_full_path}" "ANALYZE;"
 
