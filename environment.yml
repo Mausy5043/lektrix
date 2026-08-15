@@ -24,7 +24,7 @@ dependencies:
         - sessypy==0.2.6
         - zeroconf==0.150.0
         - gracefulkiller~=0.4
-        - mausy5043-common==2.11.6
+        - mausy5043-common==2.11.7
         - py-solaredge==0.0.4.9
     - pyarrow
     - python-dateutil =2.9*
